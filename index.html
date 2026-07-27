@@ -4,100 +4,146 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은의 여정: 17세기 글로벌 무역 탐구</title>
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700&display=swap" rel="stylesheet">
+    <!-- Google Fonts - Noto Sans KR -->
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    <!-- ExcelJS 라이브러리 탑재 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: #f8f9fa; }
-        .screen { display: none; width: 100vw; height: 100vh; box-sizing: border-box; }
+        :root {
+            /* 세련된 그라데이션 및 컬러 팔레트 */
+            --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
+            --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
+            --bg-color: #f3f4f6;
+            --card-bg: rgba(255, 255, 255, 0.95);
+            --text-dark: #1f2937;
+            --text-gray: #4b5563;
+            --border-color: #e5e7eb;
+            --shadow-soft: 0 10px 25px rgba(0, 0, 0, 0.05);
+            --shadow-hover: 0 15px 35px rgba(124, 58, 237, 0.2);
+        }
+
+        body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
+        .screen { display: none; width: 100vw; height: 100vh; box-sizing: border-box; overflow-y: auto; }
         
+        /* 공통 버튼 스타일 (그라데이션) */
+        .gradient-btn { 
+            background: var(--primary-gradient); color: white; border: none; padding: 14px 24px; 
+            border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; 
+            transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2);
+            font-family: 'Noto Sans KR', sans-serif; width: 100%; box-sizing: border-box;
+        }
+        .gradient-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
+        .gradient-btn:disabled { background: #d1d5db; color: #9ca3af; box-shadow: none; cursor: not-allowed; transform: none; }
+        
+        .secondary-btn { background: var(--secondary-gradient); }
+
+        /* 카드 UI (글래스모피즘 느낌) */
+        .card { 
+            background: var(--card-bg); backdrop-filter: blur(10px); padding: 40px; 
+            border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(255, 255, 255, 0.5); 
+        }
+
+        /* 텍스트 그라데이션 */
+        .text-gradient { 
+            background: var(--primary-gradient); -webkit-background-clip: text; 
+            -webkit-text-fill-color: transparent; font-weight: 900; 
+        }
+
         /* 로그인 화면 */
         #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; }
-        #login-box { background: white; padding: 40px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); text-align: center; width: 380px; }
+        #login-box { text-align: center; width: 400px; }
         
-        .mode-btn-group { display: flex; gap: 10px; margin-bottom: 20px; }
-        .mode-btn { flex: 1; padding: 12px; border: 2px solid #ced4da; border-radius: 8px; background: white; color: #495057; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; }
-        .mode-btn.active { border-color: #4263eb; background-color: #e7f5ff; color: #4263eb; }
+        .mode-btn-group { display: flex; gap: 10px; margin-bottom: 25px; }
+        .mode-btn { flex: 1; padding: 14px; border: 2px solid var(--border-color); border-radius: 12px; background: white; color: var(--text-gray); font-weight: 700; cursor: pointer; transition: all 0.2s; }
+        .mode-btn.active { border-color: #7c3aed; background: #f3e8ff; color: #6d28d9; }
         
-        .input-group { margin-bottom: 15px; text-align: left; }
-        .input-group label { display: block; font-size: 13px; color: #495057; margin-bottom: 5px; font-weight: 700; }
-        .input-group select, .input-group input { width: 100%; padding: 12px; font-size: 15px; border: 1px solid #ced4da; border-radius: 8px; box-sizing: border-box; outline: none; font-family: 'Noto Sans KR', sans-serif; }
-        
-        #login-box button.submit-btn { padding: 14px; font-size: 16px; background-color: #4263eb; color: white; border: none; border-radius: 8px; cursor: pointer; font-weight: bold; width: 100%; font-family: 'Noto Sans KR', sans-serif; margin-top: 10px; }
+        .input-group { margin-bottom: 18px; text-align: left; }
+        .input-group label { display: block; font-size: 13px; color: var(--text-gray); margin-bottom: 6px; font-weight: 700; }
+        .input-group select, .input-group input { width: 100%; padding: 14px; font-size: 15px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; outline: none; transition: border 0.2s; }
+        .input-group select:focus, .input-group input:focus { border-color: #7c3aed; }
 
         /* 퀴즈 화면 */
-        #quiz-screen { flex-direction: column; align-items: center; justify-content: center; background-color: #f1f3f5; padding: 20px; overflow-y: auto; }
-        .quiz-container { background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); width: 100%; max-width: 600px; }
-        .quiz-item { margin-bottom: 20px; border-bottom: 1px solid #e9ecef; padding-bottom: 15px; }
-        .quiz-item p { font-weight: 700; color: #343a40; }
+        #quiz-screen { flex-direction: column; align-items: center; justify-content: center; }
+        .quiz-container { width: 100%; max-width: 650px; }
+        .quiz-item { margin-bottom: 25px; background: #f9fafb; padding: 20px; border-radius: 12px; border: 1px solid var(--border-color); }
+        .quiz-item p { font-weight: 700; margin-top: 0; color: var(--text-dark); }
+        .quiz-item label { display: block; margin-bottom: 8px; cursor: pointer; }
 
         /* 챗봇 메인 화면 */
-        #chatbot-screen { width: 100%; height: 100vh; }
-        .main-layout { display: flex; width: 100%; height: 100%; }
-        #left-panel { flex: 1; padding: 20px; border-right: 2px solid #e9ecef; background-color: #ffffff; display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
-        #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 20px; background-color: #f1f3f5; }
-        h2 { margin-top: 0; color: #343a40; text-align: center; }
-        .instruction { text-align: center; color: #495057; margin-bottom: 10px; font-size: 14px; }
+        .main-layout { display: flex; width: 100%; height: 100vh; }
+        #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
+        #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
-        canvas { background-color: #ffffff; border: 2px solid #a4c2f4; border-radius: 12px; margin-top: 10px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: crosshair; }
+        canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; }
         
-        .merchant-selector { margin-bottom: 15px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
-        .merchant-selector button { padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; background-color: #e9ecef; color: #495057; font-weight: 500; font-size: 14px; font-family: 'Noto Sans KR', sans-serif; }
-        .merchant-selector button.active { background-color: #4263eb; color: white; font-weight: 700; }
+        .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
+        .merchant-selector button { padding: 12px 18px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background-color: white; color: var(--text-gray); font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .merchant-selector button.active { background: var(--primary-gradient); color: white; border: none; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3); }
         
-        #chat-box { flex: 1; background: white; border: 1px solid #ced4da; border-radius: 12px; padding: 15px; overflow-y: auto; margin-bottom: 15px; display: flex; flex-direction: column; gap: 12px; }
-        .msg-wrapper { display: flex; gap: 10px; align-items: flex-start; }
+        #chat-box { flex: 1; background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 20px; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 15px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
+        .msg-wrapper { display: flex; gap: 12px; align-items: flex-start; }
         .msg-wrapper.user { flex-direction: row-reverse; }
-        .avatar { font-size: 26px; }
-        .message { padding: 12px 16px; border-radius: 12px; line-height: 1.6; font-size: 14px; max-width: 75%; word-wrap: break-word; }
-        .user-msg { background-color: #e7f5ff; border: 1px solid #d0ebff; color: #1864ab; border-bottom-right-radius: 2px; }
-        .ai-msg { background-color: #f8f9fa; border: 1px solid #e9ecef; color: #212529; border-bottom-left-radius: 2px; }
-        .system-msg { background-color: #fff3cd; color: #856404; font-size: 13px; padding: 8px 12px; border-radius: 20px; text-align: center; width: 100%; }
-        
-        .typing-indicator { color: #868e96; font-style: italic; font-size: 13px; }
+        .avatar { font-size: 28px; }
+        .message { padding: 14px 18px; border-radius: 16px; line-height: 1.6; font-size: 14.5px; max-width: 75%; word-wrap: break-word; }
+        .user-msg { background-color: #e0e7ff; color: #3730a3; border-bottom-right-radius: 4px; }
+        .ai-msg { background-color: #f3f4f6; color: #1f2937; border-bottom-left-radius: 4px; }
+        .system-msg { background-color: #fef3c7; color: #92400e; font-size: 13px; padding: 10px; border-radius: 20px; text-align: center; width: 100%; }
+        .typing-indicator { color: #6b7280; font-style: italic; font-size: 13px; }
 
         #input-area { display: flex; gap: 10px; }
-        #user-input { flex: 1; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; outline: none; font-family: 'Noto Sans KR', sans-serif; }
-        #send-btn { padding: 12px 20px; border: none; background-color: #4263eb; color: white; border-radius: 8px; cursor: pointer; font-weight: 700; font-family: 'Noto Sans KR', sans-serif; }
+        #user-input { flex: 1; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 15px; outline: none; transition: 0.2s; }
+        #user-input:focus { border-color: #7c3aed; }
+        #send-btn { width: auto; padding: 15px 25px; border-radius: 12px; }
 
-        /* 논술/요약 과제 화면 */
-        #essay-screen { flex-direction: column; align-items: center; justify-content: center; background-color: #f8f9fa; padding: 30px; overflow-y: auto; }
-        .essay-card { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
-        .essay-banner { background: linear-gradient(135deg, #4263eb, #364fc7); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(66, 99, 235, 0.3); }
-        .essay-banner h3 { margin: 0 0 8px 0; font-size: 20px; }
-        .essay-banner p { margin: 0; font-size: 14px; opacity: 0.9; }
-        .criteria-box { background: #e7f5ff; border-left: 4px solid #339af0; padding: 15px; border-radius: 4px; margin-bottom: 20px; font-size: 13px; color: #1c7ed6; line-height: 1.6; }
-        textarea { width: 100%; padding: 12px; border: 1px solid #ced4da; border-radius: 8px; font-size: 14px; box-sizing: border-box; resize: none; margin-bottom: 10px; font-family: 'Noto Sans KR', sans-serif; }
+        /* 토의 & 논술 공통 */
+        .center-screen { flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
+        .content-card { width: 100%; max-width: 800px; }
+        .banner { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: var(--shadow-hover); }
+        .banner h3 { margin: 0 0 10px 0; font-size: 22px; }
+        .banner p { margin: 0; font-size: 15px; opacity: 0.9; }
         
-        .role-btn-group { display: flex; flex-direction: column; gap: 10px; margin-bottom: 20px; }
-        .role-btn { padding: 15px; border: 2px solid #ced4da; border-radius: 8px; background: white; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; font-size: 15px; }
-        .role-btn:hover { border-color: #4263eb; background-color: #f8f9fa; }
+        .info-box { background: #f0fdfa; border-left: 5px solid #14b8a6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: #0f766e; line-height: 1.6; }
         
-        /* 교사 대시보드 */
-        #teacher-dashboard { width: 100vw; height: 100vh; background-color: #f1f3f5; padding: 30px; box-sizing: border-box; overflow-y: auto; }
-        .dashboard-container { max-width: 1200px; margin: 0 auto; background: white; padding: 30px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
-        .dashboard-controls { display: flex; gap: 10px; margin-bottom: 20px; background: #e9ecef; padding: 15px; border-radius: 8px; align-items: center; flex-wrap: wrap; }
-        .dashboard-controls select { padding: 8px; border-radius: 6px; border: 1px solid #ced4da; font-family: 'Noto Sans KR', sans-serif; font-size: 14px; }
+        /* 토의 화면 전용 */
+        .discussion-points { background: white; border: 1px solid var(--border-color); border-radius: 12px; padding: 25px; margin-bottom: 25px; }
+        .discussion-points h4 { color: #4f46e5; margin-top: 0; font-size: 18px; }
+        .discussion-points li { margin-bottom: 10px; line-height: 1.6; color: var(--text-dark); }
+
+        textarea { width: 100%; padding: 15px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 15px; box-sizing: border-box; resize: none; margin-bottom: 15px; font-family: 'Noto Sans KR', sans-serif; transition: 0.2s; }
+        textarea:focus { border-color: #7c3aed; outline: none; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
         
-        .submission-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; position: relative; }
-        .submission-header { font-weight: 700; font-size: 16px; color: #343a40; margin-bottom: 8px; display: flex; justify-content: space-between; align-items: center; }
-        .chat-log-box { background: white; border: 1px solid #ced4da; border-radius: 6px; padding: 12px; max-height: 200px; overflow-y: auto; font-size: 13px; margin-top: 10px; white-space: pre-wrap; color: #495057; line-height: 1.5; }
-        .delete-btn { background-color: #fa5252; color: white; border: none; border-radius: 4px; padding: 4px 8px; font-size: 12px; cursor: pointer; font-weight: bold; font-family: 'Noto Sans KR', sans-serif; }
+        .role-btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
+        .role-btn { padding: 18px; border: 2px solid var(--border-color); border-radius: 12px; background: white; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; font-size: 16px; color: var(--text-dark); text-align: left; }
+        .role-btn:hover { border-color: #7c3aed; background-color: #f5f3ff; color: #6d28d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* 대시보드 */
+        #teacher-dashboard { padding: 40px; }
+        .dashboard-container { max-width: 1200px; margin: 0 auto; }
+        .dashboard-controls { display: flex; gap: 12px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
+        .dashboard-controls select { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Noto Sans KR', sans-serif; font-size: 14px; outline: none; }
+        
+        .submission-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
+        .submission-card:hover { box-shadow: var(--shadow-soft); }
+        .submission-header { font-weight: 700; font-size: 16px; color: var(--text-dark); margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #f3f4f6; padding-bottom: 12px; }
+        .chat-log-box { background: #f9fafb; border: 1px solid var(--border-color); border-radius: 8px; padding: 15px; max-height: 200px; overflow-y: auto; font-size: 13px; margin-top: 15px; white-space: pre-wrap; color: var(--text-gray); line-height: 1.6; }
+        .delete-btn { background-color: #ef4444; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
+        .delete-btn:hover { background-color: #dc2626; }
         
         /* 모달 오버레이 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: center; }
-        .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-        .pw-modal-content { background: white; padding: 30px; border-radius: 12px; width: 300px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
-        .pw-modal-content input { width: 90%; padding: 10px; font-size: 16px; margin: 15px 0; border: 1px solid #ced4da; border-radius: 6px; text-align: center; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 2px; }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; }
+        .pw-modal-content { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: var(--shadow-hover); }
+        .pw-modal-content input { width: 100%; padding: 12px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 3px; outline: none; }
+        .pw-modal-content input:focus { border-color: #7c3aed; }
     </style>
 </head>
 <body>
 
     <!-- 1. 학번 입력 & 모드 선택 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
-        <div id="login-box">
-            <h2>🌍 17세기 은 무역</h2>
-            <p style="color: #495057; margin-bottom: 20px; font-size: 14px;">탐구 방식을 선택하고 정보를 입력하세요.</p>
+        <div id="login-box" class="card">
+            <h2 class="text-gradient" style="font-size: 28px; margin-bottom: 10px;">🌍 17세기 글로벌 무역</h2>
+            <p style="color: var(--text-gray); margin-bottom: 30px; font-size: 14.5px;">탐구 방식을 선택하고 정보를 입력하세요.</p>
             
             <div class="mode-btn-group">
                 <button id="btn-mode-individual" class="mode-btn active" onclick="setStudyMode('individual')">🙋‍♂️ 개인 탐구</button>
@@ -107,22 +153,17 @@
             <div class="input-group">
                 <label>학급 선택</label>
                 <select id="login-class">
-                    <option value="1">1반</option>
-                    <option value="2">2반</option>
-                    <option value="3">3반</option>
-                    <option value="4">4반</option>
-                    <option value="5">5반</option>
+                    <option value="1">1반</option><option value="2">2반</option>
+                    <option value="3">3반</option><option value="4">4반</option><option value="5">5반</option>
                 </select>
             </div>
 
             <div class="input-group" id="group-select-container" style="display: none;">
                 <label>조 선택</label>
                 <select id="login-group">
-                    <option value="1">1조</option><option value="2">2조</option>
-                    <option value="3">3조</option><option value="4">4조</option>
-                    <option value="5">5조</option><option value="6">6조</option>
-                    <option value="7">7조</option><option value="8">8조</option>
-                    <option value="9">9조</option><option value="10">10조</option>
+                    <option value="1">1조</option><option value="2">2조</option><option value="3">3조</option>
+                    <option value="4">4조</option><option value="5">5조</option><option value="6">6조</option>
+                    <option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option>
                 </select>
             </div>
 
@@ -131,9 +172,9 @@
                 <input type="text" id="student-id" placeholder="20으로 시작하는 5자리 숫자" maxlength="5" onkeypress="if(event.key === 'Enter') checkLogin()">
             </div>
             
-            <button class="submit-btn" onclick="checkLogin()">입장하기</button>
-            <div style="margin-top: 25px; text-align: right;">
-                <span onclick="openPasswordModal()" style="font-size: 11px; color: #adb5bd; cursor: pointer; user-select: none;">⚙️ 관리자</span>
+            <button class="gradient-btn" onclick="checkLogin()">입장하기 🚀</button>
+            <div style="margin-top: 25px; text-align: center;">
+                <span onclick="openPasswordModal()" style="font-size: 12px; color: #d1d5db; cursor: pointer; user-select: none;">⚙️ 교사 관리자 모드</span>
             </div>
         </div>
     </div>
@@ -141,40 +182,40 @@
     <!-- 🔐 비밀번호 입력 모달 -->
     <div id="password-modal" class="modal-overlay">
         <div class="pw-modal-content">
-            <h3 style="margin-top: 0;">🔐 관리자 인증</h3>
-            <p style="font-size: 13px; color: #6c757d; margin: 0;">교사 비밀번호를 입력해 주세요.</p>
+            <h3 class="text-gradient" style="margin-top: 0;">🔐 관리자 인증</h3>
+            <p style="font-size: 13px; color: var(--text-gray); margin: 0;">교사 비밀번호를 입력해 주세요.</p>
             <input type="password" id="admin-pw-input" placeholder="비밀번호" onkeypress="if(event.key === 'Enter') verifyPassword()">
             <div style="display: flex; gap: 10px; justify-content: center;">
-                <button onclick="verifyPassword()" style="padding: 8px 16px; background-color: #4263eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; font-weight: bold;">확인</button>
-                <button onclick="closePasswordModal()" style="padding: 8px 16px; background-color: #868e96; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">취소</button>
+                <button class="gradient-btn" style="padding: 10px;" onclick="verifyPassword()">확인</button>
+                <button class="gradient-btn" style="padding: 10px; background: #9ca3af; box-shadow: none;" onclick="closePasswordModal()">취소</button>
             </div>
         </div>
     </div>
 
     <!-- 2. 미니 퀴즈 화면 -->
-    <div id="quiz-screen" class="screen">
-        <div class="quiz-container">
-            <h2>📝 수업 핵심 개념 미니 퀴즈</h2>
-            <p style="color: #6c757d; font-size: 14px; margin-bottom: 20px;">17세기 은 무역 핵심 3문제를 모두 맞히고 탐구 세계로 입장하세요!</p>
+    <div id="quiz-screen" class="screen center-screen">
+        <div class="card quiz-container">
+            <h2 class="text-gradient">📝 사전 개념 미니 퀴즈</h2>
+            <p style="color: var(--text-gray); font-size: 14.5px; margin-bottom: 25px; text-align: center;">17세기 은 무역 핵심 3문제를 모두 맞히고 탐구 세계로 입장하세요!</p>
             <div class="quiz-item">
-                <p>Q1. 17세기 아메리카 대륙에서 대량으로 채굴되어 세계 경제의 흐름을 바꾸어 놓은 대표적인 은광의 이름은?</p>
-                <label><input type="radio" name="q1" value="wrong"> ① 이와미 은광</label><br>
-                <label><input type="radio" name="q1" value="correct"> ② 포토시 은광</label><br>
+                <p>Q1. 17세기 아메리카 대륙에서 대량으로 채굴되어 세계 경제의 흐름을 바꾼 은광은?</p>
+                <label><input type="radio" name="q1" value="wrong"> ① 이와미 은광</label>
+                <label><input type="radio" name="q1" value="correct"> ② 포토시 은광</label>
                 <label><input type="radio" name="q1" value="wrong"> ③ 사도 광산</label>
             </div>
             <div class="quiz-item">
-                <p>Q2. 청나라(명·청 시기)가 광저우 등 항구에서 외국과의 무역을 통제하기 위해 허가한 상인 조합(기구)의 명칭은?</p>
-                <label><input type="radio" name="q2" value="correct"> ① 공행 (十三行)</label><br>
-                <label><input type="radio" name="q2" value="wrong"> ② 일조편법</label><br>
+                <p>Q2. 청나라가 광저우 등 항구에서 외국과의 무역을 통제하기 위해 허가한 상인 조합은?</p>
+                <label><input type="radio" name="q2" value="correct"> ① 공행 (十三行)</label>
+                <label><input type="radio" name="q2" value="wrong"> ② 일조편법</label>
                 <label><input type="radio" name="q2" value="wrong"> ③ 동인도 회사</label>
             </div>
             <div class="quiz-item">
-                <p>Q3. 에도 막부 시기 그리스도교 확산을 막고 대외 무역을 통제하기 위해 나가사키에 설치한 인공 섬의 이름은?</p>
-                <label><input type="radio" name="q3" value="wrong"> ① 타이완</label><br>
-                <label><input type="radio" name="q3" value="wrong"> ② 오키나와</label><br>
+                <p>Q3. 에도 막부 시기 그리스도교 확산을 막고 대외 무역을 통제하기 위해 나가사키에 설치한 인공 섬은?</p>
+                <label><input type="radio" name="q3" value="wrong"> ① 타이완</label>
+                <label><input type="radio" name="q3" value="wrong"> ② 오키나와</label>
                 <label><input type="radio" name="q3" value="correct"> ③ 데지마</label>
             </div>
-            <button onclick="submitQuiz()" style="width: 100%; padding: 12px; background-color: #2b8a3e; color: white; border: none; border-radius: 8px; font-weight: 700; font-size: 16px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">퀴즈 제출 후 챗봇 입장하기 🚀</button>
+            <button class="gradient-btn" onclick="submitQuiz()">퀴즈 제출 후 챗봇 입장하기 🚀</button>
         </div>
     </div>
 
@@ -182,79 +223,111 @@
     <div id="chatbot-screen" class="screen">
         <div class="main-layout">
             <div id="left-panel">
-                <h2>🗺️ 무역로 직접 연결하기</h2>
+                <h2 class="text-gradient">🗺️ 무역로 직접 연결하기</h2>
                 <p class="instruction" id="map-instruction">상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!</p>
                 <canvas id="mapCanvas" width="500" height="350"></canvas>
-                <div style="margin-top: 15px; display: flex; gap: 10px; width: 100%; justify-content: center;">
-                    <button onclick="resetUserArrows()" style="padding: 8px 14px; font-size: 13px; background-color: #868e96; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">🔄 화살표 초기화</button>
-                    <button onclick="goToEssayScreen()" style="padding: 8px 16px; font-size: 13px; background-color: #2b8a3e; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; font-family: 'Noto Sans KR', sans-serif;">📝 무역로 제출하고 논술로 넘기기 ➡️</button>
+                <div style="margin-top: 20px; display: flex; gap: 10px; width: 100%; justify-content: center; max-width: 500px;">
+                    <button class="gradient-btn" style="flex: 1; background: #6b7280; box-shadow: none;" onclick="resetUserArrows()">🔄 초기화</button>
+                    <button class="gradient-btn" style="flex: 2;" onclick="goToNextScreen()">제출하고 다음 단계로 ➡️</button>
                 </div>
             </div>
 
             <div id="right-panel">
-                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;">
-                    <span id="display-student-id" style="font-weight: 700; color: #4263eb; font-size: 13px; background: #e7f5ff; padding: 4px 8px; border-radius: 6px;"></span>
-                    <button onclick="logout()" style="padding: 4px 8px; font-size: 11px; background-color: #fa5252; color: white; border: none; border-radius: 4px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">🔄 학번 재설정</button>
+                <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+                    <span id="display-student-id" style="font-weight: 700; color: #4f46e5; font-size: 14px; background: white; padding: 6px 12px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"></span>
+                    <button onclick="logout()" style="padding: 6px 12px; font-size: 12px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
                 </div>
-                <h2>💬 17세기 상인 인터뷰</h2>
+                <h2 style="margin-bottom: 15px;">💬 17세기 상인 인터뷰</h2>
                 <div class="merchant-selector">
-                    <button id="btn-europe" class="active" onclick="selectMerchant('europe')">🇬🇧 영국</button>
-                    <button id="btn-china" onclick="selectMerchant('china')">🇨🇳 명·청</button>
-                    <button id="btn-japan" onclick="selectMerchant('japan')">🇯🇵 에도</button>
-                    <button id="btn-india" onclick="selectMerchant('india')">🇮🇳 무굴</button>
+                    <button id="btn-europe" class="active" onclick="selectMerchant('europe')">🇬🇧 영국 상인</button>
+                    <button id="btn-china" onclick="selectMerchant('china')">🇨🇳 명·청 상인</button>
+                    <button id="btn-japan" onclick="selectMerchant('japan')">🇯🇵 에도 상인</button>
+                    <button id="btn-india" onclick="selectMerchant('india')">🇮🇳 무굴 상인</button>
                 </div>
                 <div id="chat-box"></div>
                 <div id="input-area">
-                    <input type="text" id="user-input" placeholder="상인에게 질문을 입력하세요..." onkeypress="if(event.key === 'Enter') sendMessage()">
-                    <button id="send-btn" onclick="sendMessage()">질문</button>
+                    <input type="text" id="user-input" placeholder="상인에게 17세기 무역에 대해 질문해 보세요..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <button id="send-btn" class="gradient-btn" onclick="sendMessage()">질문</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4. 논술 과제 화면 (개인전 / 조별 역할 선택 분기) -->
-    <div id="essay-screen" class="screen">
-        <div class="essay-card">
-            <div class="essay-banner">
-                <h3>📜 역사 글쓰기: 세계사의 시선 바로 세우기</h3>
-                <p>'대항해 시대' 등 기존 용어의 문제점을 비판하고, 새로운 명칭을 제안해 주세요!</p>
+    <!-- 3.5. 조별 토의 화면 (조별 모드일 때만 등장) -->
+    <div id="discussion-screen" class="screen center-screen">
+        <div class="card content-card">
+            <div class="banner">
+                <h3>🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
+                <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
+            </div>
+            
+            <div class="info-box">
+                <b>🤔 문제의식 공유:</b> 아메리카의 은이 전 세계로 퍼져나가며 유럽, 아시아, 아메리카가 하나로 끈끈하게 연결되었습니다. 하지만 우리는 여전히 이 역동적인 시기를 유럽만의 관점인 '대항해 시대'나 '신항로 개척'이라고만 부릅니다.
             </div>
 
-            <!-- 조별 모드일 때만 나타나는 역할 선택 안내 -->
-            <div id="role-selection-section" style="display: none; background: #fff3cd; border: 1px solid #ffeeba; padding: 20px; border-radius: 8px; margin-bottom: 20px; text-align: center;">
-                <h4 style="margin-top: 0; color: #856404;">👨‍👩‍👧‍👦 조별 토의 작성 모드</h4>
-                <p style="font-size: 14px; color: #664d03; margin-bottom: 15px;">완성된 논술 점수는 조원 모두에게 동일하게 부여되나,<br><strong>총대를 매고 논술문을 대표로 작성하는 서기에게는 가산점이 부여될 수 있습니다!</strong><br>본인의 역할을 선택해 주세요.</p>
+            <div class="discussion-points">
+                <h4>💡 조별 토의 미션</h4>
+                <ol>
+                    <li>각자 챗봇과 인터뷰한 상인(영국, 명·청, 에도 막부, 인도 등)의 입장에서 <b>자신이 맡은 지역의 17세기 무역 상황을 조원들에게 설명</b>해주세요.</li>
+                    <li>유럽 중심적 시각을 비판하고, 여러 대륙이 연결된 이 시기를 잘 나타낼 수 있는 <b>'우리 조만의 새로운 역사적 명칭'</b>을 정해보세요.</li>
+                    <li>그 명칭을 뒷받침할 <b>2가지 근거</b>를 각 지역의 사례를 종합하여 정리하세요.</li>
+                </ol>
+            </div>
+            
+            <button class="gradient-btn" onclick="goToRoleSelection()">토의 완료! 역할 선택 및 제출로 넘어가기 🚀</button>
+        </div>
+    </div>
+
+    <!-- 4. 논술/요약 역할 선택 및 과제 화면 -->
+    <div id="essay-screen" class="screen center-screen">
+        <div class="card content-card">
+            <div class="banner">
+                <h3>📜 최종 제출: 세계사의 시선 바로 세우기</h3>
+                <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
+            </div>
+
+            <!-- 조별 역할 선택 섹션 -->
+            <div id="role-selection-section" style="display: none; background: #fef3c7; border: 1px solid #fde68a; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
+                <h4 style="margin-top: 0; color: #b45309; font-size: 18px; text-align: center;">👨‍👩‍👧‍👦 역할 선택 (조별 토의 작성 모드)</h4>
+                <p style="font-size: 14.5px; color: #92400e; margin-bottom: 20px; text-align: center; line-height: 1.5;">
+                    완성된 논술 점수는 <b>조원 모두에게 동일하게 부여</b>됩니다!<br>
+                    단, 총대를 매고 논술문을 <b>대표로 작성하는 서기에게는 가산점</b>이 부여될 수 있습니다.<br>본인의 역할을 선택해 주세요.
+                </p>
                 <div class="role-btn-group">
-                    <button class="role-btn" onclick="selectRole('writer')">⌨️ 내가 우리 조 대표로 논술문 길게 작성하기 (서기)</button>
-                    <button class="role-btn" onclick="selectRole('member')">📝 친구가 작성 중! 나는 내가 맡은 파트 3줄 요약만 내기 (조원)</button>
+                    <button class="role-btn" onclick="selectRole('writer')">⌨️ <b>[서기]</b> 내가 우리 조 대표로 논술문 종합해서 길게 작성하기</button>
+                    <button class="role-btn" onclick="selectRole('member')">📝 <b>[조원]</b> 친구가 작성 중! 나는 내가 맡은 파트 3줄 핵심 요약만 제출하기</button>
                 </div>
             </div>
 
             <!-- 논술 작성 영역 (서기 & 개인 모드용) -->
             <div id="essay-writer-area" style="display: none;">
-                <div class="criteria-box">
+                <div class="info-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;">
                     <b>[작성 가이드라인 (서론-본문-결론 구조)]</b><br>
                     • <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 <b>새로운 명칭 제안 및 근거 2가지</b> 서술.<br>
                     • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.
                 </div>
-                <p style="font-size: 12px; color: #fa5252; margin-bottom: 5px; font-weight: 700;">※ 외부 복붙 금지. 본인의 생각을 서술하세요!</p>
-                <textarea id="essay-input" style="height: 180px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false" oncut="return false" oncontextmenu="return false"></textarea>
+                <textarea id="essay-input" style="height: 200px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false"></textarea>
                 
-                <div style="display: flex; gap: 10px; margin-top: 10px;">
-                    <button onclick="getAIAutoGrading()" style="flex: 1; padding: 12px; background-color: #ae3ec9; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">🤖 AI 자동 채점 및 피드백 받기</button>
-                    <button onclick="finalSubmit()" id="submit-writer-btn" disabled style="flex: 1; padding: 12px; background-color: #adb5bd; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: not-allowed; font-family: 'Noto Sans KR', sans-serif;">💾 채점 완료 후 최종 제출</button>
+                <div style="display: flex; gap: 12px; margin-top: 15px;">
+                    <button class="gradient-btn secondary-btn" style="flex: 1;" onclick="getAIAutoGrading('writer')">🤖 AI 자동 채점 및 피드백</button>
+                    <button id="submit-writer-btn" class="gradient-btn" style="flex: 1;" disabled onclick="finalSubmit()">💾 채점 완료 후 최종 제출</button>
                 </div>
-                <div id="ai-grading-result" style="margin-top: 15px; font-size: 13px; color: #2b8a3e; background: #f1f3f5; padding: 12px; border-radius: 6px; display: none; white-space: pre-wrap; line-height: 1.5;"></div>
+                <div id="ai-writer-feedback-result" style="margin-top: 20px; font-size: 14px; color: #4338ca; background: #e0e7ff; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
             </div>
 
             <!-- 요약 작성 영역 (조원용) -->
             <div id="essay-member-area" style="display: none;">
-                <div class="criteria-box" style="border-left-color: #20c997; background-color: #e6fcf5; color: #08a068;">
+                <div class="info-box" style="border-left-color: #10b981; background: #d1fae5; color: #047857;">
                     <b>[조원 개인 참여도 제출]</b><br>
-                    대표 작성자가 글을 쓰는 동안, 본인이 주로 챗봇과 대화했던 <b>국가 1개의 핵심 내용을 3줄 이내로 짧게 요약</b>해서 제출해 주세요. (개인 태도 점수에 반영됩니다)
+                    서기가 글을 쓰는 동안, 본인이 주로 챗봇과 대화했던 <b>국가 1개의 핵심 내용을 3줄 이내로 짧게 요약</b>해서 제출해 주세요. (개인 태도 점수에 반영됩니다.)
                 </div>
-                <textarea id="summary-input" style="height: 100px;" placeholder="예) 일본 파트를 맡았습니다. 에도 막부는 데지마를 통해..."></textarea>
-                <button onclick="finalSubmit()" style="width: 100%; padding: 14px; background-color: #2b8a3e; color: white; border: none; border-radius: 8px; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">🚀 조원 요약본 최종 제출하기</button>
+                <textarea id="summary-input" style="height: 120px;" placeholder="예) 일본 파트를 맡았습니다. 에도 막부는 데지마를 통해..."></textarea>
+                
+                <div style="display: flex; gap: 12px; margin-top: 15px;">
+                    <button class="gradient-btn secondary-btn" style="flex: 1;" onclick="getAIMemberFeedback()">🤖 AI 칭찬 & 피드백 받기</button>
+                    <button id="submit-member-btn" class="gradient-btn" style="flex: 1;" disabled onclick="finalSubmit()">🚀 피드백 확인 후 최종 제출</button>
+                </div>
+                <div id="ai-member-feedback-result" style="margin-top: 20px; font-size: 14px; color: #047857; background: #d1fae5; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
             </div>
             
         </div>
@@ -262,33 +335,30 @@
 
     <!-- 5. 👨‍🏫 교사 대시보드 화면 -->
     <div id="teacher-dashboard" class="screen">
-        <div class="dashboard-container">
-            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2>📊 학생 제출 현황 대시보드</h2>
-                <div>
-                    <button onclick="openOverlayModal()" style="padding: 8px 12px; background-color: #4263eb; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; margin-right: 5px; font-family: 'Noto Sans KR', sans-serif;">🗺️ 무역로 모아보기</button>
-                    <button onclick="changePassword()" style="padding: 8px 12px; background-color: #f59f00; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; margin-right: 5px; font-family: 'Noto Sans KR', sans-serif;">🔐 암호 변경</button>
-                    <button onclick="downloadExcel()" style="padding: 8px 12px; background-color: #2b8a3e; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight: 700; margin-right: 5px; font-family: 'Noto Sans KR', sans-serif;">📊 맞춤형 엑셀 다운로드</button>
-                    <button onclick="closeTeacherDashboard()" style="padding: 8px 12px; background-color: #495057; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">닫기</button>
+        <div class="dashboard-container card">
+            <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
+                <h2 class="text-gradient" style="margin:0;">📊 학생 제출 현황 대시보드</h2>
+                <div style="display: flex; gap: 8px;">
+                    <button class="gradient-btn secondary-btn" style="padding: 10px 16px;" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
+                    <button class="gradient-btn" style="padding: 10px 16px; background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
+                    <button class="gradient-btn" style="padding: 10px 16px;" onclick="downloadExcel()">📊 맞춤형 엑셀 다운로드</button>
+                    <button class="gradient-btn" style="padding: 10px 16px; background: #6b7280;" onclick="closeTeacherDashboard()">닫기</button>
                 </div>
             </div>
             
             <div class="dashboard-controls">
-                <span style="font-weight: bold; font-size: 14px;">조회 필터:</span>
+                <span style="font-weight: 900; font-size: 15px; color: var(--primary-color);">🔍 조회 필터:</span>
                 <select id="yearFilter" onchange="renderDashboardList()"></select>
                 <select id="classFilterDash" onchange="renderDashboardList()">
                     <option value="all">전체 학급</option>
                     <option value="1">1반</option><option value="2">2반</option>
-                    <option value="3">3반</option><option value="4">4반</option>
-                    <option value="5">5반</option>
+                    <option value="3">3반</option><option value="4">4반</option><option value="5">5반</option>
                 </select>
                 <select id="groupFilterDash" onchange="renderDashboardList()">
                     <option value="all">전체 조</option>
-                    <option value="1">1조</option><option value="2">2조</option>
-                    <option value="3">3조</option><option value="4">4조</option>
-                    <option value="5">5조</option><option value="6">6조</option>
-                    <option value="7">7조</option><option value="8">8조</option>
-                    <option value="9">9조</option><option value="10">10조</option>
+                    <option value="1">1조</option><option value="2">2조</option><option value="3">3조</option>
+                    <option value="4">4조</option><option value="5">5조</option><option value="6">6조</option>
+                    <option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option>
                 </select>
                 <select id="sortOrder" onchange="renderDashboardList()">
                     <option value="latest">최신 제출순</option>
@@ -302,11 +372,11 @@
 
     <!-- 🗺️ 전체 무역로 오버레이 모달 창 -->
     <div id="overlay-modal" class="modal-overlay">
-        <div class="modal-content">
-            <h3 style="margin-top:0; color:#343a40;">🌍 조회된 학생들의 무역로 종합</h3>
-            <p style="font-size:13px; color:#6c757d;">현재 필터링된 학생들의 무역로 화살표가 겹쳐서 표시됩니다.</p>
-            <canvas id="overlayCanvas" width="500" height="350" style="margin: 0 auto; display:block;"></canvas>
-            <button onclick="closeOverlayModal()" style="margin-top: 15px; padding: 8px 20px; background-color: #495057; color: white; border: none; border-radius: 6px; cursor: pointer; font-weight:700;">닫기</button>
+        <div class="card" style="width: 90%; max-width: 600px; text-align: center; padding: 30px;">
+            <h3 class="text-gradient" style="margin-top:0;">🌍 조회된 학생들의 무역로 종합</h3>
+            <p style="font-size:14px; color:var(--text-gray); margin-bottom: 20px;">현재 필터링된 학생들의 무역로 화살표가 겹쳐서 표시됩니다.</p>
+            <canvas id="overlayCanvas" width="500" height="350" style="margin: 0 auto; display:block; border-radius: 12px;"></canvas>
+            <button class="gradient-btn" style="margin-top: 25px; background: #4b5563;" onclick="closeOverlayModal()">닫기</button>
         </div>
     </div>
 
@@ -314,10 +384,10 @@
     <script>
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
-        window.studyMode = 'individual'; // 'individual' or 'group'
+        window.studyMode = 'individual'; 
         window.studentClass = '1';
         window.studentGroup = 'none';
-        window.studentRole = 'individual'; // 'individual', 'writer', 'member'
+        window.studentRole = 'individual'; 
 
         window.currentMerchant = null;
         window.chatHistoriesHTML = { europe: "", china: "", japan: "", india: "" };
@@ -370,9 +440,10 @@
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
             document.getElementById("quiz-screen").style.display = "flex";
             
-            // 조별 모드일 경우 안내문구 변경
             if(window.studyMode === 'group') {
-                document.getElementById('map-instruction').innerText = "조원들과 상의하여 1인당 1명의 상인만 골라서 집중 인터뷰해 보세요!";
+                document.getElementById('map-instruction').innerHTML = "<b>[조별 미션]</b> 각자 1명의 상인만 골라서 집중 인터뷰한 뒤, 무역로를 그려보세요!";
+            } else {
+                document.getElementById('map-instruction').innerText = "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!";
             }
         }
 
@@ -384,7 +455,6 @@
         window.closePasswordModal = function() {
             document.getElementById("password-modal").style.display = "none";
         }
-
         window.verifyPassword = function() {
             const savedPassword = localStorage.getItem("teacherPassword") || "createnewid";
             const inputPw = document.getElementById("admin-pw-input").value;
@@ -405,12 +475,11 @@
             if(!q1 || !q2 || !q3) { alert("모든 3문제를 풀고 체크해 주세요!"); return; }
 
             if(q1.value === "correct" && q2.value === "correct" && q3.value === "correct") {
-                alert("🎉 정답입니다! 무역 탐구 세계로 입장합니다.");
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
                 document.getElementById("chatbot-screen").style.display = "flex";
                 
                 let idText = "👤 " + localStorage.getItem("studentId") + "번";
-                if(window.studyMode === 'group') idText += ` (${window.studentGroup}조)`;
+                if(window.studyMode === 'group') idText += ` (${window.studentClass}반 ${window.studentGroup}조)`;
                 document.getElementById("display-student-id").innerText = idText;
                 
                 selectMerchant('europe');
@@ -440,10 +509,10 @@
             
             if (window.isFirstVisit[merchantType]) {
                 const greetings = {
-                    europe: "나는 영국 동인도 회사 소속 상인이오. 은화는 챙겨왔소?",
-                    china: "어서 오시게. 나는 광저우 공행의 거상일세. 일조편법 때문에 은이 급하게 필요하오.",
-                    japan: "여기는 데지마 섬이오. 막부 눈치가 보이니 조용히 말하시오. 난학 서적이라도 구하러 왔소?",
-                    india: "캘리컷에 오신 걸 환영합니다. 최고급 캘리코 면직물을 찾으시나요?"
+                    europe: "나는 영국 동인도 회사 소속 상인이오. 은화는 두둑히 챙겨왔소?",
+                    china: "어서 오시게. 나는 광저우 공행의 거상일세. 요즘 일조편법 때문에 은이 급하게 필요하오.",
+                    japan: "여기는 데지마 섬이오. 막부 눈치가 보이니 조용히 말하시오. 서양 물건이라도 구하러 왔소?",
+                    india: "캘리컷에 오신 걸 환영합니다. 유럽 상인들이 미쳐있는 캘리코 면직물을 찾으시나요?"
                 };
                 setTimeout(() => addMessage(greetings[merchantType], 'ai-msg', false), 300);
                 window.chatContexts[merchantType].push({ role: "assistant", content: greetings[merchantType] });
@@ -517,23 +586,32 @@
             }
         }
 
-        window.goToEssayScreen = function() {
+        // 분기 처리: 토의 씬으로 갈지, 바로 에세이로 갈지 결정
+        window.goToNextScreen = function() {
             if(!window.userArrows || window.userArrows.length === 0) {
                 alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!");
                 return;
             }
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("essay-screen").style.display = "flex";
             
             if(window.studyMode === 'group') {
-                document.getElementById('role-selection-section').style.display = 'block';
-                document.getElementById('essay-writer-area').style.display = 'none';
-                document.getElementById('essay-member-area').style.display = 'none';
+                document.getElementById("discussion-screen").style.display = "flex";
             } else {
+                // 개인 모드면 토의 씬 건너뛰고 바로 논술(서기 모드) 화면으로
+                document.getElementById("essay-screen").style.display = "flex";
                 document.getElementById('role-selection-section').style.display = 'none';
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
+                window.studentRole = 'writer'; 
             }
+        }
+
+        window.goToRoleSelection = function() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
+            document.getElementById("essay-screen").style.display = "flex";
+            document.getElementById('role-selection-section').style.display = 'block';
+            document.getElementById('essay-writer-area').style.display = 'none';
+            document.getElementById('essay-member-area').style.display = 'none';
         }
 
         window.selectRole = function(role) {
@@ -549,7 +627,7 @@
         }
     </script>
 
-    <!-- 스크립트 2: 파이어베이스 및 대시보드/지도 로직 -->
+    <!-- 스크립트 2: 파이어베이스, 채점 피드백, 대시보드 로직 -->
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
@@ -566,11 +644,11 @@
         const db = getFirestore(app);
 
         const nodes = {
-            america: { x: 70, y: 120, label: "아메리카", color: "#80cbc4" },
-            europe:  { x: 190, y: 80, label: "유럽", color: "#ffcc80" },
-            india:   { x: 260, y: 250, label: "인도", color: "#c5e1a5" },
-            china:   { x: 380, y: 180, label: "중국", color: "#ef9a9a" },
-            japan:   { x: 440, y: 90, label: "데지마", color: "#b39ddb" }
+            america: { x: 70, y: 120, label: "아메리카", color: "#06b6d4" },
+            europe:  { x: 190, y: 80, label: "유럽", color: "#f59f00" },
+            india:   { x: 260, y: 250, label: "인도", color: "#10b981" },
+            china:   { x: 380, y: 180, label: "중국", color: "#ef4444" },
+            japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
         };
 
         window.drawMap = function() {
@@ -584,7 +662,7 @@
             if(window.userArrows) {
                 window.userArrows.forEach(arrow => {
                     if (nodes[arrow.from] && nodes[arrow.to]) {
-                        drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "#4263eb");
+                        drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "#4f46e5");
                     }
                 });
             }
@@ -593,13 +671,14 @@
                 const node = nodes[key];
                 ctx.beginPath();
                 ctx.arc(node.x, node.y, 28, 0, Math.PI * 2);
-                ctx.fillStyle = (window.selectedNodeKey === key) ? "#ffe066" : node.color;
-                ctx.lineWidth = (window.selectedNodeKey === key) ? 3 : 2;
-                ctx.strokeStyle = "#343a40";
+                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 4 : 0;
+                ctx.strokeStyle = "#b45309";
                 ctx.fill();
-                ctx.stroke();
-                ctx.fillStyle = "#212529";
-                ctx.font = "bold 11px 'Noto Sans KR', sans-serif";
+                if(window.selectedNodeKey === key) ctx.stroke();
+                
+                ctx.fillStyle = "#ffffff";
+                ctx.font = "bold 12px 'Noto Sans KR', sans-serif";
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(node.label, node.x, node.y);
@@ -607,7 +686,7 @@
         }
 
         function drawArrow(ctx, fromX, fromY, toX, toY, color) {
-            const headlen = 10;
+            const headlen = 12;
             const angle = Math.atan2(toY - fromY, toX - fromX);
             const startX = fromX + 28 * Math.cos(angle);
             const startY = fromY + 28 * Math.sin(angle);
@@ -646,11 +725,9 @@
             if (clickedKey) {
                 if (!window.selectedNodeKey) {
                     window.selectedNodeKey = clickedKey;
-                    alert(nodes[clickedKey].label + " 선택됨! 도착할 국가를 누르세요.");
                 } else {
                     if (window.selectedNodeKey !== clickedKey) {
                         window.userArrows.push({ from: window.selectedNodeKey, to: clickedKey });
-                        alert(nodes[window.selectedNodeKey].label + " ➡️ " + nodes[clickedKey].label + " 연결 완료!");
                     }
                     window.selectedNodeKey = null;
                 }
@@ -664,14 +741,14 @@
             window.drawMap();
         }
 
+        // 서기(논술 작성자) 점수 및 피드백 (기존 유지 + UI 피드백 영역 변경)
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
 
-            const feedbackDiv = document.getElementById("ai-grading-result");
+            const feedbackDiv = document.getElementById("ai-writer-feedback-result");
             feedbackDiv.style.display = "block";
-            feedbackDiv.style.color = "#1864ab";
-            feedbackDiv.innerText = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
+            feedbackDiv.innerHTML = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
 
             try {
                 const response = await fetch('/api/chat', {
@@ -683,8 +760,8 @@
                                 role: "system", 
                                 content: `너는 중학교 역사 교사이다. 
 [채점 절대 기준]
-1. 학생이 무의미한 자음/모음, 짧은 장난, 무역과 무관한 글을 적으면 10~30점을 준다.
-2. 성취기준('대항해 시대' 등 유럽 중심적 명칭에 대한 비판과 대안 명칭 제안, 근거 2가지)과 서론-본문-결론 구조(대략 8문장 이상)가 충실히 담긴 성실한 글에만 80점~100점 사이의 점수를 부여해라.
+1. 학생이 무의미한 장난, 무역과 무관한 글을 적으면 10~30점을 준다.
+2. 성취기준('대항해 시대' 비판 및 대안 명칭 제안, 근거 2가지)과 서론-본문-결론 구조(대략 8문장 이상)가 담긴 성실한 글에만 80점~100점을 부여해라.
 3. 결과는 반드시 '[채점 점수: OOO점]' 형태로 첫 줄에 명시하고, 그 아래에 3~4문장의 총평을 남겨라.` 
                             },
                             { role: "user", content: `학생 논술 내용: ${essayText}` }
@@ -698,17 +775,50 @@
                 const scoreMatch = resultText.match(/([0-9]{1,3})\s*점/);
                 window.lastGradingScore = scoreMatch ? scoreMatch[1] + "점" : "채점완료";
 
-                feedbackDiv.style.color = "#2b8a3e";
-                feedbackDiv.innerHTML = "🎯 <b>[AI 채점 및 피드백 완료]</b><br>" + resultText;
-
-                const submitBtn = document.getElementById("submit-writer-btn");
-                submitBtn.disabled = false;
-                submitBtn.style.backgroundColor = "#2b8a3e";
-                submitBtn.style.cursor = "pointer";
+                feedbackDiv.innerHTML = "🎯 <b>[AI 논술 채점 완료]</b><br><br>" + resultText;
+                document.getElementById("submit-writer-btn").disabled = false;
 
             } catch (err) {
-                feedbackDiv.style.color = "red";
-                feedbackDiv.innerText = "⚠️ 채점 중 오류가 발생했습니다. 다시 시도해 주세요.";
+                feedbackDiv.innerHTML = "⚠️ 채점 중 오류가 발생했습니다. 다시 시도해 주세요.";
+            }
+        }
+
+        // 조원(요약 담당자) 칭찬 피드백 신설
+        window.getAIMemberFeedback = async function() {
+            const summaryText = document.getElementById("summary-input").value.trim();
+            if(!summaryText) { alert("요약 내용을 먼저 작성해 주세요."); return; }
+
+            const feedbackDiv = document.getElementById("ai-member-feedback-result");
+            feedbackDiv.style.display = "block";
+            feedbackDiv.innerHTML = "🤖 AI 역사 교사가 요약 내용을 확인 중입니다...";
+
+            try {
+                const response = await fetch('/api/chat', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        messages: [
+                            { 
+                                role: "system", 
+                                content: `너는 중학교 역사 교사이다. 학생이 자신이 맡은 17세기 무역 국가(영국, 명청, 일본, 인도 중 1)의 상황을 3줄 내외로 요약했다.
+점수는 매기지 말고, 요약의 핵심을 잘 파악했는지 따뜻하게 칭찬해 주고, 역사적 사실에 기반하여 1~2문장의 덧살(보완점이나 격려)을 붙여주어라. 
+대답은 '[AI 요약 피드백]'이라는 제목으로 시작해라.` 
+                            },
+                            { role: "user", content: `조원 요약 내용: ${summaryText}` }
+                        ]
+                    })
+                });
+                const aiData = await response.json();
+                const resultText = aiData.choices[0].message.content;
+
+                window.lastGradingFeedback = resultText;
+                window.lastGradingScore = "요약 피드백 완료";
+
+                feedbackDiv.innerHTML = "🎯 <b>[AI 칭찬 확인 완료]</b><br><br>" + resultText;
+                document.getElementById("submit-member-btn").disabled = false;
+
+            } catch (err) {
+                feedbackDiv.innerHTML = "⚠️ 피드백 중 오류가 발생했습니다. 다시 시도해 주세요.";
             }
         }
 
@@ -719,8 +829,8 @@
             let finalEssay = "";
             if(window.studentRole === 'member') {
                 finalEssay = document.getElementById("summary-input").value.trim();
-                window.lastGradingScore = "조원 요약제출";
-                window.lastGradingFeedback = "-";
+                // 피드백 안 받고 강제 제출 막기 위해 disabled 처리했지만 방어코드
+                if(!window.lastGradingScore) window.lastGradingScore = "요약 (피드백 패스)"; 
             } else {
                 finalEssay = document.getElementById("essay-input").value.trim();
             }
@@ -739,11 +849,11 @@
                     chatContexts: window.chatContexts || {},
                     essay: finalEssay,
                     aiScore: window.lastGradingScore,
-                    aiFeedback: window.lastGradingFeedback,
+                    aiFeedback: window.lastGradingFeedback || "-",
                     timestamp: serverTimestamp()
                 });
 
-                alert("🎉 제출이 완료되었습니다! 수고하셨습니다.");
+                alert("🎉 제출이 완벽하게 완료되었습니다! 수고하셨습니다.");
                 location.reload(); 
             } catch (err) {
                 alert("⚠️ 제출 중 오류가 발생했습니다.");
@@ -834,11 +944,13 @@
             let htmlContent = "";
             filtered.forEach(data => {
                 const isGroup = data.studyMode === 'group';
-                const roleBadge = data.studentRole === 'writer' ? '<span style="background:#ffd8a8; color:#e8590c; padding:2px 6px; border-radius:4px; font-size:12px;">✍️ 서기</span>' : 
-                                  data.studentRole === 'member' ? '<span style="background:#e6fcf5; color:#08a068; padding:2px 6px; border-radius:4px; font-size:12px;">📝 조원(요약)</span>' : '';
-                const groupBadge = isGroup ? `<span style="background:#f1f3f5; padding:2px 6px; border-radius:4px; font-size:12px;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
+                const roleBadge = data.studentRole === 'writer' ? '<span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✍️ 서기(가산점)</span>' : 
+                                  data.studentRole === 'member' ? '<span style="background:#d1fae5; color:#047857; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">📝 조원(요약)</span>' : 
+                                  '<span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🙋‍♂️ 개인 탐구</span>';
+                
+                const groupBadge = isGroup ? `<span style="background:#f3f4f6; color:#4b5563; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
 
-                const scoreDisplay = data.aiScore ? `<span style="background: #e7f5ff; color: #1c7ed6; padding: 3px 8px; border-radius: 4px; font-weight: 700;">AI 채점: ${data.aiScore}</span>` : "채점 전";
+                const scoreDisplay = data.aiScore ? `<span style="background: var(--primary-gradient); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px;">AI 점수: ${data.aiScore}</span>` : "";
 
                 let chatSummary = "";
                 if (data.chatContexts) {
@@ -859,21 +971,24 @@
                 htmlContent += `
                     <div class="submission-card">
                         <div class="submission-header">
-                            <div>
+                            <div style="display:flex; gap:8px; align-items:center;">
                                 ${groupBadge} ${roleBadge}
-                                <span>🎓 학번: ${data.studentId || '미입력'}번</span> 
-                                &nbsp;&nbsp; ${scoreDisplay}
+                                <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> 
+                                ${scoreDisplay}
                             </div>
                             <div style="display:flex; align-items:center; gap: 10px;">
-                                <span style="font-size: 12px; color: #6c757d;">${data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : '방금'}</span>
-                                <button class="delete-btn" onclick="deleteSubmission('${data.docId}')">🗑️ 삭제</button>
+                                <span style="font-size: 12px; color: #6b7280;">${data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : '방금'}</span>
+                                <button class="delete-btn" onclick="deleteSubmission('${data.docId}')">삭제</button>
                             </div>
                         </div>
-                        <p style="margin: 4px 0;"><b>제출 내용 (${data.studentRole === 'member' ? '요약' : '논술'}):</b> ${data.essay || '없음'}</p>
-                        ${data.studentRole !== 'member' ? `<p style="margin: 4px 0; color: #2b8a3e;"><b>AI 총평:</b> ${data.aiFeedback || '없음'}</p>` : ''}
+                        <div style="background: #f9fafb; padding: 15px; border-radius: 8px; margin-bottom: 10px;">
+                            <p style="margin: 0 0 8px 0; font-size: 14px; font-weight: bold; color: #4f46e5;">[제출 내용: ${data.studentRole === 'member' ? '지역 요약본' : '논술문'}]</p>
+                            <p style="margin: 0; font-size: 14px; line-height: 1.6; color: #374151;">${data.essay || '없음'}</p>
+                        </div>
+                        <p style="margin: 4px 0 15px 0; font-size: 14px; color: #047857; line-height: 1.5;"><b>AI 피드백:</b> ${data.aiFeedback || '없음'}</p>
                         
-                        <details style="margin-top: 10px;">
-                            <summary style="cursor: pointer; color: #4263eb; font-weight: bold; font-size: 13px;">💬 챗봇 대화 기록 열기</summary>
+                        <details>
+                            <summary style="cursor: pointer; color: #6d28d9; font-weight: bold; font-size: 13px; outline: none;">💬 챗봇 대화 기록 열어보기</summary>
                             <div class="chat-log-box">${chatSummary}</div>
                         </details>
                     </div>
@@ -910,7 +1025,7 @@
                 if (item.arrows && Array.isArray(item.arrows)) {
                     item.arrows.forEach(arrow => {
                         if (nodes[arrow.from] && nodes[arrow.to]) {
-                            drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "rgba(66, 99, 235, 0.35)");
+                            drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "rgba(124, 58, 237, 0.35)");
                         }
                     });
                 }
@@ -939,7 +1054,7 @@
                 { header: '제출시간', key: 'time', width: 22 },
                 { header: 'AI점수', key: 'score', width: 12 },
                 { header: '작성내용(논술/요약)', key: 'essay', width: 60 },
-                { header: 'AI총평', key: 'feedback', width: 40 },
+                { header: 'AI총평/피드백', key: 'feedback', width: 45 },
                 { header: '무역로', key: 'arrows', width: 25 },
                 { header: '챗봇대화기록', key: 'chat', width: 70 }
             ];
@@ -978,7 +1093,7 @@
 
             const headerRow = worksheet.getRow(1);
             headerRow.eachCell((cell) => {
-                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4263EB' } }; 
+                cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FF4F46E5' } }; 
                 cell.font = { color: { argb: 'FFFFFFFF' }, bold: true, name: '맑은 고딕' };
                 cell.alignment = { vertical: 'middle', horizontal: 'center' };
                 cell.border = { top: {style:'thin'}, left: {style:'thin'}, bottom: {style:'thin'}, right: {style:'thin'} };
@@ -988,11 +1103,11 @@
                 if (rowNumber === 1) return; 
                 row.eachCell((cell) => {
                     cell.alignment = { vertical: 'middle', wrapText: true };
-                    cell.border = { top: {style:'thin', color: {argb:'FFE9ECEF'}}, bottom: {style:'thin', color: {argb:'FFE9ECEF'}} };
+                    cell.border = { top: {style:'thin', color: {argb:'FFE5E7EB'}}, bottom: {style:'thin', color: {argb:'FFE5E7EB'}} };
                     cell.font = { name: '맑은 고딕' };
                 });
                 if (rowNumber % 2 === 0) {
-                    row.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF8F9FA' } }; });
+                    row.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
                 }
             });
 
