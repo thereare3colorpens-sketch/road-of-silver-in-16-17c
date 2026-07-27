@@ -155,6 +155,11 @@
         /* 대시보드 */
         #teacher-dashboard { flex-direction: column; align-items: center; padding: 40px; }
         .dashboard-container { width: 100%; max-width: 1200px; }
+        
+        /* ✨ 대시보드 상단 버튼들을 가로로 1x4 배치하도록 스타일 분리 수정 */
+        .dashboard-actions { display: flex; gap: 10px; flex-wrap: wrap; }
+        .dashboard-actions button { flex: 1; width: auto; padding: 12px 14px; font-size: 14.5px; white-space: nowrap; min-width: max-content; }
+        
         .dashboard-controls { display: flex; gap: 12px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
         .dashboard-controls select { padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Noto Sans KR', sans-serif; font-size: 15px; outline: none; }
         
@@ -185,10 +190,10 @@
             /* 카드 및 화면 여백 확대 (숨통 확보) */
             .card { padding: 35px 20px; }
             
-            /* ✨ 핵심: 모바일에서 화면이 길어질 때 윗부분이 잘리는 문제(Flexbox Center 버그) 완벽 해결 */
+            /* 모바일에서 화면이 길어질 때 윗부분이 잘리는 문제 완벽 해결 */
             .center-screen, #login-screen { 
-                justify-content: flex-start; /* 화면 중앙 정렬을 해제하고 맨 위부터 자연스럽게 쌓이게 변경 */
-                padding: 40px 20px; /* 상하 여백을 넉넉히 확보 */
+                justify-content: flex-start;
+                padding: 40px 20px;
                 box-sizing: border-box;
             }
             #teacher-dashboard { padding: 30px 20px; box-sizing: border-box; }
@@ -327,7 +332,8 @@
                 </div>
                 <div id="chat-box"></div>
                 <div id="input-area">
-                    <input type="text" id="user-input" placeholder="질문해 보세요..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <!-- ✨ 플레이스홀더를 자바스크립트를 통해 상인 선택 시마다 동적으로 변경합니다. -->
+                    <input type="text" id="user-input" placeholder="영국 상인과 이야기해 보세요!" onkeypress="if(event.key === 'Enter') sendMessage()">
                     <button id="send-btn" class="gradient-btn" onclick="sendMessage()">질문</button>
                 </div>
             </div>
@@ -436,11 +442,12 @@
                 <h2 style="margin:0; font-size: 26px;">
                     📊 <span class="text-gradient">학생 제출 현황 대시보드</span>
                 </h2>
-                <div style="display: flex; gap: 10px; flex-wrap: wrap;">
-                    <button class="gradient-btn secondary-btn" style="padding: 12px 18px;" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
-                    <button class="gradient-btn" style="padding: 12px 18px; background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
-                    <button class="gradient-btn" style="padding: 12px 18px;" onclick="downloadExcel()">📊 엑셀 다운로드</button>
-                    <button class="gradient-btn" style="padding: 12px 18px; background: #6b7280;" onclick="closeTeacherDashboard()">닫기</button>
+                <!-- ✨ 가로로 1x4로 예쁘게 배치되도록 수정한 대시보드 전용 액션 버튼 영역 -->
+                <div class="dashboard-actions">
+                    <button class="gradient-btn secondary-btn" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
+                    <button class="gradient-btn" style="background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
+                    <button class="gradient-btn" onclick="downloadExcel()">📊 엑셀 다운로드</button>
+                    <button class="gradient-btn" style="background: #6b7280;" onclick="closeTeacherDashboard()">닫기</button>
                 </div>
             </div>
             
@@ -654,6 +661,15 @@
             document.querySelectorAll('.merchant-selector button').forEach(btn => btn.classList.remove('active'));
             document.getElementById(`btn-${merchantType}`).classList.add('active');
             chatBox.innerHTML = window.chatHistoriesHTML[merchantType];
+            
+            // ✨ 상인 선택 시 입력창의 플레이스홀더를 동적으로 변경
+            const placeholderTexts = {
+                europe: "영국 상인과 이야기해 보세요!",
+                china: "명·청 상인과 이야기해 보세요!",
+                japan: "에도 상인과 이야기해 보세요!",
+                india: "무굴 상인과 이야기해 보세요!"
+            };
+            document.getElementById('user-input').placeholder = placeholderTexts[merchantType];
             
             if (window.isFirstVisit[merchantType]) {
                 const greetings = {
