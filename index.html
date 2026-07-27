@@ -66,7 +66,7 @@
             border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(255, 255, 255, 0.5); 
         }
 
-        /* 그라데이션 텍스트 (이모지는 분리해서 사용해야 고유 색상 유지됨) */
+        /* 그라데이션 텍스트 */
         .text-gradient { 
             background: var(--primary-gradient); -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; font-weight: 900; 
@@ -174,17 +174,20 @@
         .pw-modal-content input { width: 100%; padding: 14px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 3px; outline: none; }
         .pw-modal-content input:focus { border-color: #7c3aed; }
 
-        /* 📱 반응형 (스마트폰 모바일) 디자인 추가 */
+        /* 📱 반응형 (스마트폰 모바일) 여백 대폭 확보 */
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; height: auto; min-height: 100vh; }
-            #left-panel { border-right: none; border-bottom: 1px solid var(--border-color); padding: 20px 15px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
-            #right-panel { padding: 20px 15px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
+            /* 좌우 패널 여백 확대 */
+            #left-panel { border-right: none; border-bottom: 1px solid var(--border-color); padding: 35px 20px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
+            #right-panel { padding: 35px 20px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
             
-            .card { padding: 25px 20px; }
-            .center-screen { padding: 20px 15px; }
-            #teacher-dashboard { padding: 20px 15px; }
+            /* 카드 및 화면 여백 확대 (숨통 확보) */
+            .card { padding: 35px 25px; }
+            .center-screen { padding: 30px 20px; box-sizing: border-box; }
+            #login-screen { padding: 30px 20px; box-sizing: border-box; }
+            #teacher-dashboard { padding: 30px 20px; box-sizing: border-box; }
             
-            canvas { width: 100%; height: auto; aspect-ratio: 500 / 350; }
+            canvas { width: 100%; height: auto; aspect-ratio: 500 / 350; margin-top: 15px; }
             
             .action-grid { grid-template-columns: 1fr; }
             .bottom-action-bar { flex-direction: column; }
@@ -203,7 +206,6 @@
     <!-- 1. 학번 입력 & 모드 선택 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
         <div id="login-box" class="card morph-target">
-            <!-- 🌍 이모지를 그라데이션에서 분리하여 색상 깨짐 방지 -->
             <h2 style="font-size: 30px; margin-bottom: 15px; font-weight: 900;">
                 🌍 <span class="text-gradient">17세기 국제 무역</span>
             </h2>
@@ -859,18 +861,21 @@
                 const node = nodes[key];
                 const nx = node.x * scaleX;
                 const ny = node.y * scaleY;
-                const r = 28 * Math.min(scaleX, scaleY);
+                
+                // ✨ 노드(거점) 크기를 기존 28에서 36으로 약 30% 확대
+                const r = 36 * Math.min(scaleX, scaleY);
                 
                 ctx.beginPath();
                 ctx.arc(nx, ny, r, 0, Math.PI * 2);
                 ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
-                ctx.lineWidth = (window.selectedNodeKey === key) ? 4 * Math.min(scaleX, scaleY) : 0;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 * Math.min(scaleX, scaleY) : 0;
                 ctx.strokeStyle = "#b45309";
                 ctx.fill();
                 if(window.selectedNodeKey === key) ctx.stroke();
                 
                 ctx.fillStyle = "#ffffff";
-                ctx.font = `bold ${12 * Math.min(scaleX, scaleY)}px 'Noto Sans KR', sans-serif`;
+                // ✨ 노드 내부 글씨도 12px에서 14px로 더 뚜렷하고 크게 조정
+                ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Noto Sans KR', sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(node.label, nx, ny);
@@ -880,10 +885,12 @@
         function drawArrow(ctx, fromX, fromY, toX, toY, color) {
             const headlen = 12;
             const angle = Math.atan2(toY - fromY, toX - fromX);
-            const startX = fromX + 28 * Math.cos(angle); 
-            const startY = fromY + 28 * Math.sin(angle);
-            const endX = toX - 32 * Math.cos(angle);
-            const endY = toY - 32 * Math.sin(angle);
+            
+            // ✨ 커진 노드 반경(36)을 피해 화살표가 시작하고 끝나도록 수치 변경
+            const startX = fromX + 36 * Math.cos(angle); 
+            const startY = fromY + 36 * Math.sin(angle);
+            const endX = toX - 42 * Math.cos(angle);
+            const endY = toY - 42 * Math.sin(angle);
 
             ctx.beginPath();
             ctx.lineWidth = 3;
@@ -918,7 +925,8 @@
             for (const key in nodes) {
                 const nx = nodes[key].x * scaleX;
                 const ny = nodes[key].y * scaleY;
-                const r = 28 * Math.min(scaleX, scaleY);
+                // ✨ 클릭 감지 반경도 커진 노드(36)에 맞춰 동일하게 변경
+                const r = 36 * Math.min(scaleX, scaleY);
                 if (Math.sqrt((clickX - nx) ** 2 + (clickY - ny) ** 2) <= r) {
                     clickedKey = key;
                     break;
@@ -1223,7 +1231,9 @@
                 const node = nodes[key];
                 const nx = node.x * scaleX;
                 const ny = node.y * scaleY;
-                const r = 28 * Math.min(scaleX, scaleY);
+                
+                // ✨ 오버레이 모달에서도 노드 크기 동일하게 36으로 확대 반영
+                const r = 36 * Math.min(scaleX, scaleY);
                 
                 ctx.beginPath();
                 ctx.arc(nx, ny, r, 0, Math.PI * 2);
@@ -1233,7 +1243,7 @@
                 ctx.fill();
                 ctx.stroke();
                 ctx.fillStyle = "#212529";
-                ctx.font = `bold ${11 * Math.min(scaleX, scaleY)}px 'Noto Sans KR', sans-serif`;
+                ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Noto Sans KR', sans-serif`;
                 ctx.textAlign = "center";
                 ctx.textBaseline = "middle";
                 ctx.fillText(node.label, nx, ny);
