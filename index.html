@@ -30,7 +30,7 @@
         h2 { margin-top: 0; color: #343a40; text-align: center; }
         .instruction { text-align: center; color: #495057; margin-bottom: 10px; font-size: 14px; }
         
-        canvas { background-color: #e3f2fd; border: 2px solid #a4c2f4; border-radius: 12px; margin-top: 10px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: crosshair; }
+        canvas { background-color: #ffffff; border: 2px solid #a4c2f4; border-radius: 12px; margin-top: 10px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); cursor: crosshair; }
         
         .merchant-selector { margin-bottom: 15px; display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; }
         .merchant-selector button { padding: 10px 14px; border: none; border-radius: 8px; cursor: pointer; background-color: #e9ecef; color: #495057; font-weight: 500; font-size: 14px; font-family: 'Noto Sans KR', sans-serif; }
@@ -54,7 +54,6 @@
         #essay-screen { flex-direction: column; align-items: center; justify-content: center; background-color: #f8f9fa; padding: 30px; overflow-y: auto; }
         .essay-card { background: white; padding: 35px; border-radius: 12px; box-shadow: 0 4px 15px rgba(0,0,0,0.1); width: 100%; max-width: 800px; }
         
-        /* 큼직하고 예쁜 메인 주제 배너 */
         .essay-banner { background: linear-gradient(135deg, #4263eb, #364fc7); color: white; padding: 20px; border-radius: 10px; text-align: center; margin-bottom: 20px; box-shadow: 0 4px 10px rgba(66, 99, 235, 0.3); }
         .essay-banner h3 { margin: 0 0 8px 0; font-size: 20px; }
         .essay-banner p { margin: 0; font-size: 14px; opacity: 0.9; }
@@ -68,7 +67,6 @@
         .submission-card { background: #f8f9fa; border: 1px solid #dee2e6; border-radius: 8px; padding: 20px; margin-bottom: 20px; }
         .submission-header { font-weight: 700; font-size: 16px; color: #343a40; margin-bottom: 8px; display: flex; justify-content: space-between; }
         
-        /* 전체 무역로 모아보기 오버레이 모달 */
         #overlay-modal { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); z-index: 999; justify-content: center; align-items: center; }
         .modal-content { background: white; padding: 30px; border-radius: 12px; width: 90%; max-width: 700px; text-align: center; box-shadow: 0 8px 20px rgba(0,0,0,0.2); }
     </style>
@@ -78,11 +76,16 @@
     <!-- 1. 학번 입력 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
         <div id="login-box">
-            <h2 id="secret-trigger" style="cursor: pointer;" title="상도중학교 역사" ondblclick="openTeacherDashboard()">🌍 17세기 은 무역</h2>
+            <h2>🌍 17세기 은 무역</h2>
             <p style="color: #495057; margin-bottom: 20px; font-size: 14px;">학번을 입력하고 탐구를 시작하세요.</p>
             <input type="text" id="student-id" placeholder="예: 20101 (20으로 시작)" maxlength="5" onkeypress="if(event.key === 'Enter') checkLogin()">
             <br>
             <button onclick="checkLogin()">입장하기</button>
+            
+            <!-- 🤫 숨겨진 관리자 진입 버튼 (초기 비밀번호 노출 안 함) -->
+            <div style="margin-top: 25px; text-align: right;">
+                <span onclick="openTeacherDashboard()" style="font-size: 11px; color: #adb5bd; cursor: pointer; user-select: none;" title="교사 관리자 모드">⚙️ 관리자</span>
+            </div>
         </div>
     </div>
 
@@ -119,7 +122,7 @@
         <div class="main-layout">
             <div id="left-panel">
                 <h2>🗺️ 무역로 직접 연결하기</h2>
-                <p class="instruction">상인들과 유쾌하게 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!</p>
+                <p class="instruction">상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!</p>
                 <canvas id="mapCanvas" width="500" height="350"></canvas>
                 <div style="margin-top: 15px; display: flex; gap: 10px; width: 100%; justify-content: center;">
                     <button onclick="resetUserArrows()" style="padding: 8px 14px; font-size: 13px; background-color: #868e96; color: white; border: none; border-radius: 6px; cursor: pointer; font-family: 'Noto Sans KR', sans-serif;">🔄 화살표 초기화</button>
@@ -141,17 +144,16 @@
                 </div>
                 <div id="chat-box"></div>
                 <div id="input-area">
-                    <input type="text" id="user-input" placeholder="상인에게 재치 있는 질문을 던져보세요..." onkeypress="if(event.key === 'Enter') sendMessage()">
+                    <input type="text" id="user-input" placeholder="상인에게 질문을 입력하세요..." onkeypress="if(event.key === 'Enter') sendMessage()">
                     <button id="send-btn" onclick="sendMessage()">질문</button>
                 </div>
             </div>
         </div>
     </div>
 
-    <!-- 4. 논술 과제 화면 (큼직한 배너 주제 및 후한 AI 채점) -->
+    <!-- 4. 논술 과제 화면 -->
     <div id="essay-screen" class="screen">
         <div class="essay-card">
-            <!-- 큼직하게 맨 위에 제시된 논술 과제 배너 -->
             <div class="essay-banner">
                 <h3>📜 역사 논술 대주제: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대' 또는 '신항로 개척'이라는 기존 용어의 문제점을 비판하고, 우리 반만의 더 멋진 명칭을 제안해 주세요!</p>
@@ -161,7 +163,7 @@
                 <b>[교육과정 성취기준]</b> [9역03-02] 신항로 개척 이후 전개된 대외 교류와 세계적 교역망의 형성을 이해하고, 이 시기의 변화를 다각도로 파악한다.<br>
                 <b>[작성 가이드라인 (서론-본문-결론 구조)]</b><br>
                 • <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 아시아·아메리카 등 다각적 세계사 맥락을 고려한 <b>새로운 명칭 제안 및 타당한 근거 2가지 이상</b> 서술.<br>
-                • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요. (조금만 성실히 쓰시면 AI가 높은 점수를 부여합니다!)
+                • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.
             </div>
             <p style="font-size: 12px; color: #fa5252; margin-bottom: 5px; font-weight: 700;">※ 외부 복사 및 붙여넣기가 차단되어 있습니다. 직접 생각을 서술해 주세요!</p>
             <textarea id="essay-input" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false" oncut="return false" oncontextmenu="return false"></textarea>
@@ -204,13 +206,15 @@
     <script>
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
-        // 1번 피드백 반영: 조금 더 재치 있고 유쾌한 상인 페르소나
-        const baseRule = `[절대 규칙: 유쾌하고 몰입감 있는 예능감 넘치는 상인] 1. 너는 17세기 상인이다. 뻔한 답변 대신 약간의 너스레, 허세, 혹은 투덜거림을 섞어서 아주 재치 있고 생동감 있게 답변해라. 2. 정답을 바로 주지 말고 은근한 힌트만 줘라. 3. 답변은 4~5문장으로 풍성하게 구성해라.\n\n[역할 정보]:\n`;
+        const baseRule = `[절대 규칙: 17세기 상인 페르소나 및 장난 대응] 
+1. 너는 17세기 상인이다. 지나치게 가벼운 농담보다는 진중하고 현실감 있는 상인의 태도를 유지해라.
+2. 만약 학생이 무역과 전혀 상관없는 엉뚱한 소리, 장난, 또는 무의미한 말을 걸어오면, "이보게, 지금 장사로 코가 석 자라 바쁘니 나중에 오시게!" 또는 "그런 한가한 소리 할 시간에 은화나 더 세어 보게나."라며 유쾌하게 튕겨내고 무역 이야기로 화제를 돌려라.
+3. 정답을 바로 주지 말고 힌트만 제공해라. 답변은 3~4문장으로 핵심만 전달해라.\n\n[역할 정보]:\n`;
         const prompts = {
-            europe: `너는 17세기 영국 동인도 회사 상인이다. [비밀 사료]: "아메리카 포토시 은이 아니었어봐, 내가 이 비싼 중국 찻잎을 어떻게 사겠소? 오만한 명나라 녀석들은 모직물도 안 받고 오직 은만 찾는다오!"`,
-            china: `너는 17세기 명나라 광저우 공행의 거상이다. [비밀 사료]: "황제 폐하께서 세금을 은으로 내라시니 전 세계 은이 우리 광저우로 몰려오지 않겠소? 서양 오랑캐들이 은화를 들고 줄을 섭니다!"`,
-            japan: `너는 17세기 에도 막부 데지마 섬의 상인이다. [비밀 사료]: "막부의 눈치를 보며 살얼음판을 걷고 있지만, 우리에게는 이와미 은광의 막대한 은이 있지! 네덜란드 놈들과 비단 거래를 하느라 눈코 뜰 새 없소."`,
-            india: `너는 17세기 무굴 제국 캘리컷의 상인이다. [비밀 사료]: "유럽 놈들이 아메리카 은화를 싸들고 와 우리 캘리코 면직물을 채가는구만! 그 은으로 나는 중국 비단과 도자기를 살 거요. 하하!"`
+            europe: `너는 17세기 영국 동인도 회사 상인이다. [비밀 사료]: "아메리카 포토시 은이 아니었어봐, 내가 이 비싼 중국 찻잎을 어떻게 구했겠소? 명나라 녀석들은 오직 은만 찾는다오."`,
+            china: `너는 17세기 명나라 광저우 공행의 거상이다. [비밀 사료]: "황제 폐하께서 세금을 은으로 내라시니 전 세계 은이 우리 광저우로 모이지 않겠소? 서양 오랑캐들이 줄을 섭니다."`,
+            japan: `너는 17세기 에도 막부 데지마 섬의 상인이다. [비밀 사료]: "막부의 눈치를 보며 살얼음판을 걷고 있지만, 우리에겐 이와미 은광의 막대한 은이 있지! 네덜란드 놈들과 거래하느라 바쁘다오."`,
+            india: `너는 17세기 무굴 제국 캘리컷의 상인이다. [비밀 사료]: "유럽 놈들이 아메리카 은화를 싸들고 와 캘리코 면직물을 채가는구만! 그 은으로 나는 중국 비단과 도자기를 살 거요."`
         };
 
         let currentMerchant = null;
@@ -239,11 +243,12 @@
             if(!q1 || !q2 || !q3) { alert("모든 3문제를 풀고 체크해 주세요!"); return; }
 
             if(q1.value === "correct" && q2.value === "correct" && q3.value === "correct") {
-                alert("🎉 정답입니다! 유쾌한 상인들이 기다리는 무역 세계로 입장합니다.");
+                alert("🎉 정답입니다! 무역 탐구 세계로 입장합니다.");
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
                 document.getElementById("chatbot-screen").style.display = "flex";
                 document.getElementById("display-student-id").innerText = "👤 " + localStorage.getItem("studentId") + "번";
                 selectMerchant('europe');
+                setTimeout(() => { if (window.drawMap) window.drawMap(); }, 100);
             } else {
                 alert("❌ 오답이 포함되어 있습니다. 핵심 개념을 다시 생각하며 풀어보세요!");
             }
@@ -269,10 +274,10 @@
             
             if (isFirstVisit[merchantType]) {
                 const greetings = {
-                    europe: "오호, 먼 길 오느라 고생했소! 나는 영국 동인도 회사 상인이오. 내게 어떤 은밀한 정보가 필요해서 왔소?",
-                    china: "반갑소! 광저우 제일 가는 거상이야. 자, 은화 주머니는 두둑히 챙겨왔겠지?",
-                    japan: "여기는 데지마 섬이오. 막부의 눈이 무서우니 목소리를 낮추고 용건만 말하시오!",
-                    india: "어서 오세요! 캘리컷 최고의 면직물 맛집에 잘 찾아왔습니다. 무엇을 보여드릴까요?"
+                    europe: "나는 영국 동인도 회사 소속 상인이오. 내게 어떤 무역 정보가 필요해서 왔소?",
+                    china: "어서 오시게. 나는 광저우 공행의 거상일세. 무슨 볼일로 찾아왔는가?",
+                    japan: "여기는 데지마 섬이오. 막부의 눈이 많으니 조용히 말하시오.",
+                    india: "캘리컷에 오신 걸 환영합니다. 최고급 캘리코 면직물을 찾으시나요?"
                 };
                 setTimeout(() => addMessage(greetings[merchantType], 'ai-msg', false), 300);
                 chatContexts[merchantType].push({ role: "assistant", content: greetings[merchantType] });
@@ -342,7 +347,7 @@
 
         window.goToEssayScreen = function() {
             if(window.userArrows.length === 0) {
-                alert("최소 1개 이상의 무역로(화살표)를 지도에 그리고 제출해 주세요!");
+                alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!");
                 return;
             }
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
@@ -382,11 +387,13 @@
             if (!canvas) return;
             const ctx = canvas.getContext('2d');
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#f8f9fa";
+            ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             window.userArrows.forEach(arrow => {
-                drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "#4263eb");
+                if (nodes[arrow.from] && nodes[arrow.to]) {
+                    drawArrow(ctx, nodes[arrow.from].x, nodes[arrow.from].y, nodes[arrow.to].x, nodes[arrow.to].y, "#4263eb");
+                }
             });
 
             for (const key in nodes) {
@@ -464,7 +471,6 @@
             window.drawMap();
         }
 
-        // 2번 피드백 반영: 채점 기준을 대폭 후하게 완화 (성실히 쓰면 90~100점)
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
@@ -472,7 +478,7 @@
             const feedbackDiv = document.getElementById("ai-grading-result");
             feedbackDiv.style.display = "block";
             feedbackDiv.style.color = "#1864ab";
-            feedbackDiv.innerText = "🤖 AI 역사 교사가 따뜻한 마음으로 학생의 논술문을 채점하고 있습니다...";
+            feedbackDiv.innerText = "🤖 AI 역사 교사가 논술문을 심사 중입니다...";
 
             try {
                 const response = await fetch('/api/chat', {
@@ -482,7 +488,7 @@
                         messages: [
                             { 
                                 role: "system", 
-                                content: "너는 아주 자상하고 칭찬을 아끼지 않는 중학교 역사 교사이다. 학생이 작성한 논술문을 채점한다. 조건: '대항해 시대' 등 유럽 중심적 명칭에 대한 비판과 대안 명칭, 그리고 성실한 서론-본문-결론 구조가 대략적으로라도 담겨 있다면, 학생을 격려하기 위해 아주 후하게 점수를 주어라 (기본 90점~100점 사이 부여). 친절한 칭찬과 함께 3~4문장의 따뜻한 총평을 남겨라." 
+                                content: "너는 중학교 역사 교사이다. 학생이 작성한 논술문을 채점한다. 조건: '대항해 시대' 등 유럽 중심적 명칭에 대한 비판과 대안 명칭, 그리고 서론-본문-결론 구조가 어느 정도 포함되어 있다면 학생을 격려하기 위해 80점~100점 사이의 높은 점수를 후하게 부여해라. 따뜻한 칭찬과 함께 3~4문장의 총평을 남겨라." 
                             },
                             { role: "user", content: `학생 논술 내용: ${essayText}` }
                         ]
@@ -493,10 +499,10 @@
 
                 lastGradingFeedback = resultText;
                 const scoreMatch = resultText.match(/([0-9]{2,3})\s*점/);
-                lastGradingScore = scoreMatch ? scoreMatch[1] + "점" : "95점"; // 점수가 안 잡히면 기본 95점 보장
+                lastGradingScore = scoreMatch ? scoreMatch[1] + "점" : "90점";
 
                 feedbackDiv.style.color = "#2b8a3e";
-                feedbackDiv.innerHTML = "🎯 <b>[AI 따뜻한 채점 및 피드백 완료]</b><br>" + resultText;
+                feedbackDiv.innerHTML = "🎯 <b>[AI 채점 및 피드백 완료]</b><br>" + resultText;
 
                 const submitBtn = document.getElementById("submit-btn");
                 submitBtn.disabled = false;
@@ -535,7 +541,7 @@
 
         window.openTeacherDashboard = async function() {
             const savedPassword = localStorage.getItem("teacherPassword") || "createnewid";
-            const password = prompt("교사 관리자 비밀번호를 입력하세요.;
+            const password = prompt("교사 관리자 비밀번호를 입력하세요:");
             
             if (password !== savedPassword) {
                 if (password !== null) alert("비밀번호가 틀렸습니다.");
@@ -577,16 +583,14 @@
             } catch (error) { listContainer.innerHTML = "<p style='color: red;'>로드 오류</p>"; }
         }
 
-        // 3번 피드백 반영: 전체 학생 무역로 오버레이 지도 모달 열기 및 그리기 함수
         window.openOverlayModal = function() {
             document.getElementById("overlay-modal").style.display = "flex";
             const canvas = document.getElementById("overlayCanvas");
             const ctx = canvas.getContext("2d");
             ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#f8f9fa";
+            ctx.fillStyle = "#ffffff";
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 노드 그리기
             for (const key in nodes) {
                 const node = nodes[key];
                 ctx.beginPath();
@@ -603,7 +607,6 @@
                 ctx.fillText(node.label, node.x, node.y);
             }
 
-            // 모든 제출된 데이터의 화살표를 반투명하게 겹쳐서 그리기 (오버레이)
             globalSubmissionsData.forEach(item => {
                 if (item.arrows && Array.isArray(item.arrows)) {
                     item.arrows.forEach(arrow => {
