@@ -24,16 +24,30 @@
 
         body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         
-        /* ✨ 씬 전환 애니메이션 정의 (아이폰/파워포인트 스타일) ✨ */
+        /* ✨ 씬 전환 & 모핑(Morph) 애니메이션 최적화 ✨ */
+        ::view-transition-old(root),
+        ::view-transition-new(root) {
+            animation-duration: 0.6s;
+            animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+        
+        /* 공통 프레임(카드) 모핑 타겟 설정 */
+        .morph-target { view-transition-name: morph-card; }
+        
+        ::view-transition-group(morph-card) {
+            animation-duration: 0.6s;
+            animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+        }
+
+        /* View Transition 미지원 브라우저를 위한 백백 부드러운 전환 */
         @keyframes smoothEnter {
-            0% { opacity: 0; transform: translateY(15px) scale(0.99); }
+            0% { opacity: 0; transform: translateY(20px) scale(0.98); }
             100% { opacity: 1; transform: translateY(0) scale(1); }
         }
 
-        /* 모든 screen에 부드러운 진입 효과 적용 */
         .screen { 
             display: none; width: 100vw; height: 100vh; box-sizing: border-box; overflow-y: auto; 
-            animation: smoothEnter 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+            animation: smoothEnter 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards;
         }
         
         .gradient-btn { 
@@ -58,7 +72,7 @@
         }
 
         /* 로그인 화면 */
-        #login-screen { display: flex; flex-direction: column; align-items: center; justify-content: center; }
+        #login-screen { flex-direction: column; align-items: center; justify-content: center; }
         #login-box { text-align: center; width: 400px; }
         
         .mode-btn-group { display: flex; gap: 10px; margin-bottom: 25px; }
@@ -78,7 +92,7 @@
         .quiz-item label { display: block; margin-bottom: 8px; cursor: pointer; }
 
         /* 챗봇 메인 화면 */
-        .main-layout { display: flex; width: 100%; height: 100vh; }
+        .main-layout { display: flex; width: 100%; height: 100vh; background: white; }
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
@@ -130,7 +144,7 @@
             gap: 12px;
             margin-top: 15px;
         }
-        .action-grid .gradient-btn { padding: 14px 10px; font-size: 15px; } 
+        .action-grid .gradient-btn { padding: 14px 10px; font-size: 15px; }
 
         .info-box { background: #f0fdfa; border-left: 5px solid #14b8a6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: #0f766e; line-height: 1.6; }
         
@@ -147,8 +161,8 @@
         .role-btn:hover { border-color: #7c3aed; background-color: #f5f3ff; color: #6d28d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         /* 대시보드 */
-        #teacher-dashboard { padding: 40px; }
-        .dashboard-container { max-width: 1200px; margin: 0 auto; }
+        #teacher-dashboard { flex-direction: column; align-items: center; padding: 40px; }
+        .dashboard-container { width: 100%; max-width: 1200px; }
         .dashboard-controls { display: flex; gap: 12px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
         .dashboard-controls select { padding: 10px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Noto Sans KR', sans-serif; font-size: 14px; outline: none; }
         
@@ -159,12 +173,9 @@
         .delete-btn { background-color: #ef4444; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .delete-btn:hover { background-color: #dc2626; }
         
-        /* 모달 오버레이 ✨ 모달에도 부드러운 애니메이션 적용 */
+        /* 모달 팝업 애니메이션 */
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
-        @keyframes modalPop {
-            0% { opacity: 0; transform: scale(0.9); }
-            100% { opacity: 1; transform: scale(1); }
-        }
+        @keyframes modalPop { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; animation: fadeIn 0.3s ease-out; }
         .pw-modal-content, #overlay-modal .card { animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
         
@@ -177,7 +188,7 @@
 
     <!-- 1. 학번 입력 & 모드 선택 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
-        <div id="login-box" class="card">
+        <div id="login-box" class="card morph-target">
             <h2 class="text-gradient" style="font-size: 28px; margin-bottom: 10px;">🌍 17세기 글로벌 무역</h2>
             <p style="color: var(--text-gray); margin-bottom: 30px; font-size: 14.5px;">탐구 방식을 선택하고 정보를 입력하세요.</p>
             
@@ -230,7 +241,7 @@
 
     <!-- 2. 미니 퀴즈 화면 -->
     <div id="quiz-screen" class="screen center-screen">
-        <div class="card quiz-container">
+        <div class="card quiz-container morph-target">
             <h2 class="text-gradient">📝 사전 개념 미니 퀴즈</h2>
             <p style="color: var(--text-gray); font-size: 14.5px; margin-bottom: 25px; text-align: center;">17세기 은 무역 핵심 3문제를 모두 맞히고 탐구 세계로 입장하세요!</p>
             <div class="quiz-item">
@@ -257,7 +268,7 @@
 
     <!-- 3. 챗봇 + 지도 메인 화면 -->
     <div id="chatbot-screen" class="screen">
-        <div class="main-layout">
+        <div class="main-layout morph-target">
             <div id="left-panel">
                 <h2 class="text-gradient">🗺️ 무역로 직접 연결하기</h2>
                 <p class="instruction" id="map-instruction">상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!</p>
@@ -291,7 +302,7 @@
 
     <!-- 3.5. 조별 토의 화면 (조별 모드일 때만 등장) -->
     <div id="discussion-screen" class="screen center-screen">
-        <div class="card content-card">
+        <div class="card content-card morph-target">
             <div class="banner">
                 <h3>🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
                 <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
@@ -310,7 +321,6 @@
                 </ol>
             </div>
             
-            <!-- 하단 2분할 버튼 영역 -->
             <div class="bottom-action-bar">
                 <button class="gradient-btn go-back-action-btn" style="flex: 0.35;" onclick="goBackToChat()">⬅️ 챗봇 보기</button>
                 <button class="gradient-btn" style="flex: 1;" onclick="goToRoleSelection()">토의 완료! 역할 선택 및 제출로 넘어가기 🚀</button>
@@ -320,7 +330,7 @@
 
     <!-- 4. 논술/요약 역할 선택 및 과제 화면 -->
     <div id="essay-screen" class="screen center-screen">
-        <div class="card content-card">
+        <div class="card content-card morph-target">
             <div class="banner">
                 <h3>📜 최종 제출: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
@@ -336,14 +346,12 @@
                 </p>
                 
                 <div style="display: flex; gap: 15px; align-items: stretch;">
-                    <!-- 왼쪽: 챗봇 보기 (폭을 140px로 고정) -->
                     <div style="flex: 0 0 140px; display: flex;">
                         <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
                             <span style="font-size: 24px;">⬅️</span>
                             <span style="font-size: 14px; text-align: center; line-height: 1.4;">챗봇 보기<br>(대화 확인)</span>
                         </button>
                     </div>
-                    <!-- 오른쪽: 서기 및 조원 선택 -->
                     <div class="role-btn-group" style="flex: 1; margin-bottom: 0;">
                         <button class="role-btn" onclick="selectRole('writer')">⌨️ <b>[서기]</b> 내가 우리 조 대표로 논술문 종합해서 길게 작성하기</button>
                         <button class="role-btn" onclick="selectRole('member')">📝 <b>[조원]</b> 친구가 작성 중! 나는 내가 맡은 파트 3줄 핵심 요약만 제출하기</button>
@@ -353,14 +361,11 @@
 
             <!-- 논술 작성 영역 (서기 & 개인 모드용) -->
             <div id="essay-writer-area" style="display: none;">
-                <div class="info-box" id="writer-guideline-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;">
-                    <!-- 동적으로 문구 변경됨 -->
-                </div>
+                <div class="info-box" id="writer-guideline-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;"></div>
                 <textarea id="essay-input" style="height: 180px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false"></textarea>
                 
                 <div id="ai-writer-feedback-result" style="margin-top: 10px; font-size: 14px; color: #4338ca; background: #e0e7ff; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
 
-                <!-- 글쓰기 화면 하단 2x2 그리드 버튼 -->
                 <div class="action-grid">
                     <button class="gradient-btn secondary-btn" onclick="getAIAutoGrading('writer')">🤖 AI 채점 및 피드백</button>
                     <button id="submit-writer-btn" class="gradient-btn" disabled onclick="finalSubmit()">💾 채점 완료 후 최종 제출</button>
@@ -379,7 +384,6 @@
                 
                 <div id="ai-member-feedback-result" style="margin-top: 10px; font-size: 14px; color: #047857; background: #d1fae5; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
 
-                <!-- 조원 요약 화면 하단 2x2 그리드 버튼 -->
                 <div class="action-grid">
                     <button class="gradient-btn secondary-btn" onclick="getAIMemberFeedback()">🤖 AI 칭찬 & 피드백</button>
                     <button id="submit-member-btn" class="gradient-btn" disabled onclick="finalSubmit()">🚀 확인 후 최종 제출</button>
@@ -393,7 +397,7 @@
 
     <!-- 5. 👨‍🏫 교사 대시보드 화면 -->
     <div id="teacher-dashboard" class="screen">
-        <div class="dashboard-container card">
+        <div class="dashboard-container card morph-target">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px;">
                 <h2 class="text-gradient" style="margin:0;">📊 학생 제출 현황 대시보드</h2>
                 <div style="display: flex; gap: 8px;">
@@ -445,7 +449,7 @@
         </div>
     </div>
 
-    <!-- 스크립트 1: 전역 변수 및 UI 로직 -->
+    <!-- 스크립트 1: 전역 변수 및 UI 로직 (View Transitions API 적용) -->
     <script>
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
@@ -467,7 +471,7 @@
 2. 학생이 무역과 무관한 장난이나 엉뚱한 소리를 치면, 매번 똑같은 말로 대답하지 말고 다음 예시들처럼 상황에 맞게 1~2문장으로 짧게 대꾸한 뒤 본론으로 화제를 돌려라.
    예시 1) "허허, 바다 건너오더니 드립 치는 폼 미쳤구려! 자, 그런 한가한 소리 할 시간에 은화 얘기나 마저 합시다."
    예시 2) "이 사람아, 상인 체면에 그런 농담은 좀 킹받는구려. 각설하고 무역로 얘기나 마저 하세."
-   예시 3) "지금 장부 정리하느라 코가 초 석 자니 농담은 완전 럭키비키하게 패스하시게! 그래, 아메리카 은은 좀 챙겨 왔소?"
+   예시 3) "지금 장부 정리하느라 코가 석 자니 농담은 완전 럭키비키하게 패스하시게! 그래, 아메리카 은은 좀 챙겨 왔소?"
 3. 철저히 중학교 역사적 사실에 기반하여 대답하되, 정답을 바로 주지 말고 힌트만 제공해라. 전체 답변은 3~4문장 내외로 굵고 짧게 전달해라.\n\n[역할 정보 및 필수 역사 개념]:\n`;
         
         const prompts = {
@@ -475,6 +479,21 @@
             china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. [필수 사료 및 개념]: "황제 폐하께서 세금을 오직 은으로만 내라(일조편법/지정은제) 명하시니, 전 세계 은이 우리 광저우로 빨려 들어오는 거 실화요? 우리 공행 상인들이 서양 오랑캐들의 은화를 싹쓸이 중이니 대명제국 경제 폼 미쳤구려. 이대로라면 세계 은의 절반은 우리 차지일 것이오!"`,
             japan: `너는 에도 막부 데지마 섬 상인이다. [필수 사료 및 개념]: "막부의 쇄국령 때문에 이 좁은 인공섬 데지마에 갇혀 네덜란드 상인들만 상대해야 하니 알빠노 싶지만, 우리에겐 조선의 연은분리법을 적용한 이와미 은광이 있지 않소! 이 은으로 서양의 학문(난학)과 비단을 사들이니 에도 막부의 교역도 완전 폼 미쳤다 할 수 있지."`,
             india: `너는 무굴 제국 캘리컷 상인이다. [필수 사료 및 개념]: "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 제국의 캘리코(면직물)를 싹쓸이해가는 거 실화요? 향신료만 찾던 놈들이 이제는 가볍고 질긴 우리 면직물에 환장을 하니 오히려 좋구려. 들어온 은화로 우리는 또 중국 비단을 살 것이니, 17세기 글로벌 무역 폼 미쳤다!"`
+        };
+
+        // ✨ 핵심: 부드러운 화면 전환을 처리하는 글로벌 함수
+        window.transitionToScreen = function(screenId, callback = null) {
+            const doChange = () => {
+                document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
+                document.getElementById(screenId).style.display = "flex";
+                if (callback) callback();
+            };
+
+            if (document.startViewTransition) {
+                document.startViewTransition(doChange);
+            } else {
+                doChange();
+            }
         };
 
         window.setStudyMode = function(mode) {
@@ -502,14 +521,14 @@
             window.studentRole = window.studyMode === 'individual' ? 'individual' : null;
 
             localStorage.setItem("studentId", studentId);
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("quiz-screen").style.display = "flex";
             
-            if(window.studyMode === 'group') {
-                document.getElementById('map-instruction').innerHTML = "<b>[조별 미션]</b> 각자 1명의 상인만 골라서 집중 인터뷰한 뒤, 무역로를 그려보세요!";
-            } else {
-                document.getElementById('map-instruction').innerText = "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!";
-            }
+            transitionToScreen("quiz-screen", () => {
+                if(window.studyMode === 'group') {
+                    document.getElementById('map-instruction').innerHTML = "<b>[조별 미션]</b> 각자 1명의 상인만 골라서 집중 인터뷰한 뒤, 무역로를 그려보세요!";
+                } else {
+                    document.getElementById('map-instruction').innerText = "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!";
+                }
+            });
         }
 
         window.openPasswordModal = function() {
@@ -537,8 +556,7 @@
         }
 
         window.closeTeacherDashboard = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("login-screen").style.display = "flex";
+            transitionToScreen("login-screen");
         }
 
         window.verifyPassword = function() {
@@ -561,15 +579,14 @@
             if(!q1 || !q2 || !q3) { alert("모든 3문제를 풀고 체크해 주세요!"); return; }
 
             if(q1.value === "correct" && q2.value === "correct" && q3.value === "correct") {
-                document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-                document.getElementById("chatbot-screen").style.display = "flex";
-                
-                let idText = "👤 " + localStorage.getItem("studentId") + "번";
-                if(window.studyMode === 'group') idText += ` (${window.studentClass}반 ${window.studentGroup}조)`;
-                document.getElementById("display-student-id").innerText = idText;
-                
-                selectMerchant('europe');
-                setTimeout(() => { if (window.drawMap) window.drawMap(); }, 100);
+                transitionToScreen("chatbot-screen", () => {
+                    let idText = "👤 " + localStorage.getItem("studentId") + "번";
+                    if(window.studyMode === 'group') idText += ` (${window.studentClass}반 ${window.studentGroup}조)`;
+                    document.getElementById("display-student-id").innerText = idText;
+                    
+                    selectMerchant('europe');
+                    setTimeout(() => { if (window.drawMap) window.drawMap(); }, 100);
+                });
             } else {
                 alert("❌ 오답이 포함되어 있습니다. 핵심 개념을 다시 생각하며 풀어보세요!");
             }
@@ -579,8 +596,7 @@
             if(confirm("학번을 다시 입력하시겠습니까?")) {
                 localStorage.removeItem("studentId");
                 document.getElementById("student-id").value = "";
-                document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-                document.getElementById("login-screen").style.display = "flex";
+                transitionToScreen("login-screen");
             }
         }
 
@@ -677,51 +693,56 @@
                 alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!");
                 return;
             }
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
             
             if(window.studyMode === 'group') {
-                document.getElementById("discussion-screen").style.display = "flex";
+                transitionToScreen("discussion-screen");
             } else {
-                window.studentRole = 'writer'; 
-                setupEssayGuideline();
-                document.getElementById("essay-screen").style.display = "flex";
-                document.getElementById('role-selection-section').style.display = 'none';
-                document.getElementById('essay-writer-area').style.display = 'block';
-                document.getElementById('essay-member-area').style.display = 'none';
-                
-                document.getElementById('back-to-role-btn').style.display = 'none';
-                document.getElementById('writer-chat-btn').style.gridColumn = 'span 2';
+                transitionToScreen("essay-screen", () => {
+                    window.studentRole = 'writer'; 
+                    setupEssayGuideline();
+                    document.getElementById('role-selection-section').style.display = 'none';
+                    document.getElementById('essay-writer-area').style.display = 'block';
+                    document.getElementById('essay-member-area').style.display = 'none';
+                    
+                    document.getElementById('back-to-role-btn').style.display = 'none';
+                    document.getElementById('writer-chat-btn').style.gridColumn = 'span 2';
+                });
             }
         }
 
         window.goToRoleSelection = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("essay-screen").style.display = "flex";
-            document.getElementById('role-selection-section').style.display = 'block';
-            document.getElementById('essay-writer-area').style.display = 'none';
-            document.getElementById('essay-member-area').style.display = 'none';
+            transitionToScreen("essay-screen", () => {
+                document.getElementById('role-selection-section').style.display = 'block';
+                document.getElementById('essay-writer-area').style.display = 'none';
+                document.getElementById('essay-member-area').style.display = 'none';
+            });
         }
 
         window.selectRole = function(role) {
-            window.studentRole = role;
-            document.getElementById('role-selection-section').style.display = 'none';
-            
-            if(role === 'writer') {
-                setupEssayGuideline();
-                document.getElementById('essay-writer-area').style.display = 'block';
-                document.getElementById('essay-member-area').style.display = 'none';
+            const doChange = () => {
+                window.studentRole = role;
+                document.getElementById('role-selection-section').style.display = 'none';
                 
-                if(window.studyMode === 'group') {
-                    document.getElementById('back-to-role-btn').style.display = 'block'; 
-                    document.getElementById('writer-chat-btn').style.gridColumn = 'auto'; 
+                if(role === 'writer') {
+                    setupEssayGuideline();
+                    document.getElementById('essay-writer-area').style.display = 'block';
+                    document.getElementById('essay-member-area').style.display = 'none';
+                    
+                    if(window.studyMode === 'group') {
+                        document.getElementById('back-to-role-btn').style.display = 'block'; 
+                        document.getElementById('writer-chat-btn').style.gridColumn = 'auto'; 
+                    } else {
+                        document.getElementById('back-to-role-btn').style.display = 'none';
+                        document.getElementById('writer-chat-btn').style.gridColumn = 'span 2';
+                    }
                 } else {
-                    document.getElementById('back-to-role-btn').style.display = 'none';
-                    document.getElementById('writer-chat-btn').style.gridColumn = 'span 2';
+                    document.getElementById('essay-writer-area').style.display = 'none';
+                    document.getElementById('essay-member-area').style.display = 'block';
                 }
-            } else {
-                document.getElementById('essay-writer-area').style.display = 'none';
-                document.getElementById('essay-member-area').style.display = 'block';
-            }
+            };
+            // 역할 선택 시에도 내부 카드 전환 모핑 적용
+            if (document.startViewTransition) document.startViewTransition(doChange);
+            else doChange();
         }
 
         window.setupEssayGuideline = function() {
@@ -742,12 +763,11 @@
         }
 
         window.goBackToChat = function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("chatbot-screen").style.display = "flex";
-            
-            if(window.drawMap) window.drawMap();
-            const chatBox = document.getElementById('chat-box');
-            chatBox.scrollTop = chatBox.scrollHeight;
+            transitionToScreen("chatbot-screen", () => {
+                if(window.drawMap) window.drawMap();
+                const chatBox = document.getElementById('chat-box');
+                chatBox.scrollTop = chatBox.scrollHeight;
+            });
         }
     </script>
 
@@ -984,40 +1004,40 @@
         }
 
         window.loadTeacherDashboard = async function() {
-            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
-            document.getElementById("teacher-dashboard").style.display = "block";
-            const listContainer = document.getElementById("submissions-list");
-            listContainer.innerHTML = "<p>데이터를 불러오는 중...</p>";
+            transitionToScreen("teacher-dashboard", async () => {
+                const listContainer = document.getElementById("submissions-list");
+                listContainer.innerHTML = "<p>데이터를 불러오는 중...</p>";
 
-            try {
-                const q = query(collection(db, "trade_submissions"), orderBy("timestamp", "desc"));
-                const querySnapshot = await getDocs(q);
-                window.globalSubmissionsData = [];
-                
-                const currentYear = new Date().getFullYear();
-                let uniqueYears = new Set([currentYear.toString()]); 
+                try {
+                    const q = query(collection(db, "trade_submissions"), orderBy("timestamp", "desc"));
+                    const querySnapshot = await getDocs(q);
+                    window.globalSubmissionsData = [];
+                    
+                    const currentYear = new Date().getFullYear();
+                    let uniqueYears = new Set([currentYear.toString()]); 
 
-                if (!querySnapshot.empty) { 
-                    querySnapshot.forEach((docSnap) => {
-                        const data = docSnap.data();
-                        data.docId = docSnap.id;
-                        if(data.academicYear) uniqueYears.add(data.academicYear);
-                        window.globalSubmissionsData.push(data);
+                    if (!querySnapshot.empty) { 
+                        querySnapshot.forEach((docSnap) => {
+                            const data = docSnap.data();
+                            data.docId = docSnap.id;
+                            if(data.academicYear) uniqueYears.add(data.academicYear);
+                            window.globalSubmissionsData.push(data);
+                        });
+                    }
+
+                    const yearSelect = document.getElementById("yearFilter");
+                    yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
+                    Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => {
+                        yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`;
                     });
+                    yearSelect.value = currentYear.toString(); 
+
+                    window.renderDashboardList();
+
+                } catch (error) { 
+                    listContainer.innerHTML = "<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.</p>"; 
                 }
-
-                const yearSelect = document.getElementById("yearFilter");
-                yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
-                Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => {
-                    yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`;
-                });
-                yearSelect.value = currentYear.toString(); 
-
-                window.renderDashboardList();
-
-            } catch (error) { 
-                listContainer.innerHTML = "<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.</p>"; 
-            }
+            });
         }
 
         window.deleteSubmission = async function(docId) {
