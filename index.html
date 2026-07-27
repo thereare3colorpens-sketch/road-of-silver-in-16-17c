@@ -52,16 +52,12 @@
     <!-- 1. 로그인 창 -->
     <div id="login-screen">
         <div id="login-box">
-            <h2>🌍 17세기 은 무역</h2>
+            <!-- 🤫 비밀 타이틀: 더블클릭 시 교사 대시보드 비밀번호 창 호출 -->
+            <h2 id="secret-trigger" style="cursor: pointer;" title="상도중학교 역사 수업" ondblclick="openTeacherDashboard()">🌍 17세기 은 무역</h2>
             <p style="color: #495057; margin-bottom: 20px; font-size: 14px;">학번을 입력하고 상인들과 협상을 시작하세요.</p>
-            <input type="text" id="student-id" placeholder="예: 20101 (숫자 5자리)" onkeypress="if(event.key === 'Enter') login()">
+            <input type="text" id="student-id" placeholder="예: 20101 (20으로 시작)" maxlength="5" onkeypress="if(event.key === 'Enter') login()">
             <br>
             <button onclick="login()">입장하기</button>
-            
-            <!-- 👨‍🏫 교사 전용 관리자 모드 버튼 -->
-            <div style="margin-top: 20px; border-top: 1px solid #e9ecef; pt: 15px;">
-                <button onclick="openTeacherDashboard()" style="background-color: #868e96; font-size: 13px; padding: 8px; margin-top: 15px;">👨‍🏫 교사 전용 대시보드 보기</button>
-            </div>
         </div>
     </div>
 
@@ -109,14 +105,14 @@
                 <h2>📊 학생 제출 현황 대시보드</h2>
                 <button onclick="closeTeacherDashboard()" style="padding: 8px 16px; background-color: #495057; color: white; border: none; border-radius: 6px; cursor: pointer;">돌아가기</button>
             </div>
-            <p style="color: #6c757d; margin-bottom: 20px;">학생들이 파이어베이스에 제출한 무역로와 대화 내역 실시간 조회 화면입니다.</p>
+            <p style="color: #6c757d; margin-bottom: 20px;">상도중학교 학생들이 파이어베이스에 제출한 무역로와 대화 내역 실시간 조회 화면입니다.</p>
             <div id="submissions-list">
                 <p>데이터를 불러오는 중입니다...</p>
             </div>
         </div>
     </div>
 
-    <!-- 챗봇 AI 통신 및 대화 로직 -->
+    <!-- 챗봇 AI 통신 및 대화 로직 (OpenAI gpt-4o-mini 연동) -->
     <script>
         window.addEventListener('beforeunload', function (e) {
             e.preventDefault();
@@ -126,8 +122,8 @@
         const baseRule = `
         [절대 규칙: 대화의 유연성과 몰입도]
         1. 너는 17세기 상인이다. 학생이 엉뚱한 말(현대 언어, 장난 등)을 하더라도 절대 시스템처럼 거절하지 말고, 상인의 페르소나를 유지한 채 재치 있게 무역(은의 흐름) 이야기로 화제를 돌려라.
-        2. 학생이 정답을 한 번에 요구해도 다 말해주지 말고 힌트만 제공해라. 그리고 자연스럽게 주제와 관련하여 대화할 수 있도록 질문해라.
-        3. 이전 대화 맥락을 기억하고, 기계가 아닌 사람처럼 자연스럽게 반응해라. 
+        2. 학생이 정답을 한 번에 요구해도 다 말해주지 말고 힌트만 제공해라.
+        3. 이전 대화 맥락을 기억하고, 기계가 아닌 사람처럼 자연스럽게 반응해라.
         4. 말을 중간에 끊지 말고 반드시 마침표(.)나 물음표(?)나 느낌표(!)로 끝나는 완성된 문장으로 대답해라. 학생이 지루하지 않게 답변 길이는 4~5문장(약 200자 내외)으로 간결하게 핵심만 전달해라.
         \n\n[너의 역할 및 사료 정보]:\n`;
 
@@ -163,7 +159,7 @@
                     india: "캘리컷에 오신 걸 환영합니다! 최고급 캘리코 면직물을 찾으시나요?"
                 };
                 setTimeout(() => addMessage(greetings[merchantType], 'ai-msg', false), 300);
-                chatContexts[merchantType].push("상인: " + greetings[merchantType]);
+                chatContexts[merchantType].push({ role: "assistant", content: greetings[merchantType] });
                 isFirstVisit[merchantType] = false;
             }
             
@@ -218,7 +214,7 @@
             if (!userText) return;
 
             addMessage(userText, 'user-msg', true);
-            chatContexts[currentMerchant].push("학생 조사관: " + userText);
+            chatContexts[currentMerchant].push({ role: "user", content: userText });
             
             if (chatContexts[currentMerchant].length > 12) {
                 chatContexts[currentMerchant].splice(1, 2); 
@@ -234,22 +230,18 @@
             const loadingElements = document.getElementsByClassName('loading-text');
             loadingElements[loadingElements.length - 1].parentElement.id = loadingId;
 
-            const contextString = chatContexts[currentMerchant].join("\n");
-            const fullSystemPrompt = baseRule + prompts[currentMerchant] + "\n\n[지금까지의 대화 내용]\n" + contextString + "\n\n이제 자연스럽게 '상인'의 입장에서 대답을 이어서 작성해라.";
+            const fullSystemPrompt = baseRule + prompts[currentMerchant];
+            const messagesPayload = [
+                { role: "system", content: fullSystemPrompt },
+                ...chatContexts[currentMerchant]
+            ];
 
             const apiRequestBody = {
-                contents: [{ parts: [{ text: fullSystemPrompt }] }],
-                safetySettings: [
-                    { category: "HARM_CATEGORY_HARASSMENT", threshold: "BLOCK_ONLY_HIGH" },
-                    { category: "HARM_CATEGORY_HATE_SPEECH", threshold: "BLOCK_ONLY_HIGH" },
-                    { category: "HARM_CATEGORY_SEXUALLY_EXPLICIT", threshold: "BLOCK_ONLY_HIGH" },
-                    { category: "HARM_CATEGORY_DANGEROUS_CONTENT", threshold: "BLOCK_ONLY_HIGH" }
-                ],
-                generationConfig: { maxOutputTokens: 800 }
+                messages: messagesPayload
             };
 
             try {
-                const response = await fetch('/.netlify/functions/gemini', {
+                const response = await fetch('/api/chat', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(apiRequestBody)
@@ -267,13 +259,13 @@
                 sendBtn.disabled = false;
                 inputField.focus();
 
-                if (data.candidates && data.candidates.length > 0) {
-                    let aiReply = data.candidates[0].content.parts[0].text;
+                if (data.choices && data.choices.length > 0) {
+                    let aiReply = data.choices[0].message.content;
                     aiReply = aiReply.replace(/^상인:\s*/, "");
                     addMessage(aiReply, 'ai-msg', false);
-                    chatContexts[currentMerchant].push("상인: " + aiReply);
+                    chatContexts[currentMerchant].push({ role: "assistant", content: aiReply });
                 } else {
-                    addMessage("⚠️ [시스템 경고] 상인이 너무 무례하거나 위험한 질문이라고 판단하여 대화를 거부했습니다.", 'system-msg', false);
+                    addMessage("⚠️ [시스템 경고] 상인이 대화를 거부했습니다.", 'system-msg', false);
                 }
             } catch (error) {
                 document.getElementById(loadingId).remove();
@@ -422,9 +414,10 @@
             window.drawMap();
         }
 
+        // 🔒 상도중학교 학번 규칙 검사 (20으로 시작하는 5자리 숫자만 허용)
         window.login = function() {
             const studentId = document.getElementById("student-id").value.trim();
-            const isValid = /^[0-9]{5}$/.test(studentId);
+            const isValid = /^20[0-9]{3}$/.test(studentId);
             
             if(isValid) { 
                 if(confirm(studentId + "번이 확실합니까?")) {
@@ -436,7 +429,7 @@
                     selectMerchant('europe');
                 }
             } else {
-                alert("정확한 5자리 숫자로 된 학번을 입력해 주세요. (예: 20101)");
+                alert("⚠️ 올바른 학번이 아닙니다.\n상도중학교 학번 형식(20으로 시작하는 5자리 숫자, 예: 20101)으로 입력해 주세요.");
             }
         }
 
@@ -477,9 +470,8 @@
             }
         }
 
-        // 👨‍🏫 교사 전용 대시보드 열기 및 데이터 로드
+        // 👨‍🏫 교사 전용 대시보드 열기 (비밀번호 보호 및 숨김 처리)
         window.openTeacherDashboard = async function() {
-            // 간단한 암호 보호 (원하시면 변경 가능)
             const password = prompt("교사 관리자 비밀번호를 입력하세요 (기본: 1234)");
             if (password !== "1234") {
                 if (password !== null) alert("비밀번호가 틀렸습니다.");
@@ -493,7 +485,6 @@
             listContainer.innerHTML = "<p>파이어베이스에서 학생 데이터를 불러오는 중...</p>";
 
             try {
-                // 제출된 데이터를 최신순으로 가져오기
                 const q = query(collection(db, "trade_submissions"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
 
@@ -507,7 +498,6 @@
                     const data = docSnap.data();
                     const studentId = data.studentId || "학번 미입력";
                     
-                    // 화살표 경로 보기 좋게 변환
                     let arrowsText = "";
                     if (data.arrows && data.arrows.length > 0) {
                         arrowsText = data.arrows.map(a => `[${a.from} ➡️ ${a.to}]`).join(", ");
@@ -515,13 +505,16 @@
                         arrowsText = "그린 무역로 없음";
                     }
 
-                    // 대화 내역 보기 좋게 가공
                     let chatSummary = "";
                     if (data.chatContexts) {
                         for (const merchant in data.chatContexts) {
                             if (data.chatContexts[merchant].length > 0) {
                                 chatSummary += `\n--- [${merchant.toUpperCase()} 상인과의 대화] ---\n`;
-                                chatSummary += data.chatContexts[merchant].join("\n") + "\n";
+                                
+                                data.chatContexts[merchant].forEach(msg => {
+                                    const roleName = msg.role === "user" ? "학생 조사관" : "상인";
+                                    chatSummary += `${roleName}: ${msg.content}\n`;
+                                });
                             }
                         }
                     }
