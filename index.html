@@ -99,19 +99,15 @@
         .banner { 
             background: var(--primary-gradient); color: white; padding: 25px; 
             border-radius: 16px; text-align: center; margin-bottom: 25px; 
-            box-shadow: var(--shadow-hover); position: relative; 
+            box-shadow: var(--shadow-hover); 
         }
         .banner h3 { margin: 5px 0 10px 0; font-size: 22px; }
         .banner p { margin: 0; font-size: 15px; opacity: 0.9; }
         
-        .go-back-btn { 
-            position: absolute; top: 15px; right: 20px; 
-            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); 
-            color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; 
-            padding: 6px 12px; border-radius: 20px; transition: all 0.2s; 
-            display: flex; align-items: center; gap: 5px; font-family: 'Noto Sans KR', sans-serif; 
-        }
-        .go-back-btn:hover { background: rgba(255, 255, 255, 0.35); color: #fde047; }
+        /* 하단 2분할 버튼 레이아웃 */
+        .bottom-action-bar { display: flex; gap: 12px; margin-top: 20px; }
+        .go-back-action-btn { background: #6b7280; color: white; flex: 1; }
+        .main-action-btn { flex: 2; }
 
         .info-box { background: #f0fdfa; border-left: 5px solid #14b8a6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: #0f766e; line-height: 1.6; }
         
@@ -267,7 +263,6 @@
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
-                <button class="go-back-btn" onclick="goBackToChat()">⬅️ 챗봇 보기</button>
                 <h3>🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
                 <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
             </div>
@@ -285,7 +280,11 @@
                 </ol>
             </div>
             
-            <button class="gradient-btn" onclick="goToRoleSelection()">토의 완료! 역할 선택 및 제출로 넘어가기 🚀</button>
+            <!-- 하단 2분할 버튼 영역 -->
+            <div class="bottom-action-bar">
+                <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()">💬 챗봇 보기</button>
+                <button class="gradient-btn main-action-btn" onclick="goToRoleSelection()">토의 완료! 역할 선택 및 제출로 넘어가기 🚀</button>
+            </div>
         </div>
     </div>
 
@@ -293,7 +292,6 @@
     <div id="essay-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
-                <button class="go-back-btn" onclick="goBackToChat()">⬅️ 챗봇 보기</button>
                 <h3>📜 최종 제출: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
@@ -309,6 +307,11 @@
                     <button class="role-btn" onclick="selectRole('writer')">⌨️ <b>[서기]</b> 내가 우리 조 대표로 논술문 종합해서 길게 작성하기</button>
                     <button class="role-btn" onclick="selectRole('member')">📝 <b>[조원]</b> 친구가 작성 중! 나는 내가 맡은 파트 3줄 핵심 요약만 제출하기</button>
                 </div>
+                
+                <!-- 역할 선택 화면 하단에도 챗봇 보기 배치 -->
+                <div class="bottom-action-bar" style="margin-top: 15px;">
+                    <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()" style="width: 100%;">💬 챗봇 보기 (대화 내용 확인)</button>
+                </div>
             </div>
 
             <!-- 논술 작성 영역 (서기 & 개인 모드용) -->
@@ -316,13 +319,19 @@
                 <div class="info-box" id="writer-guideline-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;">
                     <!-- 동적으로 문구 변경됨 -->
                 </div>
-                <textarea id="essay-input" style="height: 200px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false"></textarea>
+                <textarea id="essay-input" style="height: 180px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false"></textarea>
                 
                 <div style="display: flex; gap: 12px; margin-top: 15px;">
                     <button class="gradient-btn secondary-btn" style="flex: 1;" onclick="getAIAutoGrading('writer')">🤖 AI 자동 채점 및 피드백</button>
                     <button id="submit-writer-btn" class="gradient-btn" style="flex: 1;" disabled onclick="finalSubmit()">💾 채점 완료 후 최종 제출</button>
                 </div>
-                <div id="ai-writer-feedback-result" style="margin-top: 20px; font-size: 14px; color: #4338ca; background: #e0e7ff; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
+                <div id="ai-writer-feedback-result" style="margin-top: 15px; font-size: 14px; color: #4338ca; background: #e0e7ff; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
+
+                <!-- 글쓰기 화면 하단 2분할 버튼 (챗봇 보기 포함) -->
+                <div class="bottom-action-bar" style="margin-top: 20px;">
+                    <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()">💬 챗봇 보기</button>
+                    <button class="gradient-btn main-action-btn" style="background: #4b5563; box-shadow: none;" onclick="goToRoleSelection()" id="back-to-role-btn" style="display: none;">돌아가기</button>
+                </div>
             </div>
 
             <!-- 요약 작성 영역 (조원용) -->
@@ -337,7 +346,13 @@
                     <button class="gradient-btn secondary-btn" style="flex: 1;" onclick="getAIMemberFeedback()">🤖 AI 칭찬 & 피드백 받기</button>
                     <button id="submit-member-btn" class="gradient-btn" style="flex: 1;" disabled onclick="finalSubmit()">🚀 피드백 확인 후 최종 제출</button>
                 </div>
-                <div id="ai-member-feedback-result" style="margin-top: 20px; font-size: 14px; color: #047857; background: #d1fae5; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
+                <div id="ai-member-feedback-result" style="margin-top: 15px; font-size: 14px; color: #047857; background: #d1fae5; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
+
+                <!-- 조원 요약 화면 하단 2분할 버튼 (챗봇 보기 포함) -->
+                <div class="bottom-action-bar" style="margin-top: 20px;">
+                    <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()">💬 챗봇 보기</button>
+                    <button class="gradient-btn main-action-btn" style="background: #4b5563; box-shadow: none;" onclick="goToRoleSelection()">역할 다시 선택하기</button>
+                </div>
             </div>
             
         </div>
@@ -640,6 +655,7 @@
                 document.getElementById('role-selection-section').style.display = 'none';
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
+                document.getElementById('back-to-role-btn').style.display = 'none'; // 개인 모드에서는 돌아가기 버튼 숨김
             }
         }
 
@@ -658,13 +674,17 @@
                 setupEssayGuideline();
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
+                if(window.studyMode === 'group') {
+                    document.getElementById('back-to-role-btn').style.display = 'inline-block'; // 조별 모드일 때만 역할 재선택 버튼 노출
+                } else {
+                    document.getElementById('back-to-role-btn').style.display = 'none';
+                }
             } else {
                 document.getElementById('essay-writer-area').style.display = 'none';
                 document.getElementById('essay-member-area').style.display = 'block';
             }
         }
 
-        // 모드 및 역할에 따라 안내 가이드라인 문구 동적 설정 (개인: 근거 2가지 / 조별 서기: 근거 3가지)
         window.setupEssayGuideline = function() {
             const guidelineBox = document.getElementById('writer-guideline-box');
             if (window.studyMode === 'group' && window.studentRole === 'writer') {
@@ -814,7 +834,6 @@
             feedbackDiv.style.display = "block";
             feedbackDiv.innerHTML = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
 
-            // 개인 vs 조별(서기)에 따라 AI 채점 기준 동적 설정
             const requiredEvidence = (window.studyMode === 'group') ? "근거 3가지 이상" : "근거 2가지 이상";
 
             try {
