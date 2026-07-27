@@ -98,7 +98,7 @@
 
         /* 토의 & 논술 공통 */
         .center-screen { flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-        .content-card { width: 100%; max-width: 800px; }
+        .content-card { width: 100%; max-width: 800px; position: relative; }
         .banner { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: var(--shadow-hover); }
         .banner h3 { margin: 0 0 10px 0; font-size: 22px; }
         .banner p { margin: 0; font-size: 15px; opacity: 0.9; }
@@ -116,6 +116,10 @@
         .role-btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .role-btn { padding: 18px; border: 2px solid var(--border-color); border-radius: 12px; background: white; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; font-size: 16px; color: var(--text-dark); text-align: left; }
         .role-btn:hover { border-color: #7c3aed; background-color: #f5f3ff; color: #6d28d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
+
+        /* 상단 뒤로가기 버튼 텍스트 */
+        .go-back-link { position: absolute; top: 20px; right: 25px; background: none; border: none; color: #ffffff; font-weight: bold; font-size: 14px; cursor: pointer; text-decoration: underline; padding: 5px; opacity: 0.9; }
+        .go-back-link:hover { opacity: 1; }
 
         /* 대시보드 */
         #teacher-dashboard { padding: 40px; }
@@ -257,6 +261,7 @@
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
+                <button class="go-back-link" onclick="goBackToChat()">🔙 챗봇 내용 다시 보기</button>
                 <h3>🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
                 <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
             </div>
@@ -282,6 +287,7 @@
     <div id="essay-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
+                <button class="go-back-link" onclick="goBackToChat()">🔙 챗봇 내용 다시 보기</button>
                 <h3>📜 최종 제출: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
@@ -347,7 +353,15 @@
             </div>
             
             <div class="dashboard-controls">
-                <span style="font-weight: 900; font-size: 15px; color: var(--primary-color);">🔍 조회 필터:</span>
+                <span style="font-weight: 900; font-size: 15px; color: var(--text-dark);">🔍 조회 필터:</span>
+                
+                <!-- 신규: 활동 모드 필터 추가 -->
+                <select id="modeFilterDash" onchange="renderDashboardList()">
+                    <option value="all">전체 활동</option>
+                    <option value="individual">개별 탐구</option>
+                    <option value="group">조별 토의</option>
+                </select>
+
                 <select id="yearFilter" onchange="renderDashboardList()"></select>
                 <select id="classFilterDash" onchange="renderDashboardList()">
                     <option value="all">전체 학급</option>
@@ -380,7 +394,7 @@
         </div>
     </div>
 
-    <!-- 스크립트 1: 전역 변수 및 UI 로직 -->
+    <!-- 스크립트 1: 전역 변수 및 UI 로직 (모듈 외부 배치로 버튼 오류 방지) -->
     <script>
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
@@ -452,15 +466,37 @@
             document.getElementById("admin-pw-input").value = ""; 
             document.getElementById("admin-pw-input").focus();
         }
+        
         window.closePasswordModal = function() {
             document.getElementById("password-modal").style.display = "none";
         }
+
+        // 교사 모드용 UI 전역 함수 (모듈 분리로 인한 버튼 미작동 방지)
+        window.changePassword = function() {
+            const currentSaved = localStorage.getItem("teacherPassword") || "createnewid";
+            const oldInput = prompt("현재 관리자 비밀번호를 입력하세요:");
+            if (oldInput !== currentSaved) {
+                if(oldInput !== null) alert("현재 비밀번호가 일치하지 않습니다.");
+                return;
+            }
+            const newInput = prompt("새로 사용할 비밀번호를 입력하세요:");
+            if (newInput && newInput.trim() !== "") {
+                localStorage.setItem("teacherPassword", newInput.trim());
+                alert("🔒 관리자 비밀번호가 성공적으로 변경되었습니다!");
+            }
+        }
+
+        window.closeTeacherDashboard = function() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
+            document.getElementById("login-screen").style.display = "flex";
+        }
+
         window.verifyPassword = function() {
             const savedPassword = localStorage.getItem("teacherPassword") || "createnewid";
             const inputPw = document.getElementById("admin-pw-input").value;
             if (inputPw === savedPassword) {
                 closePasswordModal();
-                loadTeacherDashboard();
+                if(window.loadTeacherDashboard) window.loadTeacherDashboard();
             } else {
                 alert("❌ 비밀번호가 일치하지 않습니다.");
                 document.getElementById("admin-pw-input").value = "";
@@ -597,7 +633,6 @@
             if(window.studyMode === 'group') {
                 document.getElementById("discussion-screen").style.display = "flex";
             } else {
-                // 개인 모드면 토의 씬 건너뛰고 바로 논술(서기 모드) 화면으로
                 document.getElementById("essay-screen").style.display = "flex";
                 document.getElementById('role-selection-section').style.display = 'none';
                 document.getElementById('essay-writer-area').style.display = 'block';
@@ -624,6 +659,17 @@
                 document.getElementById('essay-writer-area').style.display = 'none';
                 document.getElementById('essay-member-area').style.display = 'block';
             }
+        }
+
+        // 신규: 챗봇으로 다시 되돌아가는 기능
+        window.goBackToChat = function() {
+            document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
+            document.getElementById("chatbot-screen").style.display = "flex";
+            
+            // 지도와 챗봇 스크롤 다시 그려주기
+            if(window.drawMap) window.drawMap();
+            const chatBox = document.getElementById('chat-box');
+            chatBox.scrollTop = chatBox.scrollHeight;
         }
     </script>
 
@@ -741,7 +787,6 @@
             window.drawMap();
         }
 
-        // 서기(논술 작성자) 점수 및 피드백 (기존 유지 + UI 피드백 영역 변경)
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
@@ -783,7 +828,6 @@
             }
         }
 
-        // 조원(요약 담당자) 칭찬 피드백 신설
         window.getAIMemberFeedback = async function() {
             const summaryText = document.getElementById("summary-input").value.trim();
             if(!summaryText) { alert("요약 내용을 먼저 작성해 주세요."); return; }
@@ -829,7 +873,6 @@
             let finalEssay = "";
             if(window.studentRole === 'member') {
                 finalEssay = document.getElementById("summary-input").value.trim();
-                // 피드백 안 받고 강제 제출 막기 위해 disabled 처리했지만 방어코드
                 if(!window.lastGradingScore) window.lastGradingScore = "요약 (피드백 패스)"; 
             } else {
                 finalEssay = document.getElementById("essay-input").value.trim();
@@ -860,6 +903,7 @@
             }
         }
 
+        // Dashboard Logic Update
         window.loadTeacherDashboard = async function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
             document.getElementById("teacher-dashboard").style.display = "block";
@@ -910,6 +954,7 @@
         }
 
         window.renderDashboardList = function() {
+            const modeFilter = document.getElementById("modeFilterDash").value;
             const yearFilter = document.getElementById("yearFilter").value;
             const classFilter = document.getElementById("classFilterDash").value;
             const groupFilter = document.getElementById("groupFilterDash").value;
@@ -917,6 +962,11 @@
             const listContainer = document.getElementById("submissions-list");
 
             let filtered = window.globalSubmissionsData.slice(); 
+
+            // 모드 필터링 적용
+            if (modeFilter !== "all") {
+                filtered = filtered.filter(item => item.studyMode === modeFilter);
+            }
 
             if (yearFilter !== "all") {
                 filtered = filtered.filter(item => (item.academicYear || "2025") === yearFilter);
