@@ -309,24 +309,26 @@
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
 
-            <!-- 조별 역할 선택 섹션 (테마 색상 변경 및 2x2 레이아웃 적용) -->
+            <!-- 조별 역할 선택 섹션 (간격 및 비율 조정) -->
             <div id="role-selection-section" style="display: none; background: #f5f3ff; border: 1px solid #e0e7ff; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
                 <h4 style="margin-top: 0; color: #3730a3; font-size: 18px; text-align: center;">👨‍👩‍👧‍👦 역할 선택 (조별 토의 작성 모드)</h4>
-                <p style="font-size: 14.5px; color: #4f46e5; margin-bottom: 20px; text-align: center; line-height: 1.5;">
+                
+                <!-- 여백(margin-bottom)을 35px로 대폭 늘려 본문과 버튼 사이 거리를 확보 -->
+                <p style="font-size: 14.5px; color: #4f46e5; margin-bottom: 35px; text-align: center; line-height: 1.5;">
                     완성된 논술 점수는 <b>조원 모두에게 동일하게 부여</b>됩니다!<br>
                     단, 총대를 매고 논술문을 <b>대표로 작성하는 서기에게는 가산점</b>이 부여될 수 있습니다.<br>본인의 역할을 선택해 주세요.
                 </p>
                 
                 <div style="display: flex; gap: 15px; align-items: stretch;">
-                    <!-- 왼쪽: 챗봇 보기 (좁게 1칸 차지) -->
-                    <div style="flex: 1; display: flex;">
+                    <!-- 왼쪽: 챗봇 보기 (폭을 140px로 고정하여 확 줄임) -->
+                    <div style="flex: 0 0 140px; display: flex;">
                         <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
                             <span style="font-size: 24px;">⬅️</span>
-                            <span style="font-size: 14.5px; text-align: center; line-height: 1.4;">챗봇 보기<br>(대화 확인)</span>
+                            <span style="font-size: 14px; text-align: center; line-height: 1.4;">챗봇 보기<br>(대화 확인)</span>
                         </button>
                     </div>
-                    <!-- 오른쪽: 서기 및 조원 선택 (넓게 2.5칸 차지) -->
-                    <div class="role-btn-group" style="flex: 2.5; margin-bottom: 0;">
+                    <!-- 오른쪽: 서기 및 조원 선택 (나머지 공간 전체 차지하여 글자 꺾임 방지) -->
+                    <div class="role-btn-group" style="flex: 1; margin-bottom: 0;">
                         <button class="role-btn" onclick="selectRole('writer')">⌨️ <b>[서기]</b> 내가 우리 조 대표로 논술문 종합해서 길게 작성하기</button>
                         <button class="role-btn" onclick="selectRole('member')">📝 <b>[조원]</b> 친구가 작성 중! 나는 내가 맡은 파트 3줄 핵심 요약만 제출하기</button>
                     </div>
@@ -342,7 +344,7 @@
                 
                 <div id="ai-writer-feedback-result" style="margin-top: 10px; font-size: 14px; color: #4338ca; background: #e0e7ff; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
 
-                <!-- 글쓰기 화면 하단 2x2 그리드 버튼 (4개 균등 분할) -->
+                <!-- 글쓰기 화면 하단 2x2 그리드 버튼 -->
                 <div class="action-grid">
                     <button class="gradient-btn secondary-btn" onclick="getAIAutoGrading('writer')">🤖 AI 채점 및 피드백</button>
                     <button id="submit-writer-btn" class="gradient-btn" disabled onclick="finalSubmit()">💾 채점 완료 후 최종 제출</button>
@@ -361,7 +363,7 @@
                 
                 <div id="ai-member-feedback-result" style="margin-top: 10px; font-size: 14px; color: #047857; background: #d1fae5; padding: 15px; border-radius: 10px; display: none; white-space: pre-wrap; line-height: 1.6;"></div>
 
-                <!-- 조원 요약 화면 하단 2x2 그리드 버튼 (4개 균등 분할) -->
+                <!-- 조원 요약 화면 하단 2x2 그리드 버튼 -->
                 <div class="action-grid">
                     <button class="gradient-btn secondary-btn" onclick="getAIMemberFeedback()">🤖 AI 칭찬 & 피드백</button>
                     <button id="submit-member-btn" class="gradient-btn" disabled onclick="finalSubmit()">🚀 확인 후 최종 제출</button>
