@@ -60,7 +60,7 @@
             
             <!-- 👨‍🏫 교사 전용 관리자 모드 버튼 -->
             <div style="margin-top: 20px; border-top: 1px solid #e9ecef; pt: 15px;">
-                <button onclick="openTeacherDashboard()" style="background-color: #868e96; font-size: 13px; padding: 8px; margin-top: 15px;">👨‍🏫 교사 전용 대시보드 보기</button>
+                <button onclick="openTeacherDashboard()" style="background-color: #868e96; font-size: 13px; padding: 8px; margin-top: 15px; width: 90%;">👨‍🏫 교사 전용 대시보드 보기</button>
             </div>
         </div>
     </div>
@@ -126,8 +126,8 @@
         const baseRule = `
         [절대 규칙: 대화의 유연성과 몰입도]
         1. 너는 17세기 상인이다. 학생이 엉뚱한 말(현대 언어, 장난 등)을 하더라도 절대 시스템처럼 거절하지 말고, 상인의 페르소나를 유지한 채 재치 있게 무역(은의 흐름) 이야기로 화제를 돌려라.
-        2. 학생이 정답을 한 번에 요구해도 다 말해주지 말고 힌트만 제공해라. 그리고 자연스럽게 주제와 관련하여 대화할 수 있도록 질문해라.
-        3. 이전 대화 맥락을 기억하고, 기계가 아닌 사람처럼 자연스럽게 반응해라. 
+        2. 학생이 정답을 한 번에 요구해도 다 말해주지 말고 힌트만 제공해라.
+        3. 이전 대화 맥락을 기억하고, 기계가 아닌 사람처럼 자연스럽게 반응해라.
         4. 말을 중간에 끊지 말고 반드시 마침표(.)나 물음표(?)나 느낌표(!)로 끝나는 완성된 문장으로 대답해라. 학생이 지루하지 않게 답변 길이는 4~5문장(약 200자 내외)으로 간결하게 핵심만 전달해라.
         \n\n[너의 역할 및 사료 정보]:\n`;
 
@@ -249,7 +249,8 @@
             };
 
             try {
-                const response = await fetch('/.netlify/functions/gemini', {
+                // 🚀 버셀 서버리스 함수 호출 주소 (/api/gemini)
+                const response = await fetch('/api/gemini', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify(apiRequestBody)
@@ -479,7 +480,6 @@
 
         // 👨‍🏫 교사 전용 대시보드 열기 및 데이터 로드
         window.openTeacherDashboard = async function() {
-            // 간단한 암호 보호 (원하시면 변경 가능)
             const password = prompt("교사 관리자 비밀번호를 입력하세요 (기본: 1234)");
             if (password !== "1234") {
                 if (password !== null) alert("비밀번호가 틀렸습니다.");
@@ -493,7 +493,6 @@
             listContainer.innerHTML = "<p>파이어베이스에서 학생 데이터를 불러오는 중...</p>";
 
             try {
-                // 제출된 데이터를 최신순으로 가져오기
                 const q = query(collection(db, "trade_submissions"), orderBy("timestamp", "desc"));
                 const querySnapshot = await getDocs(q);
 
@@ -507,7 +506,6 @@
                     const data = docSnap.data();
                     const studentId = data.studentId || "학번 미입력";
                     
-                    // 화살표 경로 보기 좋게 변환
                     let arrowsText = "";
                     if (data.arrows && data.arrows.length > 0) {
                         arrowsText = data.arrows.map(a => `[${a.from} ➡️ ${a.to}]`).join(", ");
@@ -515,7 +513,6 @@
                         arrowsText = "그린 무역로 없음";
                     }
 
-                    // 대화 내역 보기 좋게 가공
                     let chatSummary = "";
                     if (data.chatContexts) {
                         for (const merchant in data.chatContexts) {
