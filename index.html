@@ -23,7 +23,18 @@
         }
 
         body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
-        .screen { display: none; width: 100vw; height: 100vh; box-sizing: border-box; overflow-y: auto; }
+        
+        /* ✨ 씬 전환 애니메이션 정의 (아이폰/파워포인트 스타일) ✨ */
+        @keyframes smoothEnter {
+            0% { opacity: 0; transform: translateY(15px) scale(0.99); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* 모든 screen에 부드러운 진입 효과 적용 */
+        .screen { 
+            display: none; width: 100vw; height: 100vh; box-sizing: border-box; overflow-y: auto; 
+            animation: smoothEnter 0.5s cubic-bezier(0.25, 1, 0.5, 1) forwards; 
+        }
         
         .gradient-btn { 
             background: var(--primary-gradient); color: white; border: none; padding: 14px 24px; 
@@ -104,7 +115,7 @@
         .banner h3 { margin: 5px 0 10px 0; font-size: 22px; }
         .banner p { margin: 0; font-size: 15px; opacity: 0.9; }
         
-        /* 하단 액션 바 및 뒤로가기 보조 버튼 스타일 (테마 색상 통일) */
+        /* 하단 액션 바 및 뒤로가기 보조 버튼 스타일 */
         .bottom-action-bar { display: flex; gap: 12px; margin-top: 20px; }
         .go-back-action-btn { 
             background: #ffffff; color: #6d28d9; border: 2px solid #ddd6fe; box-shadow: none; font-weight: 700;
@@ -113,14 +124,13 @@
             background: #f5f3ff; border-color: #c4b5fd; transform: translateY(-2px);
         }
 
-        /* 4개 버튼 균등 분할을 위한 2x2 그리드 */
         .action-grid {
             display: grid;
             grid-template-columns: 1fr 1fr;
             gap: 12px;
             margin-top: 15px;
         }
-        .action-grid .gradient-btn { padding: 14px 10px; font-size: 15px; } /* 버튼 내부 여백 조절 */
+        .action-grid .gradient-btn { padding: 14px 10px; font-size: 15px; } 
 
         .info-box { background: #f0fdfa; border-left: 5px solid #14b8a6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: #0f766e; line-height: 1.6; }
         
@@ -149,8 +159,15 @@
         .delete-btn { background-color: #ef4444; color: white; border: none; border-radius: 6px; padding: 6px 12px; font-size: 12px; cursor: pointer; font-weight: bold; transition: 0.2s; }
         .delete-btn:hover { background-color: #dc2626; }
         
-        /* 모달 오버레이 */
-        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; }
+        /* 모달 오버레이 ✨ 모달에도 부드러운 애니메이션 적용 */
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+        @keyframes modalPop {
+            0% { opacity: 0; transform: scale(0.9); }
+            100% { opacity: 1; transform: scale(1); }
+        }
+        .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; animation: fadeIn 0.3s ease-out; }
+        .pw-modal-content, #overlay-modal .card { animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        
         .pw-modal-content { background: white; padding: 40px; border-radius: 20px; width: 320px; text-align: center; box-shadow: var(--shadow-hover); }
         .pw-modal-content input { width: 100%; padding: 12px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 3px; outline: none; }
         .pw-modal-content input:focus { border-color: #7c3aed; }
@@ -309,25 +326,24 @@
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
 
-            <!-- 조별 역할 선택 섹션 (간격 및 비율 조정) -->
+            <!-- 조별 역할 선택 섹션 -->
             <div id="role-selection-section" style="display: none; background: #f5f3ff; border: 1px solid #e0e7ff; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
                 <h4 style="margin-top: 0; color: #3730a3; font-size: 18px; text-align: center;">👨‍👩‍👧‍👦 역할 선택 (조별 토의 작성 모드)</h4>
                 
-                <!-- 여백(margin-bottom)을 35px로 대폭 늘려 본문과 버튼 사이 거리를 확보 -->
                 <p style="font-size: 14.5px; color: #4f46e5; margin-bottom: 35px; text-align: center; line-height: 1.5;">
                     완성된 논술 점수는 <b>조원 모두에게 동일하게 부여</b>됩니다!<br>
                     단, 총대를 매고 논술문을 <b>대표로 작성하는 서기에게는 가산점</b>이 부여될 수 있습니다.<br>본인의 역할을 선택해 주세요.
                 </p>
                 
                 <div style="display: flex; gap: 15px; align-items: stretch;">
-                    <!-- 왼쪽: 챗봇 보기 (폭을 140px로 고정하여 확 줄임) -->
+                    <!-- 왼쪽: 챗봇 보기 (폭을 140px로 고정) -->
                     <div style="flex: 0 0 140px; display: flex;">
                         <button class="gradient-btn go-back-action-btn" onclick="goBackToChat()" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
                             <span style="font-size: 24px;">⬅️</span>
                             <span style="font-size: 14px; text-align: center; line-height: 1.4;">챗봇 보기<br>(대화 확인)</span>
                         </button>
                     </div>
-                    <!-- 오른쪽: 서기 및 조원 선택 (나머지 공간 전체 차지하여 글자 꺾임 방지) -->
+                    <!-- 오른쪽: 서기 및 조원 선택 -->
                     <div class="role-btn-group" style="flex: 1; margin-bottom: 0;">
                         <button class="role-btn" onclick="selectRole('writer')">⌨️ <b>[서기]</b> 내가 우리 조 대표로 논술문 종합해서 길게 작성하기</button>
                         <button class="role-btn" onclick="selectRole('member')">📝 <b>[조원]</b> 친구가 작성 중! 나는 내가 맡은 파트 3줄 핵심 요약만 제출하기</button>
@@ -451,7 +467,7 @@
 2. 학생이 무역과 무관한 장난이나 엉뚱한 소리를 치면, 매번 똑같은 말로 대답하지 말고 다음 예시들처럼 상황에 맞게 1~2문장으로 짧게 대꾸한 뒤 본론으로 화제를 돌려라.
    예시 1) "허허, 바다 건너오더니 드립 치는 폼 미쳤구려! 자, 그런 한가한 소리 할 시간에 은화 얘기나 마저 합시다."
    예시 2) "이 사람아, 상인 체면에 그런 농담은 좀 킹받는구려. 각설하고 무역로 얘기나 마저 하세."
-   예시 3) "지금 장부 정리하느라 코가 석 자니 농담은 완전 럭키비키하게 패스하시게! 그래, 아메리카 은은 좀 챙겨 왔소?"
+   예시 3) "지금 장부 정리하느라 코가 초 석 자니 농담은 완전 럭키비키하게 패스하시게! 그래, 아메리카 은은 좀 챙겨 왔소?"
 3. 철저히 중학교 역사적 사실에 기반하여 대답하되, 정답을 바로 주지 말고 힌트만 제공해라. 전체 답변은 3~4문장 내외로 굵고 짧게 전달해라.\n\n[역할 정보 및 필수 역사 개념]:\n`;
         
         const prompts = {
@@ -673,7 +689,6 @@
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
                 
-                // 개인 모드일 경우 역할 재설정 버튼 숨기고 챗봇 보기 버튼이 2칸을 꽉 채우게 함
                 document.getElementById('back-to-role-btn').style.display = 'none';
                 document.getElementById('writer-chat-btn').style.gridColumn = 'span 2';
             }
@@ -696,7 +711,6 @@
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
                 
-                // 조별 모드에서 서기 역할 시, 역할 재설정 버튼 노출 및 그리드 원래대로 1칸씩 복귀
                 if(window.studyMode === 'group') {
                     document.getElementById('back-to-role-btn').style.display = 'block'; 
                     document.getElementById('writer-chat-btn').style.gridColumn = 'auto'; 
