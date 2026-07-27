@@ -11,7 +11,6 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
         :root {
-            /* 세련된 그라데이션 및 컬러 팔레트 */
             --primary-gradient: linear-gradient(135deg, #4f46e5 0%, #7c3aed 100%);
             --secondary-gradient: linear-gradient(135deg, #06b6d4 0%, #3b82f6 100%);
             --bg-color: #f3f4f6;
@@ -26,7 +25,6 @@
         body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         .screen { display: none; width: 100vw; height: 100vh; box-sizing: border-box; overflow-y: auto; }
         
-        /* 공통 버튼 스타일 (그라데이션) */
         .gradient-btn { 
             background: var(--primary-gradient); color: white; border: none; padding: 14px 24px; 
             border-radius: 12px; font-weight: 700; font-size: 16px; cursor: pointer; 
@@ -38,13 +36,11 @@
         
         .secondary-btn { background: var(--secondary-gradient); }
 
-        /* 카드 UI (글래스모피즘 느낌) */
         .card { 
             background: var(--card-bg); backdrop-filter: blur(10px); padding: 40px; 
             border-radius: 20px; box-shadow: var(--shadow-soft); border: 1px solid rgba(255, 255, 255, 0.5); 
         }
 
-        /* 텍스트 그라데이션 */
         .text-gradient { 
             background: var(--primary-gradient); -webkit-background-clip: text; 
             -webkit-text-fill-color: transparent; font-weight: 900; 
@@ -98,11 +94,25 @@
 
         /* 토의 & 논술 공통 */
         .center-screen { flex-direction: column; align-items: center; justify-content: center; padding: 40px 20px; }
-        .content-card { width: 100%; max-width: 800px; position: relative; }
-        .banner { background: var(--primary-gradient); color: white; padding: 25px; border-radius: 16px; text-align: center; margin-bottom: 25px; box-shadow: var(--shadow-hover); }
-        .banner h3 { margin: 0 0 10px 0; font-size: 22px; }
+        .content-card { width: 100%; max-width: 800px; }
+        
+        .banner { 
+            background: var(--primary-gradient); color: white; padding: 25px; 
+            border-radius: 16px; text-align: center; margin-bottom: 25px; 
+            box-shadow: var(--shadow-hover); position: relative; 
+        }
+        .banner h3 { margin: 5px 0 10px 0; font-size: 22px; }
         .banner p { margin: 0; font-size: 15px; opacity: 0.9; }
         
+        .go-back-btn { 
+            position: absolute; top: 15px; right: 20px; 
+            background: rgba(255, 255, 255, 0.2); border: 1px solid rgba(255, 255, 255, 0.4); 
+            color: #ffffff; font-weight: 700; font-size: 13px; cursor: pointer; 
+            padding: 6px 12px; border-radius: 20px; transition: all 0.2s; 
+            display: flex; align-items: center; gap: 5px; font-family: 'Noto Sans KR', sans-serif; 
+        }
+        .go-back-btn:hover { background: rgba(255, 255, 255, 0.35); color: #fde047; }
+
         .info-box { background: #f0fdfa; border-left: 5px solid #14b8a6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14px; color: #0f766e; line-height: 1.6; }
         
         /* 토의 화면 전용 */
@@ -116,10 +126,6 @@
         .role-btn-group { display: flex; flex-direction: column; gap: 12px; margin-bottom: 25px; }
         .role-btn { padding: 18px; border: 2px solid var(--border-color); border-radius: 12px; background: white; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; font-size: 16px; color: var(--text-dark); text-align: left; }
         .role-btn:hover { border-color: #7c3aed; background-color: #f5f3ff; color: #6d28d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
-
-        /* 상단 뒤로가기 버튼 텍스트 */
-        .go-back-link { position: absolute; top: 20px; right: 25px; background: none; border: none; color: #ffffff; font-weight: bold; font-size: 14px; cursor: pointer; text-decoration: underline; padding: 5px; opacity: 0.9; }
-        .go-back-link:hover { opacity: 1; }
 
         /* 대시보드 */
         #teacher-dashboard { padding: 40px; }
@@ -261,7 +267,7 @@
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
-                <button class="go-back-link" onclick="goBackToChat()">🔙 챗봇 내용 다시 보기</button>
+                <button class="go-back-btn" onclick="goBackToChat()">⬅️ 챗봇 보기</button>
                 <h3>🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
                 <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
             </div>
@@ -271,11 +277,11 @@
             </div>
 
             <div class="discussion-points">
-                <h4>💡 조별 토의 미션</h4>
+                <h4>💡 조별 토의 미션 (조별 작성 시 근거 3가지 이상 필수!)</h4>
                 <ol>
                     <li>각자 챗봇과 인터뷰한 상인(영국, 명·청, 에도 막부, 인도 등)의 입장에서 <b>자신이 맡은 지역의 17세기 무역 상황을 조원들에게 설명</b>해주세요.</li>
                     <li>유럽 중심적 시각을 비판하고, 여러 대륙이 연결된 이 시기를 잘 나타낼 수 있는 <b>'우리 조만의 새로운 역사적 명칭'</b>을 정해보세요.</li>
-                    <li>그 명칭을 뒷받침할 <b>2가지 근거</b>를 각 지역의 사례를 종합하여 정리하세요.</li>
+                    <li>그 명칭을 뒷받침할 <b>3가지 이상의 근거</b>를 각 지역의 사례를 종합하여 조원들과 함께 토의하고 정리하세요.</li>
                 </ol>
             </div>
             
@@ -287,7 +293,7 @@
     <div id="essay-screen" class="screen center-screen">
         <div class="card content-card">
             <div class="banner">
-                <button class="go-back-link" onclick="goBackToChat()">🔙 챗봇 내용 다시 보기</button>
+                <button class="go-back-btn" onclick="goBackToChat()">⬅️ 챗봇 보기</button>
                 <h3>📜 최종 제출: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
@@ -307,10 +313,8 @@
 
             <!-- 논술 작성 영역 (서기 & 개인 모드용) -->
             <div id="essay-writer-area" style="display: none;">
-                <div class="info-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;">
-                    <b>[작성 가이드라인 (서론-본문-결론 구조)]</b><br>
-                    • <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 <b>새로운 명칭 제안 및 근거 2가지</b> 서술.<br>
-                    • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.
+                <div class="info-box" id="writer-guideline-box" style="border-left-color: #6366f1; background: #e0e7ff; color: #4338ca;">
+                    <!-- 동적으로 문구 변경됨 -->
                 </div>
                 <textarea id="essay-input" style="height: 200px;" placeholder="서론, 본론, 결론의 구조를 갖추어 8~10문장 이상으로 상세히 작성하세요..." oncopy="return false" onpaste="return false"></textarea>
                 
@@ -355,7 +359,6 @@
             <div class="dashboard-controls">
                 <span style="font-weight: 900; font-size: 15px; color: var(--text-dark);">🔍 조회 필터:</span>
                 
-                <!-- 신규: 활동 모드 필터 추가 -->
                 <select id="modeFilterDash" onchange="renderDashboardList()">
                     <option value="all">전체 활동</option>
                     <option value="individual">개별 탐구</option>
@@ -394,7 +397,7 @@
         </div>
     </div>
 
-    <!-- 스크립트 1: 전역 변수 및 UI 로직 (모듈 외부 배치로 버튼 오류 방지) -->
+    <!-- 스크립트 1: 전역 변수 및 UI 로직 -->
     <script>
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
@@ -471,7 +474,6 @@
             document.getElementById("password-modal").style.display = "none";
         }
 
-        // 교사 모드용 UI 전역 함수 (모듈 분리로 인한 버튼 미작동 방지)
         window.changePassword = function() {
             const currentSaved = localStorage.getItem("teacherPassword") || "createnewid";
             const oldInput = prompt("현재 관리자 비밀번호를 입력하세요:");
@@ -622,7 +624,6 @@
             }
         }
 
-        // 분기 처리: 토의 씬으로 갈지, 바로 에세이로 갈지 결정
         window.goToNextScreen = function() {
             if(!window.userArrows || window.userArrows.length === 0) {
                 alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!");
@@ -633,11 +634,12 @@
             if(window.studyMode === 'group') {
                 document.getElementById("discussion-screen").style.display = "flex";
             } else {
+                window.studentRole = 'writer'; 
+                setupEssayGuideline();
                 document.getElementById("essay-screen").style.display = "flex";
                 document.getElementById('role-selection-section').style.display = 'none';
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
-                window.studentRole = 'writer'; 
             }
         }
 
@@ -653,6 +655,7 @@
             window.studentRole = role;
             document.getElementById('role-selection-section').style.display = 'none';
             if(role === 'writer') {
+                setupEssayGuideline();
                 document.getElementById('essay-writer-area').style.display = 'block';
                 document.getElementById('essay-member-area').style.display = 'none';
             } else {
@@ -661,12 +664,28 @@
             }
         }
 
-        // 신규: 챗봇으로 다시 되돌아가는 기능
+        // 모드 및 역할에 따라 안내 가이드라인 문구 동적 설정 (개인: 근거 2가지 / 조별 서기: 근거 3가지)
+        window.setupEssayGuideline = function() {
+            const guidelineBox = document.getElementById('writer-guideline-box');
+            if (window.studyMode === 'group' && window.studentRole === 'writer') {
+                guidelineBox.innerHTML = `
+                    <b>[조별 서기 작성 가이드라인 (서론-본문-결론 구조)]</b><br>
+                    • <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 3가지 이상</b> 서술.<br>
+                    • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.
+                `;
+            } else {
+                guidelineBox.innerHTML = `
+                    <b>[개인 탐구 작성 가이드라인 (서론-본문-결론 구조)]</b><br>
+                    • <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 2가지 이상</b> 서술.<br>
+                    • <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.
+                `;
+            }
+        }
+
         window.goBackToChat = function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
             document.getElementById("chatbot-screen").style.display = "flex";
             
-            // 지도와 챗봇 스크롤 다시 그려주기
             if(window.drawMap) window.drawMap();
             const chatBox = document.getElementById('chat-box');
             chatBox.scrollTop = chatBox.scrollHeight;
@@ -795,6 +814,9 @@
             feedbackDiv.style.display = "block";
             feedbackDiv.innerHTML = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
 
+            // 개인 vs 조별(서기)에 따라 AI 채점 기준 동적 설정
+            const requiredEvidence = (window.studyMode === 'group') ? "근거 3가지 이상" : "근거 2가지 이상";
+
             try {
                 const response = await fetch('/api/chat', {
                     method: 'POST',
@@ -806,7 +828,7 @@
                                 content: `너는 중학교 역사 교사이다. 
 [채점 절대 기준]
 1. 학생이 무의미한 장난, 무역과 무관한 글을 적으면 10~30점을 준다.
-2. 성취기준('대항해 시대' 비판 및 대안 명칭 제안, 근거 2가지)과 서론-본문-결론 구조(대략 8문장 이상)가 담긴 성실한 글에만 80점~100점을 부여해라.
+2. 성취기준('대항해 시대' 비판 및 대안 명칭 제안, 필수 조건인 '${requiredEvidence}')과 서론-본문-결론 구조(대략 8문장 이상)가 담긴 성실한 글에만 80점~100점을 부여해라.
 3. 결과는 반드시 '[채점 점수: OOO점]' 형태로 첫 줄에 명시하고, 그 아래에 3~4문장의 총평을 남겨라.` 
                             },
                             { role: "user", content: `학생 논술 내용: ${essayText}` }
@@ -903,7 +925,6 @@
             }
         }
 
-        // Dashboard Logic Update
         window.loadTeacherDashboard = async function() {
             document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
             document.getElementById("teacher-dashboard").style.display = "block";
@@ -963,7 +984,6 @@
 
             let filtered = window.globalSubmissionsData.slice(); 
 
-            // 모드 필터링 적용
             if (modeFilter !== "all") {
                 filtered = filtered.filter(item => item.studyMode === modeFilter);
             }
