@@ -12,7 +12,6 @@ export default async function handler(req, res) {
 
         const apiRequestBody = req.body;
 
-        // OpenAI 공식 API 엔드포인트 호출 (gpt-4o-mini 모델)
         const response = await fetch('https://api.openai.com/v1/chat/completions', {
             method: 'POST',
             headers: { 
@@ -21,7 +20,7 @@ export default async function handler(req, res) {
             },
             body: JSON.stringify({
                 model: "gpt-4o-mini",
-                messages: apiRequestBody.messages, // 프론트엔드에서 보낸 대화 배열
+                messages: apiRequestBody.messages,
                 max_tokens: 800
             })
         });
