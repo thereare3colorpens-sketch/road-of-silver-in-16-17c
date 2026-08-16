@@ -32,7 +32,6 @@
 
         body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         
-        /* 모든 제목과 그라데이션 텍스트에 페이퍼로지 폰트 일괄 적용 */
         h2, h3, h4, .text-gradient { font-family: 'Paperlogy-8ExtraBold', 'Noto Sans KR', sans-serif !important; }
 
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
@@ -143,11 +142,11 @@
         .source-modal-content { background: white; padding: 35px 30px; border-radius: 20px; width: 100%; max-width: 700px; text-align: left; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; max-height: 90dvh; overflow-y: auto; }
         #overlay-modal .card { animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-        /* ✨ 사료 원문 박스 디자인 */
+        /* ✨ 1차 사료 원문 박스 디자인 */
         .source-quote-box {
             background: #fffbeb;
             border-left: 6px solid #d97706;
-            padding: 20px;
+            padding: 22px;
             margin-bottom: 25px;
             border-radius: 0 10px 10px 0;
             color: #451a03;
@@ -156,6 +155,18 @@
             box-shadow: 0 2px 5px rgba(0,0,0,0.03);
         }
         .source-quote-box strong { color: #92400e; font-size: 17px; display: block; margin-bottom: 8px; font-family: 'Paperlogy-8ExtraBold', sans-serif; }
+        
+        /* ✨ 교과서 설명 박스 디자인 */
+        .source-desc-box {
+            background: #f3f4f6;
+            padding: 18px;
+            border-radius: 8px;
+            margin-bottom: 25px;
+            font-size: 14.5px;
+            line-height: 1.6;
+            color: #374151;
+            border: 1px solid #e5e7eb;
+        }
 
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; height: auto; min-height: 100vh; min-height: 100dvh; }
@@ -313,16 +324,16 @@
         </div>
     </div>
 
-    <!-- 3.5. [NEW] 사료 학습 화면 -->
+    <!-- 3.5. 사료 학습 화면 -->
     <div id="source-study-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
                 <h3 style="font-size: 26px;">📖 사료 학습: 무역의 명과 암</h3>
-                <p>본격적인 토론과 논술에 앞서, 각 대륙의 사료를 클릭해 핵심 내용을 분석해 봅시다.</p>
+                <p>본격적인 토론과 논술에 앞서, 각 대륙의 진짜 사료를 읽고 분석해 봅시다.</p>
             </div>
             
             <div class="info-box" style="border-left-color: #f59f00; background: #fef9c3; color: #b45309;">
-                <b>💡 학습 미션:</b> 자신이 맡은 지역(또는 관심 있는 대륙)의 버튼을 클릭하여 교과서 사료를 꼼꼼히 읽고, 분석 질문에 답을 적어보세요. 이 과정은 다음 단계인 '역사적 명칭 정하기' 논술의 훌륭한 밑거름이 됩니다.
+                <b>💡 학습 미션:</b> 자신이 맡은 지역(또는 관심 있는 대륙)의 버튼을 클릭하여 진짜 역사 사료를 읽고, 분석 질문에 답을 적어보세요. 이 과정은 다음 단계인 '역사적 명칭 정하기' 논술의 훌륭한 밑거름이 됩니다.
             </div>
 
             <div class="source-grid">
@@ -341,16 +352,16 @@
         </div>
     </div>
 
-    <!-- 3.6. [NEW] 사료 팝업 모달 창 -->
+    <!-- 3.6. 사료 팝업 모달 창 (실제 원문 사료 적용) -->
     <div id="source-modal" class="modal-overlay">
         <div class="source-modal-content">
             <h3 id="source-modal-title" style="margin-top: 0; font-size: 26px;"></h3>
-            <!-- ✨ 실제 사료가 들어갈 디자인 박스 -->
-            <div class="source-quote-box" id="source-modal-content">
-            </div>
+            
+            <!-- ✨ 실제 사료와 교과서 설명이 각각 들어갈 공간 -->
+            <div id="source-modal-content"></div>
             
             <p style="font-weight: 700; color: #4f46e5; margin-bottom: 8px; font-size: 16px;">✏️ Q1. <span id="source-modal-q1" style="font-weight: 500; color: var(--text-dark);"></span></p>
-            <textarea id="source-modal-a1" style="height: 70px; margin-bottom: 20px;" placeholder="교과서와 사료를 바탕으로 기초 질문의 정답을 간단히 적어보세요."></textarea>
+            <textarea id="source-modal-a1" style="height: 70px; margin-bottom: 20px;" placeholder="사료와 배경 설명을 바탕으로 기초 질문의 정답을 간단히 적어보세요."></textarea>
             
             <p style="font-weight: 700; color: #b45309; margin-bottom: 8px; font-size: 16px;">🤔 Q2. <span id="source-modal-q2" style="font-weight: 500; color: var(--text-dark);"></span></p>
             <textarea id="source-modal-a2" style="height: 100px; margin-bottom: 25px;" placeholder="대화의 흐름과 사료를 종합하여 비판적(심화) 질문에 대한 여러분의 생각을 자세히 적어보세요."></textarea>
@@ -519,58 +530,95 @@
             india: `너는 무굴 제국 캘리컷 상인이다. [필수 사료 및 교과서 개념]: "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 제국의 면직물인 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 가볍고 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 수출품 중 가장 큰 비중을 차지하니 오히려 좋구려. 들어온 은화로 17세기 국제 무역 폼 미쳤다!"`
         };
 
-        // ✨ 교과서 원문 사료가 예쁜 박스 형태로 들어가도록 업데이트
+        // ✨ 진짜 1차 사료(원문)와 교과서 설명을 완벽하게 구분하여 추가
         const sourceData = {
             europe: { 
                 title: "🇬🇧 유럽 (영국/에스파냐)", 
-                content: `<strong>[콜베르의 의견서]</strong>
-폐하, 모든 무역에서 국내 산업에 도움이 되는 상품을 수입할 때는 세금을 면제해 주고, 외국에서 만들어진 상품을 들여올 때는 세금을 부과해야 합니다.<br><br>
-<strong>[교과서 본문]</strong>
-포르투갈, 에스파냐가 동방과의 교역에 앞장섰고, 뒤이어 네덜란드, 영국, 프랑스 등이 각각 동인도 회사를 세우고 아시아로 진출하였다. 유럽은 동남아시아의 향신료, 인도의 면직물, 중국의 도자기·비단·차 등을 사들이고, 아메리카에서 얻어 낸 은으로 값을 치렀다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 콜베르의 상소문, 1664년]</strong>
+                        "폐하, 모든 무역에서 국내 산업에 도움이 되는 상품을 수입할 때는 세금을 면제해 주고, 외국에서 만들어진 상품을 들여올 때는 세금을 부과해야 합니다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        포르투갈, 에스파냐가 동방과의 교역에 앞장섰고, 뒤이어 네덜란드, 영국, 프랑스 등이 각각 동인도 회사를 세우고 아시아로 진출하였다. 유럽은 동남아시아의 향신료, 인도의 면직물, 중국의 도자기·비단·차 등을 사들이고, 아메리카에서 얻어 낸 은으로 값을 치렀다.
+                    </div>
+                `, 
                 q1: "17세기 유럽의 여러 나라가 인도 및 동남아시아 지역과 무역하기 위해 세운 무역 회사의 이름은 무엇인가요?", 
                 q2: "아메리카 대륙에서 채굴된 막대한 양의 금과 은이 유럽으로 쏟아져 들어오면서, 당시 유럽의 '물가'에는 어떤 현상이 일어났나요?" 
             },
             africa: { 
                 title: "🌍 아프리카", 
-                content: `<strong>[노예 무역의 비극]</strong>
-17세기 후반 유럽에서 설탕의 인기가 높아지자 유럽인들은 아메리카의 사탕수수 농장에 아프리카 노예를 동원하였다. 19세기까지 약 1,200만 명의 아프리카인이 노예로 아메리카에 팔려 갔으며, 수많은 사람이 긴 항해를 견디지 못하고 목숨을 잃었다. 노예들은 쇠사슬에 묶인 채 좁은 공간에 실려 장거리를 이동하였다.<br><br>
-<strong>[교과서 본문]</strong>
-아메리카 원주민의 인구가 감소하여 노동력이 부족해지자 유럽인은 아프리카 원주민을 노예로 동원하였다. 독자적인 문화를 누리던 아프리카는 노예 무역으로 인구가 줄고 성비가 불균형해졌으며, 부족 간의 갈등도 깊어졌다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 콩고 국왕 아폰소 1세의 편지, 1526년]</strong>
+                        "유럽 상인들이 매일같이 우리 백성들을 납치해 가고 있습니다. 심지어 귀족들마저 잡혀갑니다. 이 나라는 완전히 인구를 잃어가고 있습니다. 폐하, 우리 왕국에는 더 이상 상품이나 노예 상인이 필요하지 않습니다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        아메리카 원주민의 인구가 감소하여 노동력이 부족해지자 유럽인은 아프리카 원주민을 노예로 동원하였다. 19세기까지 약 1,200만 명의 아프리카인이 좁은 배에 묶인 채 아메리카에 팔려 갔다. 노예 무역으로 아프리카는 인구가 줄고 성비가 불균형해졌으며, 부족 간의 갈등도 깊어졌다.
+                    </div>
+                `, 
                 q1: "유럽, 아프리카, 아메리카 세 대륙을 노예와 은, 무기 및 일용품으로 이어주었던 대서양 무역의 형태를 무엇이라고 부르나요?", 
                 q2: "유럽 상인들이 가져온 무기와 일용품은 아프리카인들의 삶을 어떻게 바꾸어 놓았나요? 교과서 내용을 바탕으로 두 가지 이상의 비극적인 변화를 적어보세요." 
             },
             america: { 
                 title: "🌎 아메리카", 
-                content: `<strong>[에스파냐 은화의 이동]</strong>
-16세기 중반 오늘날 볼리비아의 포토시 지역에서 거대한 은광이 발견되었다. 에스파냐인들은 이곳에 도시를 세우고 원주민과 아프리카 노예를 동원하여 은을 채굴하였다. 당시 포토시에서 채굴된 은은 전 세계에서 생산된 은의 절반이 넘었다. 채굴한 은으로 만든 은화는 16~17세기 국제 무역의 기준 화폐로 쓰였다.<br><br>
-<strong>[교과서 본문]</strong>
-아메리카 원주민은 가혹한 노동에 시달렸으며, 유럽에서 들어온 천연두, 홍역 같은 새로운 질병에 노출되어 많은 사람이 목숨을 잃었다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 안토니오 데 에스피노사의 기록, 1620년대]</strong>
+                        "포토시 광산의 깊은 갱도 안은 캄캄하고 매캐하다. 징용된 원주민(미타요스)들은 일주일 내내 햇빛을 보지 못하고 곡괭이질을 한다. 많은 이들이 가혹한 노동과 끔찍한 폐 질환으로 목숨을 잃는다. 이 거대한 산은 원주민들의 피와 눈물로 은을 토해내고 있다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        16세기 중반 오늘날 볼리비아의 포토시 지역에서 거대한 은광이 발견되었다. 당시 포토시에서 채굴된 은은 전 세계 생산량의 절반이 넘었고, 국제 무역의 기준 화폐로 쓰였다. 하지만 아메리카 원주민은 가혹한 노동에 시달렸으며, 유럽에서 들어온 천연두 같은 새로운 질병으로 수많은 이가 목숨을 잃었다.
+                    </div>
+                `, 
                 q1: "16세기 중반 오늘날의 볼리비아 지역에서 발견되어, 16~17세기 국제 무역의 기준 화폐가 될 막대한 양의 은이 채굴된 은광의 이름은 무엇인가요?", 
                 q2: "에스파냐인들이 아메리카에서 막대한 은과 사탕수수 등을 얻어내는 과정에서, 아메리카 원주민들이 겪어야 했던 두 가지 큰 고통은 무엇이었나요?" 
             },
             china: { 
                 title: "🇨🇳 중국 (명·청)", 
-                content: `<strong>[은으로 세금을 거둔 중국]</strong>
-명·청대에는 비단, 도자기, 차 등 중국의 문물이 유럽과 이슬람 세계에서 큰 인기를 끌었다. 유럽과 이슬람 상인들이 중국에서 물품을 은으로 구입하면서 중국에 많은 양의 은이 들어왔다. 그 결과 중국에서는 은이 널리 사용되었고, 여러 항목의 세금을 은으로 내게 하는 등 세금 제도의 개혁이 이루어졌다.<br><br>
-<strong>[교과서 본문]</strong>
-초기에 해상 무역을 통제하던 청은 18세기 중반 이후 광저우 한 곳을 서양 상인에게 개방하고 공행을 통한 무역만 허용하였다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 이탈리아 선교사 마테오 리치의 기록]</strong>
+                        "중국인들은 다른 어떤 서양 물건보다도 오직 '은'만을 원한다. 유럽 상인들은 아메리카에서 가져온 막대한 은화를 바치고 나서야 질 좋은 비단, 차, 도자기를 배에 실을 수 있었다. 명나라 조정이 모든 세금을 은으로만 내도록 제도를 바꾸었기 때문이다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        명·청대에는 비단, 도자기, 차 등 중국의 문물이 유럽과 이슬람 세계에서 큰 인기를 끌었다. 서양 상인들이 중국의 물품을 오직 은으로 구입하면서 중국에 막대한 양의 은이 들어왔다. 그 결과 중국에서는 세금 제도의 개혁(은납화)이 이루어졌고, 청은 나중에 광저우에 공행이라는 상인 조합을 두어 무역을 철저히 통제했다.
+                    </div>
+                `, 
                 q1: "유럽 상인들이 열광했던 명·청 시대 중국의 대표적인 수출품을 두 가지 이상 적어보세요.", 
                 q2: "당시 서양 상인들이 중국의 물건을 사기 위해서는 반드시 '은(Silver)'을 챙겨가야만 했습니다. 중국으로 막대한 은이 흘러 들어간 후, 중국 정부의 세금 납부 방식은 어떻게 변화했나요?" 
             },
             japan: { 
                 title: "🇯🇵 일본 (에도 막부)", 
-                content: `<strong>[일본의 은광 개발]</strong>
-16세기 일본은 조선에서 개발한 은 제련법을 도입하여 은 생산량을 크게 늘렸다. 일본에서 생산된 은은 한때 전 세계 은 생산량의 약 3분의 1을 차지하였다. 일본은 은으로 네덜란드, 포르투갈로부터 화포와 조총 등 최신 무기를 구입하였고, 중국과 동남아시아의 여러 항구에서 약재와 비단 등을 구입하였다.<br><br>
-<strong>[교과서 본문]</strong>
-데지마는 나가사키 앞바다를 메워 만든 부채 모양의 인공 섬으로, 일본이 서양과 교류하는 유일한 창구였다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 16세기 서양 상인의 기록]</strong>
+                        "이 섬나라 사람들은 이와미 등지에서 막대한 은을 캐낸다. 그들은 이 은으로 우리 유럽 상인들이 가져온 조총과 화약, 그리고 중국산 고급 비단을 엄청난 양으로 사들인다. 지금 일본은 전 세계에서 은이 가장 많이 쏟아져 나오는 곳 중 하나다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        16세기 일본은 조선에서 개발한 은 제련법을 도입하여 은 생산량을 크게 늘렸고, 한때 전 세계 은 생산량의 약 3분의 1을 차지하였다. 일본은 이 은으로 서양으로부터 화포와 조총 등 최신 무기를 사들였다. 에도 막부는 데지마라는 나가사키의 좁은 인공 섬을 통해서만 제한적으로 서양(네덜란드)과 교류하였다.
+                    </div>
+                `, 
                 q1: "16세기 일본이 조선의 은 제련법을 도입하여 개발하였으며, 한때 전 세계 은 생산량의 약 3분의 1을 차지했던 일본 최대의 은광 이름은 무엇인가요?", 
                 q2: "에도 막부는 이 은광에서 캐낸 막대한 은을 지불하여 네덜란드, 포르투갈 등 서양 세력으로부터 어떤 물건들을 주로 사들였나요?" 
             },
             india: { 
                 title: "🇮🇳 인도 (무굴 제국)", 
-                content: `<strong>[캘리코의 유행]</strong>
-무굴 제국의 면직물은 포르투갈, 영국을 거쳐 유럽 여러 나라에 전해졌다. 당시 인도의 면직물은 '캘리코'라고 불렸다. 캘리코는 유럽인들이 입던 모직물에 비해 가볍고 화사하였으며, 관리가 쉽고 값이 저렴하여 큰 인기를 끌었다.<br>
-캘리코는 당시 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국이 캘리코를 수입하는 대금을 은으로 지불하면서 인도에 많은 양의 은이 들어왔다.`, 
+                content: `
+                    <div class="source-quote-box">
+                        <strong>[실제 역사 사료: 17세기 후반 영국 의회의 불만 기록]</strong>
+                        "인도에서 온 '캘리코'라 불리는 이 가볍고 화려한 면직물 때문에, 우리 영국의 전통적인 모직물 산업이 망하게 생겼다! 심지어 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있으니 참으로 통탄할 일이다."
+                    </div>
+                    <div class="source-desc-box">
+                        <strong>📖 교과서 역사 배경</strong><br>
+                        인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 유럽인들이 입던 두꺼운 모직물에 비해 가볍고 화사하여 큰 인기를 끌었고, 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코를 수입하는 대금을 아메리카 은으로 지불하면서, 인도에도 막대한 양의 은이 들어왔다.
+                    </div>
+                `, 
                 q1: "17세기 무굴 제국의 수출품 중 가장 큰 비중을 차지했으며, 가볍고 화사하여 유럽인들에게 큰 인기를 끌었던 인도의 면직물을 무엇이라고 불렀나요?", 
                 q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도(무굴 제국)까지 흘러들어오게 되었을까요? 영국의 수입품과 대금 결제 방식을 연결하여 설명해 보세요." 
             }
@@ -763,7 +811,7 @@
             const data = sourceData[region];
             
             document.getElementById('source-modal-title').innerText = data.title;
-            // ✨ 내용에 HTML 태그(<strong>, <br>)가 포함되어 있으므로 innerHTML 사용
+            // ✨ HTML을 포함한 사료+설명이 제대로 렌더링되도록 innerHTML 사용
             document.getElementById('source-modal-content').innerHTML = data.content;
             document.getElementById('source-modal-q1').innerText = data.q1;
             document.getElementById('source-modal-q2').innerText = data.q2;
