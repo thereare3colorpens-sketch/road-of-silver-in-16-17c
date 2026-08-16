@@ -4,17 +4,24 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은의 여정: 17세기 국제 무역 탐구</title>
-    <!-- Google Fonts - Noto Sans KR (본문용) -->
-    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+KR:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
     <!-- ExcelJS 라이브러리 탑재 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* ✨ 눈누 페이퍼로지 폰트 중 가장 두꺼운 ExtraBold(8) 불러오기 */
+        /* ✨ 눈누 페이퍼로지 폰트 (제목용) */
         @font-face {
             font-family: 'Paperlogy-8ExtraBold';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
             font-weight: 800;
+            font-style: normal;
+        }
+
+        /* ✨ 눈누 프리텐다드 폰트 (본문용) */
+        @font-face {
+            font-family: 'Pretendard-Regular';
+            src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
+            font-weight: 400;
             font-style: normal;
         }
 
@@ -30,9 +37,12 @@
             --shadow-hover: 0 15px 35px rgba(124, 58, 237, 0.2);
         }
 
-        body { font-family: 'Noto Sans KR', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
+        /* ✨ 전체 본문 폰트를 프리텐다드로 변경 */
+        body { font-family: 'Pretendard-Regular', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
+        input, select, textarea, button { font-family: 'Pretendard-Regular', sans-serif; }
         
-        h2, h3, h4, .text-gradient { font-family: 'Paperlogy-8ExtraBold', 'Noto Sans KR', sans-serif !important; }
+        /* 제목과 그라데이션 텍스트에만 페이퍼로지 폰트 유지 */
+        h2, h3, h4, .text-gradient { font-family: 'Paperlogy-8ExtraBold', sans-serif !important; }
 
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
         .morph-target { view-transition-name: morph-card; }
@@ -42,7 +52,7 @@
         
         .screen { display: none; width: 100vw; height: 100vh; height: 100dvh; box-sizing: border-box; overflow-y: auto; overflow-x: hidden; animation: smoothEnter 0.6s cubic-bezier(0.22, 1, 0.36, 1) forwards; }
         
-        .gradient-btn { background: var(--primary-gradient); color: white; border: none; padding: 15px 24px; border-radius: 12px; font-weight: 700; font-size: 17px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); font-family: 'Noto Sans KR', sans-serif; width: 100%; box-sizing: border-box; }
+        .gradient-btn { background: var(--primary-gradient); color: white; border: none; padding: 15px 24px; border-radius: 12px; font-weight: 700; font-size: 17px; cursor: pointer; transition: all 0.3s ease; box-shadow: 0 4px 6px rgba(79, 70, 229, 0.2); width: 100%; box-sizing: border-box; }
         .gradient-btn:hover:not(:disabled) { transform: translateY(-2px); box-shadow: var(--shadow-hover); }
         .gradient-btn:disabled { background: #d1d5db; color: #9ca3af; box-shadow: none; cursor: not-allowed; transform: none; }
         .secondary-btn { background: var(--secondary-gradient); }
@@ -107,11 +117,11 @@
         .discussion-points h4 { color: #4f46e5; margin-top: 0; font-size: 20px; }
         .discussion-points li { margin-bottom: 12px; line-height: 1.6; font-size: 16px; color: var(--text-dark); }
 
-        textarea { width: 100%; padding: 18px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; resize: none; margin-bottom: 15px; font-family: 'Noto Sans KR', sans-serif; transition: 0.2s; line-height: 1.5; }
+        textarea { width: 100%; padding: 18px; border: 1px solid var(--border-color); border-radius: 12px; font-size: 16px; box-sizing: border-box; resize: none; margin-bottom: 15px; transition: 0.2s; line-height: 1.5; }
         textarea:focus { border-color: #7c3aed; outline: none; box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.1); }
         
         .role-btn-group { display: flex; flex-direction: column; gap: 12px; }
-        .role-btn { padding: 20px; border: 2px solid var(--border-color); border-radius: 12px; background: white; font-weight: 700; cursor: pointer; font-family: 'Noto Sans KR', sans-serif; transition: all 0.2s; font-size: 17px; color: var(--text-dark); text-align: left; }
+        .role-btn { padding: 20px; border: 2px solid var(--border-color); border-radius: 12px; background: white; font-weight: 700; cursor: pointer; transition: all 0.2s; font-size: 17px; color: var(--text-dark); text-align: left; }
         .role-btn:hover { border-color: #7c3aed; background-color: #f5f3ff; color: #6d28d9; transform: translateY(-2px); box-shadow: 0 4px 10px rgba(0,0,0,0.05); }
 
         .source-grid { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; margin-bottom: 25px; }
@@ -122,7 +132,7 @@
         .dashboard-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .dashboard-actions button { flex: 1; width: auto; padding: 12px 14px; font-size: 14.5px; white-space: nowrap; min-width: max-content; }
         .dashboard-controls { display: flex; gap: 12px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
-        .dashboard-controls select { padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-family: 'Noto Sans KR', sans-serif; font-size: 15px; outline: none; }
+        .dashboard-controls select { padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; outline: none; }
         
         .submission-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
         .submission-card:hover { box-shadow: var(--shadow-soft); }
@@ -136,59 +146,32 @@
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; animation: fadeIn 0.3s ease-out; padding: 15px; box-sizing: border-box;}
         
         .pw-modal-content { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .pw-modal-content input { width: 100%; padding: 14px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; font-family: 'Noto Sans KR', sans-serif; letter-spacing: 3px; outline: none; }
+        .pw-modal-content input { width: 100%; padding: 14px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; letter-spacing: 3px; outline: none; }
         .pw-modal-content input:focus { border-color: #7c3aed; }
 
         .source-modal-content { background: white; padding: 35px 30px; border-radius: 20px; width: 100%; max-width: 700px; text-align: left; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; max-height: 90dvh; overflow-y: auto; }
         #overlay-modal .card { animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
 
-        /* ✨ 1차 사료 원문 박스 디자인 */
-        .source-quote-box {
-            background: #fffbeb;
-            border-left: 6px solid #d97706;
-            padding: 22px;
-            margin-bottom: 25px;
-            border-radius: 0 10px 10px 0;
-            color: #451a03;
-            font-size: 15.5px;
-            line-height: 1.7;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.03);
-        }
-        .source-quote-box strong { color: #92400e; font-size: 17px; display: block; margin-bottom: 8px; font-family: 'Paperlogy-8ExtraBold', sans-serif; }
+        .source-quote-box { background: #fffbeb; border-left: 6px solid #d97706; padding: 22px; margin-bottom: 25px; border-radius: 0 10px 10px 0; color: #451a03; font-size: 15.5px; line-height: 1.7; box-shadow: 0 2px 5px rgba(0,0,0,0.03); }
+        .source-quote-box strong { color: #92400e; font-size: 17px; display: block; margin-bottom: 8px; }
         
-        /* ✨ 교과서 설명 박스 디자인 */
-        .source-desc-box {
-            background: #f3f4f6;
-            padding: 18px;
-            border-radius: 8px;
-            margin-bottom: 25px;
-            font-size: 14.5px;
-            line-height: 1.6;
-            color: #374151;
-            border: 1px solid #e5e7eb;
-        }
+        .source-desc-box { background: #f3f4f6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14.5px; line-height: 1.6; color: #374151; border: 1px solid #e5e7eb; }
 
         @media (max-width: 768px) {
             .main-layout { flex-direction: column; height: auto; min-height: 100vh; min-height: 100dvh; }
             #left-panel { border-right: none; border-bottom: 1px solid var(--border-color); padding: 35px 20px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
             #right-panel { padding: 35px 20px; flex: none; height: auto; width: 100%; box-sizing: border-box; }
-            
             .card { padding: 35px 20px; }
             .center-screen, #login-screen { justify-content: flex-start; padding: 40px 20px; box-sizing: border-box; }
             #teacher-dashboard { padding: 30px 20px; box-sizing: border-box; }
-            
             canvas { width: 100%; height: auto; aspect-ratio: 500 / 350; margin-top: 15px; }
-            
             .action-grid { grid-template-columns: 1fr; }
             .bottom-action-bar { flex-direction: column; }
             .bottom-action-bar button { flex: none; width: 100%; }
-
             #role-selection-section > div { flex-direction: column; }
             #role-selection-section > div > div:first-child { flex: auto; width: 100%; margin-bottom: 15px; height: 60px; }
             #role-selection-section > div > div:first-child button { flex-direction: row; gap: 15px; }
-            
             .source-grid { grid-template-columns: 1fr; }
-            
             #chat-box { min-height: 400px; }
         }
     </style>
@@ -259,7 +242,7 @@
                 <h2 style="margin: 0; font-size: 28px;">
                     📝 <span class="text-gradient">사전 개념 퀴즈</span>
                 </h2>
-                <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Noto Sans KR', sans-serif;">🔄 학번 재설정</button>
+                <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
             </div>
             <p style="color: var(--text-gray); font-size: 16px; margin-bottom: 25px; text-align: left; line-height: 1.5;">17세기 은 무역 핵심 3문제를 모두 맞히고 탐구 세계로 입장하세요!</p>
             <div class="quiz-item">
@@ -302,7 +285,7 @@
             <div id="right-panel">
                 <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
                     <span id="display-student-id" style="font-weight: 700; color: #4f46e5; font-size: 15.5px; background: white; padding: 8px 14px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"></span>
-                    <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold; font-family: 'Noto Sans KR', sans-serif;">🔄 학번 재설정</button>
+                    <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
                 </div>
                 <h2 style="margin-bottom: 15px; font-size: 24px;">💬 17세기 상인 인터뷰</h2>
                 
@@ -352,12 +335,10 @@
         </div>
     </div>
 
-    <!-- 3.6. 사료 팝업 모달 창 (실제 원문 사료 적용) -->
+    <!-- 3.6. 사료 팝업 모달 창 -->
     <div id="source-modal" class="modal-overlay">
         <div class="source-modal-content">
             <h3 id="source-modal-title" style="margin-top: 0; font-size: 26px;"></h3>
-            
-            <!-- ✨ 실제 사료와 교과서 설명이 각각 들어갈 공간 -->
             <div id="source-modal-content"></div>
             
             <p style="font-weight: 700; color: #4f46e5; margin-bottom: 8px; font-size: 16px;">✏️ Q1. <span id="source-modal-q1" style="font-weight: 500; color: var(--text-dark);"></span></p>
@@ -373,7 +354,7 @@
         </div>
     </div>
 
-    <!-- 4. 조별 토의 화면 (조별 모드일 때만 등장) -->
+    <!-- 4. 조별 토의 화면 -->
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
@@ -417,7 +398,7 @@
                 <div style="display: flex; gap: 15px; align-items: stretch;">
                     <div style="flex: 0 0 140px; display: flex;">
                         <button class="gradient-btn go-back-action-btn" onclick="goBackToSourceStudy()" style="width: 100%; height: 100%; display: flex; flex-direction: column; justify-content: center; align-items: center; gap: 8px;">
-                            <span style="font-size: 26px;">⬅️</span><span style="font-size: 15px; text-align: center; line-height: 1.4; font-family: 'Noto Sans KR', sans-serif;">이전 단계<br>(사료 학습)</span>
+                            <span style="font-size: 26px;">⬅️</span><span style="font-size: 15px; text-align: center; line-height: 1.4;">이전 단계<br>(사료 학습)</span>
                         </button>
                     </div>
                     <div class="role-btn-group" style="flex: 1; margin-bottom: 0;">
@@ -530,7 +511,6 @@
             india: `너는 무굴 제국 캘리컷 상인이다. [필수 사료 및 교과서 개념]: "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 제국의 면직물인 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 가볍고 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 수출품 중 가장 큰 비중을 차지하니 오히려 좋구려. 들어온 은화로 17세기 국제 무역 폼 미쳤다!"`
         };
 
-        // ✨ 진짜 1차 사료(원문)와 교과서 설명을 완벽하게 구분하여 추가
         const sourceData = {
             europe: { 
                 title: "🇬🇧 유럽 (영국/에스파냐)", 
@@ -811,7 +791,6 @@
             const data = sourceData[region];
             
             document.getElementById('source-modal-title').innerText = data.title;
-            // ✨ HTML을 포함한 사료+설명이 제대로 렌더링되도록 innerHTML 사용
             document.getElementById('source-modal-content').innerHTML = data.content;
             document.getElementById('source-modal-q1').innerText = data.q1;
             document.getElementById('source-modal-q2').innerText = data.q2;
@@ -1043,6 +1022,7 @@
 
         window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.drawMap(); }
 
+        // ✨ 역사적 피드백 강화를 위한 프롬프트 수정
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
@@ -1059,7 +1039,15 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
-                            { role: "system", content: `너는 중학교 역사 교사이다. [채점 절대 기준] 1. 학생이 무의미한 장난, 무역과 무관한 글을 적으면 10~30점을 준다. 2. 성취기준('대항해 시대' 비판 및 대안 명칭 제안, 필수 조건인 '${requiredEvidence}')과 서론-본문-결론 구조(대략 8문장 이상)가 담긴 성실한 글에만 80점~100점을 부여해라. 3. 결과는 반드시 '[채점 점수: OOO점]' 형태로 첫 줄에 명시하고, 그 아래에 3~4문장의 총평을 남겨라.` },
+                            { 
+                                role: "system", 
+                                content: `너는 중학교 역사 교사이다. 
+[채점 및 피드백 절대 기준] 
+1. 장난이나 무관한 글은 10~30점. 
+2. 성취기준('대항해 시대' 비판, 대안 명칭, 필수 조건인 '${requiredEvidence}')과 서론-본문-결론 구조를 갖춘 글에 80~100점. 
+3. 결과는 첫 줄에 '[채점 점수: OOO점]'으로 명시. 
+4. [핵심] 총평은 단순한 글쓰기 형식에 대한 칭찬을 넘어, 학생이 제시한 17세기 무역(은의 흐름, 삼각 무역, 공행, 데지마 등)의 역사적 사실이 정확한지 짚어주고, 교사로서 생각할 거리를 던져주는 '역사적으로 유의미한 피드백'을 3~4문장으로 구체적으로 남겨라.` 
+                            },
                             { role: "user", content: `학생 논술 내용: ${essayText}` }
                         ]
                     })
@@ -1071,11 +1059,12 @@
                 const scoreMatch = resultText.match(/([0-9]{1,3})\s*점/);
                 window.lastGradingScore = scoreMatch ? scoreMatch[1] + "점" : "채점완료";
 
-                feedbackDiv.innerHTML = "🎯 <b>[AI 논술 채점 완료]</b><br><br>" + resultText;
+                feedbackDiv.innerHTML = "🎯 <b>[AI 논술 채점 및 역사 피드백 완료]</b><br><br>" + resultText;
                 document.getElementById("submit-writer-btn").disabled = false;
             } catch (err) { feedbackDiv.innerHTML = "⚠️ 채점 중 오류가 발생했습니다. 다시 시도해 주세요."; }
         }
 
+        // ✨ 역사적 피드백 강화를 위한 프롬프트 수정
         window.getAIMemberFeedback = async function() {
             const summaryText = document.getElementById("summary-input").value.trim();
             if(!summaryText) { alert("요약 내용을 먼저 작성해 주세요."); return; }
@@ -1090,7 +1079,11 @@
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
-                            { role: "system", content: `너는 중학교 역사 교사이다. 학생이 자신이 맡은 17세기 무역 국가(영국, 아프리카, 아메리카, 명청, 일본, 인도 중 1)의 상황을 3줄 내외로 요약했다. 점수는 매기지 말고, 요약의 핵심을 잘 파악했는지 따뜻하게 칭찬해 주고, 역사적 사실에 기반하여 1~2문장의 덧살(보완점이나 격려)을 붙여주어라. 대답은 '[AI 요약 피드백]'이라는 제목으로 시작해라.` },
+                            { 
+                                role: "system", 
+                                content: `너는 중학교 역사 교사이다. 학생이 자신이 맡은 17세기 무역 국가의 상황을 요약했다. 대답은 '[AI 요약 피드백]'으로 시작해라. 
+[핵심] 단순한 칭찬에 그치지 말고, 학생이 작성한 내용 중 역사적 사실(예: 은의 유입, 노예 무역, 캘리코 등)을 정확히 짚어주며, 당시 세계 무역망 속에서 그 국가가 가졌던 역사적 의미나 추가로 알아두면 좋을 심화 개념을 2~3문장의 구체적인 역사적 피드백으로 덧붙여 주어라.` 
+                            },
                             { role: "user", content: `조원 요약 내용: ${summaryText}` }
                         ]
                     })
@@ -1100,7 +1093,7 @@
 
                 window.lastGradingFeedback = resultText;
                 window.lastGradingScore = "요약 피드백 완료";
-                feedbackDiv.innerHTML = "🎯 <b>[AI 칭찬 확인 완료]</b><br><br>" + resultText;
+                feedbackDiv.innerHTML = "🎯 <b>[AI 칭찬 및 역사 피드백 완료]</b><br><br>" + resultText;
                 document.getElementById("submit-member-btn").disabled = false;
             } catch (err) { feedbackDiv.innerHTML = "⚠️ 피드백 중 오류가 발생했습니다. 다시 시도해 주세요."; }
         }
