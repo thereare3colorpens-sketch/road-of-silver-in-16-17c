@@ -5,11 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은의 여정: 17세기 국제 무역 탐구</title>
     
-    <!-- ExcelJS 라이브러리 탑재 -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* ✨ 눈누 페이퍼로지 폰트 (제목용) */
+        /* 눈누 페이퍼로지 폰트 (제목용) */
         @font-face {
             font-family: 'Paperlogy-8ExtraBold';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
@@ -17,7 +16,7 @@
             font-style: normal;
         }
 
-        /* ✨ 눈누 프리텐다드 폰트 (본문용) */
+        /* 눈누 프리텐다드 폰트 (본문용) */
         @font-face {
             font-family: 'Pretendard-Regular';
             src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
@@ -37,11 +36,8 @@
             --shadow-hover: 0 15px 35px rgba(124, 58, 237, 0.2);
         }
 
-        /* ✨ 전체 본문 폰트를 프리텐다드로 변경 */
         body { font-family: 'Pretendard-Regular', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         input, select, textarea, button { font-family: 'Pretendard-Regular', sans-serif; }
-        
-        /* 제목과 그라데이션 텍스트에만 페이퍼로지 폰트 유지 */
         h2, h3, h4, .text-gradient { font-family: 'Paperlogy-8ExtraBold', sans-serif !important; }
 
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
@@ -82,7 +78,7 @@
         canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
-        .merchant-selector button { padding: 14px 20px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background-color: white; color: var(--text-gray); font-size: 15.5px; font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
+        .merchant-selector button { padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background-color: white; color: var(--text-gray); font-size: 14.5px; font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
         .merchant-selector button.active { background: var(--primary-gradient); color: white; border: none; box-shadow: 0 4px 10px rgba(124, 58, 237, 0.3); }
         
         #chat-box { flex: 1; background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; overflow-y: auto; margin-bottom: 20px; display: flex; flex-direction: column; gap: 18px; box-shadow: inset 0 2px 4px rgba(0,0,0,0.02); }
@@ -296,6 +292,8 @@
                     <button id="btn-india" onclick="selectMerchant('india')">🇮🇳 무굴 상인</button>
                     <button id="btn-china" onclick="selectMerchant('china')">🇨🇳 명·청 상인</button>
                     <button id="btn-japan" onclick="selectMerchant('japan')">🇯🇵 에도 상인</button>
+                    <!-- ✨ 포토시 광부 챗봇 버튼 추가 -->
+                    <button id="btn-miner" onclick="selectMerchant('miner')" style="border-color: #ef4444; color: #b91c1c;">⛏️ 포토시 광부</button>
                 </div>
                 
                 <div id="chat-box"></div>
@@ -463,9 +461,16 @@
 
     <!-- 🗺️ 전체 무역로 오버레이 모달 창 -->
     <div id="overlay-modal" class="modal-overlay">
-        <div class="card" style="width: 100%; max-width: 600px; text-align: center; padding: 30px;">
-            <h3 style="margin-top:0; font-size: 26px;">🌍 <span class="text-gradient">조회된 학생들의 무역로 종합</span></h3>
-            <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 25px;">현재 필터링된 학생들의 무역로 화살표가 겹쳐서 표시됩니다.</p>
+        <div class="card" style="width: 100%; max-width: 650px; text-align: center; padding: 30px;">
+            <h3 style="margin-top:0; font-size: 26px;">🌍 <span class="text-gradient">무역로 종합 데이터</span></h3>
+            <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 15px;">아래 버튼을 눌러 지도에 표시할 데이터를 선택하세요.</p>
+            
+            <!-- ✨ 오버레이 모달 내 필터 전환 버튼 -->
+            <div style="display:flex; justify-content:center; gap:10px; margin-bottom: 25px;">
+                <button id="btn-overlay-filtered" class="gradient-btn" style="padding:10px 15px; font-size:15px; flex:1;" onclick="drawOverlayMap('filtered')">현재 필터(반/학년) 데이터</button>
+                <button id="btn-overlay-all" class="gradient-btn secondary-btn" style="padding:10px 15px; font-size:15px; flex:1; background: #6b7280; box-shadow:none;" onclick="drawOverlayMap('all')">전체 누적 데이터</button>
+            </div>
+
             <canvas id="overlayCanvas" width="500" height="350" style="margin: 0 auto; display:block; border-radius: 12px; max-width: 100%; height: auto; aspect-ratio: 500/350;"></canvas>
             <button class="gradient-btn" style="margin-top: 25px; background: #4b5563;" onclick="closeOverlayModal()">닫기</button>
         </div>
@@ -480,127 +485,69 @@
         window.studentRole = 'individual'; 
 
         window.currentMerchant = null;
-        window.chatHistoriesHTML = { europe: "", africa: "", america: "", china: "", japan: "", india: "" };
-        window.chatContexts = { europe: [], africa: [], america: [], china: [], japan: [], india: [] };
-        window.isFirstVisit = { europe: true, africa: true, america: true, china: true, japan: true, india: true };
+        // ✨ 광부(miner) 페르소나 추가
+        window.chatHistoriesHTML = { europe: "", africa: "", america: "", china: "", japan: "", india: "", miner: "" };
+        window.chatContexts = { europe: [], africa: [], america: [], china: [], japan: [], india: [], miner: [] };
+        window.isFirstVisit = { europe: true, africa: true, america: true, china: true, japan: true, india: true, miner: true };
         
         window.userArrows = [];
         window.selectedNodeKey = null;
 
         window.currentSourceRegion = null;
         window.sourceAnswers = {
-            europe: {a1: "", a2: ""},
-            africa: {a1: "", a2: ""},
-            america: {a1: "", a2: ""},
-            china: {a1: "", a2: ""},
-            japan: {a1: "", a2: ""},
-            india: {a1: "", a2: ""}
+            europe: {a1: "", a2: ""}, africa: {a1: "", a2: ""}, america: {a1: "", a2: ""},
+            china: {a1: "", a2: ""}, japan: {a1: "", a2: ""}, india: {a1: "", a2: ""}
         };
 
+        // ✨ 관리자 비밀번호 ASCII 치환 (코드상 노출 방지)
+        const getDefPw = () => [99, 114, 101, 97, 116, 101, 110, 101, 119, 105, 100].map(c => String.fromCharCode(c)).join('');
+
         const baseRule = `[절대 규칙: 17세기 상인 페르소나 및 요즘 중학생 맞춤형 대화] 
-1. 너는 17세기 상인이다. 하지만 번역투의 딱딱한 영어를 쓰지 말고, 한국어 사극 톤(~하오, ~구려, ~느냐)에 '완전 럭키비키잖아', '폼 미쳤다', '실화냐', '오히려 좋아', '킹받네', '알빠노' 등 요즘 유행어와 밈(meme)을 아주 찰지고 자연스럽게 섞어서 유쾌하게 말해라.
-2. 학생이 무역과 무관한 장난이나 엉뚱한 소리를 치면, 매번 똑같은 말로 대답하지 말고 상황에 맞게 1~2문장으로 짧게 대꾸한 뒤 본론으로 화제를 돌려라.
-3. 철저히 역사적 사실(주어진 사료)에 기반하여 대답하되, 정답을 바로 주지 말고 힌트만 제공해라. 전체 답변은 3~4문장 내외로 굵고 짧게 전달해라.\n\n[역할 정보 및 필수 역사 개념]:\n`;
+1. 너는 17세기 상인(또는 광부)이다. 번역투를 쓰지 말고, 사극 톤(~하오, ~구려, ~느냐)에 '완전 럭키비키잖아', '폼 미쳤다', '실화냐', '오히려 좋아', '킹받네', '알빠노' 등 요즘 유행어를 찰지게 섞어서 말해라.
+2. 학생이 장난치면 짧게 대꾸한 뒤 본론(무역 이야기)으로 돌려라.
+3. 철저히 역사적 사실에 기반하되, 정답을 주지 말고 힌트만 줘라. 답변은 3~4문장 내외로 짧게 해라.\n\n[역할 정보]:\n`;
         
         const prompts = {
-            europe: `너는 17세기 유럽 국가(영국 동인도 회사 등)의 상인이다. [필수 사료 및 교과서 개념]: "우리가 아프리카에 무기와 일용품을 팔고 노예를 사서 아메리카로 보내는 삼각 무역을 주도하는 거 실화냐? 인도에서 산 가볍고 화사한 면직물 '캘리코', 중국에서 산 비단과 도자기를 아메리카의 은으로 사들이고 있으니 우리 유럽 경제 폼 미쳤구려. 이것이 바로 럭키비키 아니겠소?"`,
-            africa: `너는 17세기 서아프리카 연안의 상인 부족장이다. [필수 사료 및 교과서 개념]: "유럽 놈들이 가져온 총과 일용품에 혹해서 동족들을 노예로 넘겨버린 거 실화냐... 삼각 무역 때문에 우리 아프리카 인구가 줄어들고 성비가 무너지며, 부족 간 갈등만 킹받게 깊어지는 중이오. 강제로 좁은 배에 실려 아메리카 대농장으로 끌려가는 형제들을 생각하면 과연 이 무역이 럭키비키인지 묻고 싶구려."`,
-            america: `너는 17세기 아메리카 대륙 포토시 은광과 대농장의 상인 겸 감독관이다. [필수 사료 및 교과서 개념]: "여기 포토시 은광에서 원주민과 아프리카 노예들이 피땀 흘려 캔 은이 전 세계 은 생산량의 절반이 넘는 거 실화냐? 게다가 대농장에서는 사탕수수와 담배까지 재배해서 유럽으로 보내고 있지. 하지만 유럽의 전염병과 가혹한 노동으로 원주민들이 죽어가고 아프리카 노예들이 끌려와 고통받고 있으니, 이 엄청난 부가 과연 누구를 위한 럭키비키인지 생각해보게 되네."`,
-            china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. [필수 사료 및 교과서 개념]: "유럽 상인들이 우리의 차, 비단, 도자기를 사고 오직 은으로만 값을 치르니, 전 세계 은이 우리 광저우로 빨려 들어오는 거 실화요? 우리 정부도 이제 세금을 은으로 걷고 있지 않소. 서양 상인들은 오직 우리 공행을 통해서만 무역할 수 있으니 대청제국 경제 폼 미쳤구려!"`,
-            japan: `너는 에도 막부 데지마 섬 상인이다. [필수 사료 및 교과서 개념]: "막부의 통제 때문에 이 좁은 인공섬 데지마에 갇혀 네덜란드, 중국 상인들만 상대해야 하니 알빠노 싶지만, 우리에겐 세계 은 생산량의 3분의 1을 차지하는 이와미 은광이 있지 않소! 조선의 제련법을 도입해 뽑아낸 이 은으로 서양의 조총과 학문(난학), 중국의 비단을 사들이니 에도 막부의 교역도 완전 폼 미쳤다 할 수 있지."`,
-            india: `너는 무굴 제국 캘리컷 상인이다. [필수 사료 및 교과서 개념]: "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 제국의 면직물인 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 가볍고 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 수출품 중 가장 큰 비중을 차지하니 오히려 좋구려. 들어온 은화로 17세기 국제 무역 폼 미쳤다!"`
+            europe: `너는 17세기 유럽 국가(영국/스페인)의 상인이다. "우리가 아프리카에 무기와 일용품을 팔고 노예를 사서 아메리카로 보내는 삼각 무역을 주도하는 거 실화냐? 인도산 면직물 '캘리코', 중국산 비단/도자기를 아메리카 은으로 사들이니 우리 유럽 경제 폼 미쳤구려. 럭키비키 아니겠소?"`,
+            africa: `너는 17세기 서아프리카 연안의 부족장이다. "유럽 놈들이 가져온 총에 혹해서 동족들을 노예로 넘긴 거 실화냐... 삼각 무역 때문에 우리 아프리카 인구가 줄고 성비가 무너지며, 갈등만 킹받게 깊어지는 중이오. 강제로 끌려가는 형제들을 생각하면 과연 이 무역이 축복인지 묻고 싶구려."`,
+            america: `너는 17세기 아메리카 대륙 포토시 은광과 대농장의 스페인 상인/감독관이다. "여기 포토시 은광에서 캔 은이 전 세계 은 생산량의 절반인 거 실화냐? 대농장에서는 사탕수수를 재배해 유럽으로 보내지. 근데 유럽 전염병과 가혹한 노동으로 원주민과 노예들이 죽어가니, 이 엄청난 부가 누구를 위한 건지 생각해보게 되네."`,
+            china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. "유럽 상인들이 우리의 차, 비단, 도자기를 사고 은으로만 값을 치르니, 전 세계 은이 광저우로 빨려 들어오는 거 실화요? 우리 정부도 세금을 은으로 걷고 있지. 서양 상인들은 오직 공행을 통해서만 무역할 수 있으니 대청제국 경제 폼 미쳤구려!"`,
+            japan: `너는 에도 막부 데지마 섬 상인이다. "이 좁은 인공섬 데지마에 갇혀 네덜란드, 중국만 상대해야 하니 알빠노 싶지만, 우리에겐 세계 은 생산량 3분의 1을 차지하는 이와미 은광이 있소! 조선 제련법을 도입해 뽑아낸 은으로 서양 조총과 중국 비단을 사들이니 에도 막부 교역도 폼 미쳤다 할 수 있지."`,
+            india: `너는 무굴 제국 캘리컷 상인이다. "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 면직물 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 오히려 좋구려. 들어온 은화로 국제 무역 폼 미쳤다!"`,
+            // ✨ 광부 페르소나 (새로 추가됨)
+            miner: `너는 17세기 아메리카 포토시 은광에서 강제 노역(미타 제도)을 하는 원주민 또는 아프리카 출신 노예다. "이 어둡고 매캐한 갱도에서 햇빛도 못 보고 은을 캐는 거 실화냐? 우리가 피땀 흘려 캔 은이 갈레온 선을 타고 태평양을 건너 명나라로 가고, 대서양을 건너 스페인으로 간다 들었소. 가혹한 노동과 유럽놈들이 옮긴 전염병 때문에 내 형제들이 죽어가는데, 저들은 우리 은으로 비단과 도자기를 산다니... 이게 진정 누굴 위한 럭키비키란 말이오? 완전 킹받네!"`
         };
 
         const sourceData = {
             europe: { 
                 title: "🇬🇧 유럽 (영국/에스파냐)", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 콜베르의 상소문, 1664년]</strong>
-                        "폐하, 모든 무역에서 국내 산업에 도움이 되는 상품을 수입할 때는 세금을 면제해 주고, 외국에서 만들어진 상품을 들여올 때는 세금을 부과해야 합니다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        포르투갈, 에스파냐가 동방과의 교역에 앞장섰고, 뒤이어 네덜란드, 영국, 프랑스 등이 각각 동인도 회사를 세우고 아시아로 진출하였다. 유럽은 동남아시아의 향신료, 인도의 면직물, 중국의 도자기·비단·차 등을 사들이고, 아메리카에서 얻어 낸 은으로 값을 치렀다.
-                    </div>
-                `, 
-                q1: "17세기 유럽의 여러 나라가 인도 및 동남아시아 지역과 무역하기 위해 세운 무역 회사의 이름은 무엇인가요?", 
-                q2: "아메리카 대륙에서 채굴된 막대한 양의 금과 은이 유럽으로 쏟아져 들어오면서, 당시 유럽의 '물가'에는 어떤 현상이 일어났나요?" 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 콜베르의 상소문, 1664년]</strong>"폐하, 모든 무역에서 국내 산업에 도움이 되는 상품을 수입할 때는 세금을 면제해 주고, 외국에서 만들어진 상품을 들여올 때는 세금을 부과해야 합니다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>포르투갈, 에스파냐가 동방과의 교역에 앞장섰고, 뒤이어 네덜란드, 영국, 프랑스 등이 아시아로 진출하였다. 유럽은 동남아시아 향신료, 인도의 면직물, 중국의 도자기·비단·차 등을 사들이고 아메리카에서 얻어 낸 은으로 값을 치렀다.</div>`, 
+                q1: "17세기 유럽의 여러 나라가 인도 및 동남아시아 지역과 무역하기 위해 세운 무역 회사의 이름은 무엇인가요?", q2: "아메리카 대륙에서 채굴된 막대한 양의 금과 은이 유럽으로 쏟아져 들어오면서, 당시 유럽의 '물가'에는 어떤 현상이 일어났나요?" 
             },
             africa: { 
                 title: "🌍 아프리카", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 콩고 국왕 아폰소 1세의 편지, 1526년]</strong>
-                        "유럽 상인들이 매일같이 우리 백성들을 납치해 가고 있습니다. 심지어 귀족들마저 잡혀갑니다. 이 나라는 완전히 인구를 잃어가고 있습니다. 폐하, 우리 왕국에는 더 이상 상품이나 노예 상인이 필요하지 않습니다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        아메리카 원주민의 인구가 감소하여 노동력이 부족해지자 유럽인은 아프리카 원주민을 노예로 동원하였다. 19세기까지 약 1,200만 명의 아프리카인이 좁은 배에 묶인 채 아메리카에 팔려 갔다. 노예 무역으로 아프리카는 인구가 줄고 성비가 불균형해졌으며, 부족 간의 갈등도 깊어졌다.
-                    </div>
-                `, 
-                q1: "유럽, 아프리카, 아메리카 세 대륙을 노예와 은, 무기 및 일용품으로 이어주었던 대서양 무역의 형태를 무엇이라고 부르나요?", 
-                q2: "유럽 상인들이 가져온 무기와 일용품은 아프리카인들의 삶을 어떻게 바꾸어 놓았나요? 교과서 내용을 바탕으로 두 가지 이상의 비극적인 변화를 적어보세요." 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 콩고 국왕 아폰소 1세의 편지, 1526년]</strong>"유럽 상인들이 매일같이 우리 백성들을 납치해 가고 있습니다. 이 나라는 완전히 인구를 잃어가고 있습니다. 우리 왕국에는 더 이상 상품이나 노예 상인이 필요하지 않습니다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>아메리카 원주민의 인구가 감소하여 노동력이 부족해지자 유럽인은 아프리카 원주민을 노예로 동원하였다. 노예 무역으로 아프리카는 인구가 줄고 성비가 불균형해졌으며 부족 간 갈등도 깊어졌다.</div>`, 
+                q1: "유럽, 아프리카, 아메리카 세 대륙을 노예와 은, 무기 및 일용품으로 이어주었던 대서양 무역의 형태를 무엇이라고 부르나요?", q2: "유럽 상인들이 가져온 무기와 일용품은 아프리카인들의 삶을 어떻게 바꾸어 놓았나요? 두 가지 이상의 비극적인 변화를 적어보세요." 
             },
             america: { 
                 title: "🌎 아메리카", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 안토니오 데 에스피노사의 기록, 1620년대]</strong>
-                        "포토시 광산의 깊은 갱도 안은 캄캄하고 매캐하다. 징용된 원주민(미타요스)들은 일주일 내내 햇빛을 보지 못하고 곡괭이질을 한다. 많은 이들이 가혹한 노동과 끔찍한 폐 질환으로 목숨을 잃는다. 이 거대한 산은 원주민들의 피와 눈물로 은을 토해내고 있다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        16세기 중반 오늘날 볼리비아의 포토시 지역에서 거대한 은광이 발견되었다. 당시 포토시에서 채굴된 은은 전 세계 생산량의 절반이 넘었고, 국제 무역의 기준 화폐로 쓰였다. 하지만 아메리카 원주민은 가혹한 노동에 시달렸으며, 유럽에서 들어온 천연두 같은 새로운 질병으로 수많은 이가 목숨을 잃었다.
-                    </div>
-                `, 
-                q1: "16세기 중반 오늘날의 볼리비아 지역에서 발견되어, 16~17세기 국제 무역의 기준 화폐가 될 막대한 양의 은이 채굴된 은광의 이름은 무엇인가요?", 
-                q2: "에스파냐인들이 아메리카에서 막대한 은과 사탕수수 등을 얻어내는 과정에서, 아메리카 원주민들이 겪어야 했던 두 가지 큰 고통은 무엇이었나요?" 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 안토니오 데 에스피노사의 기록, 1620년대]</strong>"포토시 광산의 징용된 원주민(미타요스)들은 일주일 내내 햇빛을 보지 못하고 곡괭이질을 한다. 많은 이들이 가혹한 노동과 끔찍한 폐 질환으로 목숨을 잃는다. 이 거대한 산은 원주민들의 피와 눈물로 은을 토해내고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>당시 포토시에서 채굴된 은은 전 세계 생산량의 절반이 넘었고 국제 무역의 기준 화폐로 쓰였다. 하지만 아메리카 원주민은 가혹한 노동에 시달렸고, 유럽에서 들어온 천연두 같은 새로운 질병으로 수많은 이가 목숨을 잃었다.</div>`, 
+                q1: "16세기 중반 오늘날의 볼리비아 지역에서 발견된, 16~17세기 국제 무역의 기준 화폐가 될 막대한 양의 은이 채굴된 은광은?", q2: "에스파냐인들이 아메리카에서 막대한 은과 사탕수수 등을 얻어내는 과정에서, 원주민들이 겪어야 했던 두 가지 큰 고통은 무엇이었나요?" 
             },
             china: { 
                 title: "🇨🇳 중국 (명·청)", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 이탈리아 선교사 마테오 리치의 기록]</strong>
-                        "중국인들은 다른 어떤 서양 물건보다도 오직 '은'만을 원한다. 유럽 상인들은 아메리카에서 가져온 막대한 은화를 바치고 나서야 질 좋은 비단, 차, 도자기를 배에 실을 수 있었다. 명나라 조정이 모든 세금을 은으로만 내도록 제도를 바꾸었기 때문이다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        명·청대에는 비단, 도자기, 차 등 중국의 문물이 유럽과 이슬람 세계에서 큰 인기를 끌었다. 서양 상인들이 중국의 물품을 오직 은으로 구입하면서 중국에 막대한 양의 은이 들어왔다. 그 결과 중국에서는 세금 제도의 개혁(은납화)이 이루어졌고, 청은 나중에 광저우에 공행이라는 상인 조합을 두어 무역을 철저히 통제했다.
-                    </div>
-                `, 
-                q1: "유럽 상인들이 열광했던 명·청 시대 중국의 대표적인 수출품을 두 가지 이상 적어보세요.", 
-                q2: "당시 서양 상인들이 중국의 물건을 사기 위해서는 반드시 '은(Silver)'을 챙겨가야만 했습니다. 중국으로 막대한 은이 흘러 들어간 후, 중국 정부의 세금 납부 방식은 어떻게 변화했나요?" 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 마테오 리치의 기록]</strong>"중국인들은 다른 어떤 서양 물건보다도 오직 '은'만을 원한다. 유럽 상인들은 막대한 은화를 바치고 나서야 질 좋은 비단, 차, 도자기를 배에 실을 수 있었다. 명나라 조정이 모든 세금을 은으로만 내도록 제도를 바꾸었기 때문이다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>명·청대에는 서양 상인들이 중국 물품을 오직 은으로 구입하면서 막대한 은이 들어왔다. 그 결과 중국에서는 세금 제도의 개혁(은납화)이 이루어졌고, 청은 나중에 광저우에 공행이라는 상인 조합을 두어 무역을 철저히 통제했다.</div>`, 
+                q1: "유럽 상인들이 열광했던 명·청 시대 중국의 대표적인 수출품을 두 가지 이상 적어보세요.", q2: "중국으로 막대한 은이 흘러 들어간 후, 중국 정부의 세금 납부 방식은 어떻게 변화했나요?" 
             },
             japan: { 
                 title: "🇯🇵 일본 (에도 막부)", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 16세기 서양 상인의 기록]</strong>
-                        "이 섬나라 사람들은 이와미 등지에서 막대한 은을 캐낸다. 그들은 이 은으로 우리 유럽 상인들이 가져온 조총과 화약, 그리고 중국산 고급 비단을 엄청난 양으로 사들인다. 지금 일본은 전 세계에서 은이 가장 많이 쏟아져 나오는 곳 중 하나다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        16세기 일본은 조선에서 개발한 은 제련법을 도입하여 은 생산량을 크게 늘렸고, 한때 전 세계 은 생산량의 약 3분의 1을 차지하였다. 일본은 이 은으로 서양으로부터 화포와 조총 등 최신 무기를 사들였다. 에도 막부는 데지마라는 나가사키의 좁은 인공 섬을 통해서만 제한적으로 서양(네덜란드)과 교류하였다.
-                    </div>
-                `, 
-                q1: "16세기 일본이 조선의 은 제련법을 도입하여 개발하였으며, 한때 전 세계 은 생산량의 약 3분의 1을 차지했던 일본 최대의 은광 이름은 무엇인가요?", 
-                q2: "에도 막부는 이 은광에서 캐낸 막대한 은을 지불하여 네덜란드, 포르투갈 등 서양 세력으로부터 어떤 물건들을 주로 사들였나요?" 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 16세기 서양 상인의 기록]</strong>"이 섬나라 사람들은 이와미 등지에서 막대한 은을 캐낸다. 그은으로 우리 유럽 상인들이 가져온 조총과 화약, 중국산 고급 비단을 엄청난 양으로 사들인다. 지금 일본은 전 세계에서 은이 가장 많이 쏟아져 나오는 곳 중 하나다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>16세기 일본은 조선에서 개발한 은 제련법을 도입해 은 생산량을 늘렸고 전 세계 은 생산량의 약 3분의 1을 차지하였다. 막부는 데지마라는 나가사키의 좁은 인공 섬을 통해서만 제한적으로 서양과 교류하였다.</div>`, 
+                q1: "16세기 일본이 조선의 은 제련법을 도입하여 개발했던 일본 최대의 은광 이름은 무엇인가요?", q2: "에도 막부는 이 은광에서 캐낸 막대한 은을 지불하여 네덜란드 등 서양 세력으로부터 어떤 물건들을 주로 사들였나요?" 
             },
             india: { 
                 title: "🇮🇳 인도 (무굴 제국)", 
-                content: `
-                    <div class="source-quote-box">
-                        <strong>[실제 역사 사료: 17세기 후반 영국 의회의 불만 기록]</strong>
-                        "인도에서 온 '캘리코'라 불리는 이 가볍고 화려한 면직물 때문에, 우리 영국의 전통적인 모직물 산업이 망하게 생겼다! 심지어 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있으니 참으로 통탄할 일이다."
-                    </div>
-                    <div class="source-desc-box">
-                        <strong>📖 교과서 역사 배경</strong><br>
-                        인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 유럽인들이 입던 두꺼운 모직물에 비해 가볍고 화사하여 큰 인기를 끌었고, 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코를 수입하는 대금을 아메리카 은으로 지불하면서, 인도에도 막대한 양의 은이 들어왔다.
-                    </div>
-                `, 
-                q1: "17세기 무굴 제국의 수출품 중 가장 큰 비중을 차지했으며, 가볍고 화사하여 유럽인들에게 큰 인기를 끌었던 인도의 면직물을 무엇이라고 불렀나요?", 
-                q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도(무굴 제국)까지 흘러들어오게 되었을까요? 영국의 수입품과 대금 결제 방식을 연결하여 설명해 보세요." 
+                content: `<div class="source-quote-box"><strong>[실제 역사 사료: 17세기 후반 영국 의회의 기록]</strong>"인도에서 온 '캘리코'라 불리는 가볍고 화려한 면직물 때문에, 우리 영국의 전통 모직물 산업이 망하게 생겼다! 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 화사하여 큰 인기를 끌었고 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코 대금을 아메리카 은으로 지불하면서 인도에도 은이 들어왔다.</div>`, 
+                q1: "17세기 무굴 제국 수출품 중 가장 큰 비중을 차지했으며 유럽인들에게 큰 인기를 끌었던 면직물은?", q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도까지 흘러들어오게 되었을까요?" 
             }
         };
 
@@ -610,8 +557,7 @@
                 document.getElementById(screenId).style.display = "flex";
                 if (callback) callback();
             };
-            if (document.startViewTransition) document.startViewTransition(doChange);
-            else doChange();
+            if (document.startViewTransition) document.startViewTransition(doChange); else doChange();
         };
 
         window.setStudyMode = function(mode) {
@@ -622,8 +568,7 @@
                 document.getElementById(`btn-mode-${mode}`).classList.add('active');
                 document.getElementById('group-select-container').style.display = mode === 'group' ? 'block' : 'none';
             };
-            if (document.startViewTransition) document.startViewTransition(doChange);
-            else doChange();
+            if (document.startViewTransition) document.startViewTransition(doChange); else doChange();
         }
 
         window.checkLogin = function() {
@@ -635,23 +580,25 @@
             localStorage.setItem("studentId", studentId);
             
             transitionToScreen("quiz-screen", () => {
-                document.getElementById('map-instruction').innerHTML = window.studyMode === 'group' ? "<b>[조별 미션]</b> 각자 1명의 상인만 골라서 집중 인터뷰한 뒤, 무역로를 그려보세요!" : "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 무역로를 그려보세요!";
+                document.getElementById('map-instruction').innerHTML = window.studyMode === 'group' ? "<b>[조별 미션]</b> 각자 자신이 맡은 상인(또는 광부)과 집중 인터뷰한 뒤, 무역로를 그려보세요!" : "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 역사적으로 올바른 무역로를 그려보세요!";
             });
         }
 
         window.openPasswordModal = function() { document.getElementById("password-modal").style.display = "flex"; document.getElementById("admin-pw-input").value = ""; document.getElementById("admin-pw-input").focus(); }
         window.closePasswordModal = function() { document.getElementById("password-modal").style.display = "none"; }
+        
         window.changePassword = function() {
-            const currentSaved = localStorage.getItem("teacherPassword") || "createnewid";
+            const currentSaved = localStorage.getItem("teacherPassword") || getDefPw();
             const oldInput = prompt("현재 관리자 비밀번호를 입력하세요:");
             if (oldInput !== currentSaved) { if(oldInput !== null) alert("현재 비밀번호가 일치하지 않습니다."); return; }
             const newInput = prompt("새로 사용할 비밀번호를 입력하세요:");
             if (newInput && newInput.trim() !== "") { localStorage.setItem("teacherPassword", newInput.trim()); alert("🔒 관리자 비밀번호가 성공적으로 변경되었습니다!"); }
         }
+        
         window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
 
         window.verifyPassword = function() {
-            const savedPassword = localStorage.getItem("teacherPassword") || "createnewid";
+            const savedPassword = localStorage.getItem("teacherPassword") || getDefPw();
             const inputPw = document.getElementById("admin-pw-input").value;
             if (inputPw === savedPassword) { closePasswordModal(); if(window.loadTeacherDashboard) window.loadTeacherDashboard(); } 
             else { alert("❌ 비밀번호가 일치하지 않습니다."); document.getElementById("admin-pw-input").value = ""; document.getElementById("admin-pw-input").focus(); }
@@ -676,9 +623,7 @@
 
         window.logout = function() {
             if(confirm("학번을 다시 입력하시겠습니까?")) {
-                localStorage.removeItem("studentId");
-                document.getElementById("student-id").value = "";
-                transitionToScreen("login-screen");
+                localStorage.removeItem("studentId"); document.getElementById("student-id").value = ""; transitionToScreen("login-screen");
             }
         }
 
@@ -692,12 +637,9 @@
             chatBox.innerHTML = window.chatHistoriesHTML[merchantType];
             
             const placeholderTexts = {
-                europe: "유럽 상인과 이야기해 보세요!",
-                africa: "아프리카 상인과 이야기해 보세요!",
-                america: "아메리카 상인과 이야기해 보세요!",
-                china: "명·청 상인과 이야기해 보세요!",
-                japan: "에도 상인과 이야기해 보세요!",
-                india: "무굴 상인과 이야기해 보세요!"
+                europe: "유럽 상인과 이야기해 보세요!", africa: "아프리카 상인과 이야기해 보세요!", america: "아메리카 상인과 이야기해 보세요!",
+                china: "명·청 상인과 이야기해 보세요!", japan: "에도 상인과 이야기해 보세요!", india: "무굴 상인과 이야기해 보세요!",
+                miner: "광산의 노동자와 이야기해 보세요!"
             };
             document.getElementById('user-input').placeholder = placeholderTexts[merchantType];
             
@@ -708,7 +650,8 @@
                     america: "포토시 은광에 온 걸 환영하오. 전 세계로 흘러가는 은화의 절반이 여기서 나오지. 무역 얘기 좀 해볼까?",
                     china: "어서 오시게. 나는 광저우 공행의 거상일세. 요즘 일조편법 때문에 은이 급하게 필요하오.",
                     japan: "여기는 데지마 섬이오. 서양 물건이라도 구하러 왔소?",
-                    india: "캘리컷에 오신 걸 환영합니다. 유럽 상인들이 미쳐있는 캘리코 면직물을 찾으시나요?"
+                    india: "캘리컷에 오신 걸 환영합니다. 유럽 상인들이 미쳐있는 캘리코 면직물을 찾으시나요?",
+                    miner: "콜록콜록... 여긴 너무 어둡고 숨쉬기가 힘드오. 당신도 미타(Mita) 제도로 은을 캐러 끌려온 거요?"
                 };
                 setTimeout(() => addMessage(greetings[merchantType], 'ai-msg', false), 300);
                 window.chatContexts[merchantType].push({ role: "assistant", content: greetings[merchantType] });
@@ -729,17 +672,14 @@
             if (isTyping) {
                 avatar.innerHTML = '⏳';
             } else {
-                avatar.innerHTML = isUser ? '🕵️' : ( { europe: '🎩', africa: '🪘', america: '🤠', china: '👲', japan: '👘', india: '👳' }[window.currentMerchant] || '👤' );
+                avatar.innerHTML = isUser ? '🕵️' : ( { europe: '🎩', africa: '🪘', america: '🤠', china: '👲', japan: '👘', india: '👳', miner: '⛏️' }[window.currentMerchant] || '👤' );
             }
 
             const msgDiv = document.createElement('div');
             msgDiv.className = `message ${className}`;
             msgDiv.innerHTML = text.replace(/\n/g, '<br>');
 
-            wrapper.appendChild(avatar);
-            wrapper.appendChild(msgDiv);
-            chatBox.appendChild(wrapper);
-            chatBox.scrollTop = chatBox.scrollHeight;
+            wrapper.appendChild(avatar); wrapper.appendChild(msgDiv); chatBox.appendChild(wrapper); chatBox.scrollTop = chatBox.scrollHeight;
         }
 
         window.sendMessage = async function() {
@@ -749,25 +689,18 @@
 
             addMessage(userText, 'user-msg', true);
             window.chatContexts[window.currentMerchant].push({ role: "user", content: userText });
-            inputField.value = '';
-            inputField.disabled = true;
+            inputField.value = ''; inputField.disabled = true;
 
-            addMessage("상인이 서신을 작성 중입니다...", 'ai-msg typing-indicator', false, true);
+            addMessage("대답을 생각 중입니다...", 'ai-msg typing-indicator', false, true);
 
             const fullSystemPrompt = baseRule + prompts[window.currentMerchant];
             const messagesPayload = [{ role: "system", content: fullSystemPrompt }, ...window.chatContexts[window.currentMerchant]];
 
             try {
-                const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ messages: messagesPayload })
-                });
-                
+                const response = await fetch('/api/chat', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ messages: messagesPayload }) });
                 document.getElementById('typing-indicator')?.remove(); 
                 const data = await response.json();
-                inputField.disabled = false;
-                inputField.focus();
+                inputField.disabled = false; inputField.focus();
 
                 if (data.choices && data.choices.length > 0) {
                     let aiReply = data.choices[0].message.content;
@@ -776,13 +709,45 @@
                 }
             } catch (error) {
                 document.getElementById('typing-indicator')?.remove();
-                addMessage("⚠️ 통신이 원활하지 않습니다.", 'system-msg', false);
-                inputField.disabled = false;
+                addMessage("⚠️ 통신이 원활하지 않습니다.", 'system-msg', false); inputField.disabled = false;
             }
         }
 
+        // ✨ 1번 기능: 역사적 무역로 검증 로직 추가
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length === 0) { alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!"); return; }
+
+            // 17세기 핵심 무역로 및 은의 흐름 정의
+            const validRoutes = [
+                "america->europe", // 아메리카 -> 유럽 (은, 설탕)
+                "america->china",  // 아메리카 -> 중국 (마닐라 갈레온 - 은)
+                "europe->africa",  // 유럽 -> 아프리카 (무기, 일용품)
+                "africa->america", // 아프리카 -> 아메리카 (노예 / 삼각무역)
+                "europe->india",   // 유럽 -> 인도 (은 지불)
+                "india->europe",   // 인도 -> 유럽 (캘리코 면직물)
+                "europe->china",   // 유럽 -> 중국 (은 지불)
+                "china->europe",   // 중국 -> 유럽 (차, 비단, 도자기)
+                "japan->china"     // 일본 -> 중국 (은 유출)
+            ];
+
+            let isAllValid = true;
+            let invalidRouteMsg = "";
+
+            for(let arrow of window.userArrows) {
+                const routeStr = `${arrow.from}->${arrow.to}`;
+                if(!validRoutes.includes(routeStr)) {
+                    isAllValid = false;
+                    invalidRouteMsg = `[${nodes[arrow.from].label} ➔ ${nodes[arrow.to].label}] 경로는 17세기 핵심 무역 흐름(은의 이동 및 삼각무역)과 다릅니다. 상인들과의 대화를 다시 읽고 올바른 경로로 수정해보세요!`;
+                    break;
+                }
+            }
+
+            if(!isAllValid) {
+                alert("⚠️ 피드백: " + invalidRouteMsg);
+                return; // ❌ 오답일 경우 다음 단계로 안 넘어감
+            }
+
+            // ✅ 모두 정답일 경우에만 통과
             transitionToScreen("source-study-screen");
         }
 
@@ -801,9 +766,7 @@
             document.getElementById('source-modal').style.display = 'flex';
         }
 
-        window.closeSourceModal = function() {
-            document.getElementById('source-modal').style.display = 'none';
-        }
+        window.closeSourceModal = function() { document.getElementById('source-modal').style.display = 'none'; }
 
         window.saveSourceAnswer = function() {
             const region = window.currentSourceRegion;
@@ -813,23 +776,18 @@
                 
                 const btn = document.getElementById(`btn-source-${region}`);
                 if(btn && (window.sourceAnswers[region].a1 || window.sourceAnswers[region].a2)) {
-                    btn.style.background = 'var(--primary-gradient)';
-                    btn.style.color = 'white';
-                    if(!btn.innerText.includes('✅')) {
-                        btn.innerText = btn.innerText + " ✅";
-                    }
+                    btn.style.background = 'var(--primary-gradient)'; btn.style.color = 'white';
+                    if(!btn.innerText.includes('✅')) btn.innerText = btn.innerText + " ✅";
                 }
             }
             document.getElementById('source-modal').style.display = 'none';
         }
 
         window.goToDiscussionOrEssay = function() {
-            if(window.studyMode === 'group') {
-                transitionToScreen("discussion-screen");
-            } else {
+            if(window.studyMode === 'group') { transitionToScreen("discussion-screen"); } 
+            else {
                 transitionToScreen("essay-screen", () => {
-                    window.studentRole = 'writer'; 
-                    setupEssayGuideline();
+                    window.studentRole = 'writer'; setupEssayGuideline();
                     document.getElementById('role-selection-section').style.display = 'none';
                     document.getElementById('essay-writer-area').style.display = 'block';
                     document.getElementById('essay-member-area').style.display = 'none';
@@ -839,18 +797,13 @@
             }
         }
 
-        window.goBackToSourceStudy = function() {
-            transitionToScreen("source-study-screen");
-        }
-
+        window.goBackToSourceStudy = function() { transitionToScreen("source-study-screen"); }
         window.goBackToChat = function() {
             transitionToScreen("chatbot-screen", () => {
                 if(window.drawMap) window.drawMap();
-                const chatBox = document.getElementById('chat-box');
-                chatBox.scrollTop = chatBox.scrollHeight;
+                const chatBox = document.getElementById('chat-box'); chatBox.scrollTop = chatBox.scrollHeight;
             });
         }
-
         window.goToRoleSelection = function() {
             transitionToScreen("essay-screen", () => {
                 document.getElementById('role-selection-section').style.display = 'block';
@@ -861,23 +814,14 @@
 
         window.selectRole = function(role) {
             const doChange = () => {
-                window.studentRole = role;
-                document.getElementById('role-selection-section').style.display = 'none';
+                window.studentRole = role; document.getElementById('role-selection-section').style.display = 'none';
                 
                 if(role === 'writer') {
-                    setupEssayGuideline();
-                    document.getElementById('essay-writer-area').style.display = 'block';
-                    document.getElementById('essay-member-area').style.display = 'none';
-                    if(window.studyMode === 'group') {
-                        document.getElementById('back-to-role-btn').style.display = 'block'; 
-                        document.getElementById('writer-chat-btn').style.gridColumn = 'auto'; 
-                    } else {
-                        document.getElementById('back-to-role-btn').style.display = 'none';
-                        document.getElementById('writer-chat-btn').style.gridColumn = window.innerWidth <= 768 ? 'auto' : 'span 2';
-                    }
+                    setupEssayGuideline(); document.getElementById('essay-writer-area').style.display = 'block'; document.getElementById('essay-member-area').style.display = 'none';
+                    if(window.studyMode === 'group') { document.getElementById('back-to-role-btn').style.display = 'block'; document.getElementById('writer-chat-btn').style.gridColumn = 'auto'; } 
+                    else { document.getElementById('back-to-role-btn').style.display = 'none'; document.getElementById('writer-chat-btn').style.gridColumn = window.innerWidth <= 768 ? 'auto' : 'span 2'; }
                 } else {
-                    document.getElementById('essay-writer-area').style.display = 'none';
-                    document.getElementById('essay-member-area').style.display = 'block';
+                    document.getElementById('essay-writer-area').style.display = 'none'; document.getElementById('essay-member-area').style.display = 'block';
                 }
             };
             if (document.startViewTransition) document.startViewTransition(doChange); else doChange();
@@ -886,9 +830,9 @@
         window.setupEssayGuideline = function() {
             const guidelineBox = document.getElementById('writer-guideline-box');
             if (window.studyMode === 'group' && window.studentRole === 'writer') {
-                guidelineBox.innerHTML = `<b>[조별 서기 작성 가이드라인 (서론-본문-결론 구조)]</b><br>• <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 3가지 이상</b> 서술.<br>• <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.`;
+                guidelineBox.innerHTML = `<b>[조별 서기 작성 가이드라인 (서론-본론-결론 구조)]</b><br>• <b>주제:</b> 유럽 중심적 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 3가지 이상</b> 서술.<br>• <b>분량:</b> 총 <b>8~10문장 이상</b>으로 성실히 작성해 주세요.`;
             } else {
-                guidelineBox.innerHTML = `<b>[개인 탐구 작성 가이드라인 (서론-본문-결론 구조)]</b><br>• <b>주제:</b> 유럽 중심적 시각을 담은 기존 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 2가지 이상</b> 서술.<br>• <b>분량 및 구조:</b> 총 <b>8~10문장 이상</b>으로 <b>[서론 ➔ 본론 ➔ 결론]</b> 구조를 갖추어 성실히 작성해 주세요.`;
+                guidelineBox.innerHTML = `<b>[개인 탐구 작성 가이드라인 (서론-본론-결론 구조)]</b><br>• <b>주제:</b> 유럽 중심적 명칭을 비판하고, 다각적 맥락을 고려한 새로운 명칭 제안 및 <b>근거 2가지 이상</b> 서술.<br>• <b>분량:</b> 총 <b>8~10문장 이상</b>으로 성실히 작성해 주세요.`;
             }
         }
     </script>
@@ -916,98 +860,55 @@
             china:   { x: 380, y: 180, label: "중국", color: "#ef4444" },
             japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
         };
+        window.nodes = nodes; // 전역 접근용
 
         window.drawMap = function() {
-            const canvas = document.getElementById('mapCanvas');
-            if (!canvas) return;
+            const canvas = document.getElementById('mapCanvas'); if (!canvas) return;
             const ctx = canvas.getContext('2d');
-            
             const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width;
-            canvas.height = rect.width * (350 / 500);
-            const scaleX = canvas.width / 500;
-            const scaleY = canvas.height / 350;
+            canvas.width = rect.width; canvas.height = rect.width * (350 / 500);
+            const scaleX = canvas.width / 500; const scaleY = canvas.height / 350;
 
-            ctx.clearRect(0, 0, canvas.width, canvas.height);
-            ctx.fillStyle = "#ffffff";
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
             if(window.userArrows) {
                 window.userArrows.forEach(arrow => {
-                    if (nodes[arrow.from] && nodes[arrow.to]) {
-                        drawArrow(ctx, nodes[arrow.from].x * scaleX, nodes[arrow.from].y * scaleY, nodes[arrow.to].x * scaleX, nodes[arrow.to].y * scaleY, "#4f46e5");
-                    }
+                    if (nodes[arrow.from] && nodes[arrow.to]) { drawArrow(ctx, nodes[arrow.from].x * scaleX, nodes[arrow.from].y * scaleY, nodes[arrow.to].x * scaleX, nodes[arrow.to].y * scaleY, "#4f46e5"); }
                 });
             }
 
             for (const key in nodes) {
-                const node = nodes[key];
-                const nx = node.x * scaleX;
-                const ny = node.y * scaleY;
-                const r = 36 * Math.min(scaleX, scaleY);
-                
-                ctx.beginPath();
-                ctx.arc(nx, ny, r, 0, Math.PI * 2);
-                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
-                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 * Math.min(scaleX, scaleY) : 0;
-                ctx.strokeStyle = "#b45309";
-                ctx.fill();
+                const node = nodes[key]; const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
+                ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 * Math.min(scaleX, scaleY) : 0; ctx.strokeStyle = "#b45309"; ctx.fill();
                 if(window.selectedNodeKey === key) ctx.stroke();
                 
-                ctx.fillStyle = "#ffffff";
-                ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`;
-                ctx.textAlign = "center";
-                ctx.textBaseline = "middle";
-                ctx.fillText(node.label, nx, ny);
+                ctx.fillStyle = "#ffffff"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
             }
         }
 
-        function drawArrow(ctx, fromX, fromY, toX, toY, color) {
-            const headlen = 12;
-            const angle = Math.atan2(toY - fromY, toX - fromX);
-            const startX = fromX + 36 * Math.cos(angle); 
-            const startY = fromY + 36 * Math.sin(angle);
-            const endX = toX - 42 * Math.cos(angle);
-            const endY = toY - 42 * Math.sin(angle);
+        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
+            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
+            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
 
-            ctx.beginPath();
-            ctx.lineWidth = 3;
-            ctx.strokeStyle = color;
-            ctx.moveTo(startX, startY);
-            ctx.lineTo(endX, endY);
-            ctx.stroke();
-
-            ctx.beginPath();
-            ctx.moveTo(endX, endY);
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(endX, endY);
             ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
             ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.lineTo(endX, endY);
-            ctx.fillStyle = color;
-            ctx.fill();
+            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
         }
         
-        window.addEventListener('resize', () => {
-            if (document.getElementById('chatbot-screen').style.display !== 'none') {
-                window.drawMap();
-            }
-        });
+        window.addEventListener('resize', () => { if (document.getElementById('chatbot-screen').style.display !== 'none') window.drawMap(); });
 
         document.getElementById('mapCanvas').addEventListener('click', function(event) {
-            const rect = this.getBoundingClientRect();
-            const clickX = event.clientX - rect.left;
-            const clickY = event.clientY - rect.top;
-            const scaleX = rect.width / 500;
-            const scaleY = rect.height / 350;
+            const rect = this.getBoundingClientRect(); const clickX = event.clientX - rect.left; const clickY = event.clientY - rect.top;
+            const scaleX = rect.width / 500; const scaleY = rect.height / 350;
 
             let clickedKey = null;
             for (const key in nodes) {
-                const nx = nodes[key].x * scaleX;
-                const ny = nodes[key].y * scaleY;
-                const r = 36 * Math.min(scaleX, scaleY);
-                if (Math.sqrt((clickX - nx) ** 2 + (clickY - ny) ** 2) <= r) {
-                    clickedKey = key;
-                    break;
-                }
+                const nx = nodes[key].x * scaleX; const ny = nodes[key].y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
+                if (Math.sqrt((clickX - nx) ** 2 + (clickY - ny) ** 2) <= r) { clickedKey = key; break; }
             }
 
             if (clickedKey) {
@@ -1022,38 +923,29 @@
 
         window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.drawMap(); }
 
-        // ✨ 역사적 피드백 강화를 위한 프롬프트 수정
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
 
             const feedbackDiv = document.getElementById("ai-writer-feedback-result");
-            feedbackDiv.style.display = "block";
-            feedbackDiv.innerHTML = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
+            feedbackDiv.style.display = "block"; feedbackDiv.innerHTML = "🤖 AI 역사 교사가 성취기준에 따라 엄밀하게 심사 중입니다...";
 
             const requiredEvidence = (window.studyMode === 'group') ? "근거 3가지 이상" : "근거 2가지 이상";
 
             try {
                 const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
                             { 
                                 role: "system", 
-                                content: `너는 중학교 역사 교사이다. 
-[채점 및 피드백 절대 기준] 
-1. 장난이나 무관한 글은 10~30점. 
-2. 성취기준('대항해 시대' 비판, 대안 명칭, 필수 조건인 '${requiredEvidence}')과 서론-본문-결론 구조를 갖춘 글에 80~100점. 
-3. 결과는 첫 줄에 '[채점 점수: OOO점]'으로 명시. 
-4. [핵심] 총평은 단순한 글쓰기 형식에 대한 칭찬을 넘어, 학생이 제시한 17세기 무역(은의 흐름, 삼각 무역, 공행, 데지마 등)의 역사적 사실이 정확한지 짚어주고, 교사로서 생각할 거리를 던져주는 '역사적으로 유의미한 피드백'을 3~4문장으로 구체적으로 남겨라.` 
+                                content: `너는 중학교 역사 교사이다. [채점 및 피드백 절대 기준] 1. 장난이나 무관한 글은 10~30점. 2. 성취기준('대항해 시대' 비판, 대안 명칭, 필수 조건인 '${requiredEvidence}')과 서론-본론-결론 구조를 갖춘 글에 80~100점. 3. 결과는 첫 줄에 '[채점 점수: OOO점]'으로 명시. 4. [핵심] 학생이 제시한 17세기 무역(은의 흐름, 삼각 무역 등)의 역사적 사실이 정확한지 짚어주고, 교사로서 생각할 거리를 던져주는 '역사적으로 유의미한 피드백'을 3~4문장으로 구체적으로 남겨라.` 
                             },
                             { role: "user", content: `학생 논술 내용: ${essayText}` }
                         ]
                     })
                 });
-                const aiData = await response.json();
-                const resultText = aiData.choices[0].message.content;
+                const aiData = await response.json(); const resultText = aiData.choices[0].message.content;
 
                 window.lastGradingFeedback = resultText;
                 const scoreMatch = resultText.match(/([0-9]{1,3})\s*점/);
@@ -1064,35 +956,26 @@
             } catch (err) { feedbackDiv.innerHTML = "⚠️ 채점 중 오류가 발생했습니다. 다시 시도해 주세요."; }
         }
 
-        // ✨ 역사적 피드백 강화를 위한 프롬프트 수정
         window.getAIMemberFeedback = async function() {
             const summaryText = document.getElementById("summary-input").value.trim();
             if(!summaryText) { alert("요약 내용을 먼저 작성해 주세요."); return; }
 
             const feedbackDiv = document.getElementById("ai-member-feedback-result");
-            feedbackDiv.style.display = "block";
-            feedbackDiv.innerHTML = "🤖 AI 역사 교사가 요약 내용을 확인 중입니다...";
+            feedbackDiv.style.display = "block"; feedbackDiv.innerHTML = "🤖 AI 역사 교사가 요약 내용을 확인 중입니다...";
 
             try {
                 const response = await fetch('/api/chat', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    method: 'POST', headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({
                         messages: [
-                            { 
-                                role: "system", 
-                                content: `너는 중학교 역사 교사이다. 학생이 자신이 맡은 17세기 무역 국가의 상황을 요약했다. 대답은 '[AI 요약 피드백]'으로 시작해라. 
-[핵심] 단순한 칭찬에 그치지 말고, 학생이 작성한 내용 중 역사적 사실(예: 은의 유입, 노예 무역, 캘리코 등)을 정확히 짚어주며, 당시 세계 무역망 속에서 그 국가가 가졌던 역사적 의미나 추가로 알아두면 좋을 심화 개념을 2~3문장의 구체적인 역사적 피드백으로 덧붙여 주어라.` 
-                            },
+                            { role: "system", content: `너는 중학교 역사 교사이다. 학생이 자신이 맡은 17세기 무역 국가의 상황을 요약했다. 대답은 '[AI 요약 피드백]'으로 시작해라. [핵심] 단순한 칭찬에 그치지 말고, 학생이 작성한 내용 중 역사적 사실을 정확히 짚어주며, 당시 세계 무역망 속에서 그 국가가 가졌던 역사적 의미나 추가 심화 개념을 2~3문장의 구체적인 역사적 피드백으로 덧붙여 주어라.` },
                             { role: "user", content: `조원 요약 내용: ${summaryText}` }
                         ]
                     })
                 });
-                const aiData = await response.json();
-                const resultText = aiData.choices[0].message.content;
+                const aiData = await response.json(); const resultText = aiData.choices[0].message.content;
 
-                window.lastGradingFeedback = resultText;
-                window.lastGradingScore = "요약 피드백 완료";
+                window.lastGradingFeedback = resultText; window.lastGradingScore = "요약 피드백 완료";
                 feedbackDiv.innerHTML = "🎯 <b>[AI 칭찬 및 역사 피드백 완료]</b><br><br>" + resultText;
                 document.getElementById("submit-member-btn").disabled = false;
             } catch (err) { feedbackDiv.innerHTML = "⚠️ 피드백 중 오류가 발생했습니다. 다시 시도해 주세요."; }
@@ -1109,13 +992,8 @@
             try {
                 await addDoc(collection(db, "trade_submissions"), {
                     studentId: studentId, academicYear: currentYear, studyMode: window.studyMode, studentClass: window.studentClass, studentGroup: window.studentGroup, studentRole: window.studentRole, 
-                    arrows: window.userArrows || [], 
-                    chatContexts: window.chatContexts || {}, 
-                    sourceAnswers: window.sourceAnswers || {},
-                    essay: finalEssay, 
-                    aiScore: window.lastGradingScore, 
-                    aiFeedback: window.lastGradingFeedback || "-", 
-                    timestamp: serverTimestamp()
+                    arrows: window.userArrows || [], chatContexts: window.chatContexts || {}, sourceAnswers: window.sourceAnswers || {},
+                    essay: finalEssay, aiScore: window.lastGradingScore, aiFeedback: window.lastGradingFeedback || "-", timestamp: serverTimestamp()
                 });
                 alert("🎉 제출이 완벽하게 완료되었습니다! 수고하셨습니다."); location.reload(); 
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
@@ -1135,8 +1013,7 @@
 
                     if (!querySnapshot.empty) { 
                         querySnapshot.forEach((docSnap) => {
-                            const data = docSnap.data();
-                            data.docId = docSnap.id;
+                            const data = docSnap.data(); data.docId = docSnap.id;
                             if(data.academicYear) uniqueYears.add(data.academicYear);
                             window.globalSubmissionsData.push(data);
                         });
@@ -1159,12 +1036,9 @@
         }
 
         window.renderDashboardList = function() {
-            const modeFilter = document.getElementById("modeFilterDash").value;
-            const yearFilter = document.getElementById("yearFilter").value;
-            const classFilter = document.getElementById("classFilterDash").value;
-            const groupFilter = document.getElementById("groupFilterDash").value;
-            const sortOrder = document.getElementById("sortOrder").value;
-            const listContainer = document.getElementById("submissions-list");
+            const modeFilter = document.getElementById("modeFilterDash").value; const yearFilter = document.getElementById("yearFilter").value;
+            const classFilter = document.getElementById("classFilterDash").value; const groupFilter = document.getElementById("groupFilterDash").value;
+            const sortOrder = document.getElementById("sortOrder").value; const listContainer = document.getElementById("submissions-list");
 
             let filtered = window.globalSubmissionsData.slice(); 
             if (modeFilter !== "all") filtered = filtered.filter(item => item.studyMode === modeFilter);
@@ -1189,8 +1063,8 @@
                 if (data.chatContexts) {
                     for (const merchant in data.chatContexts) {
                         if (data.chatContexts[merchant].length > 0) {
-                            chatSummary += `=== [${merchant.toUpperCase()} 상인] ===\n`;
-                            data.chatContexts[merchant].forEach(msg => { if (msg.role !== "system") { chatSummary += `${msg.role === "user" ? "학생" : "상인"}: ${msg.content}\n`; } });
+                            chatSummary += `=== [${merchant.toUpperCase()}] ===\n`;
+                            data.chatContexts[merchant].forEach(msg => { if (msg.role !== "system") { chatSummary += `${msg.role === "user" ? "학생" : "상인/광부"}: ${msg.content}\n`; } });
                             chatSummary += `\n`;
                         }
                     }
@@ -1201,9 +1075,7 @@
                 if(data.sourceAnswers) {
                     for(const region in data.sourceAnswers) {
                         const ans = data.sourceAnswers[region];
-                        if(ans.a1 || ans.a2) {
-                            sourceSummary += `[${sourceData[region].title}]\nQ1 답: ${ans.a1 || "미작성"}\nQ2 답: ${ans.a2 || "미작성"}\n\n`;
-                        }
+                        if(ans.a1 || ans.a2) sourceSummary += `[${sourceData[region].title}]\nQ1 답: ${ans.a1 || "미작성"}\nQ2 답: ${ans.a2 || "미작성"}\n\n`;
                     }
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
@@ -1212,21 +1084,14 @@
                     <div class="submission-card">
                         <div class="submission-header">
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                ${groupBadge} ${roleBadge}
-                                <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> 
-                                ${scoreDisplay}
+                                ${groupBadge} ${roleBadge} <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> ${scoreDisplay}
                             </div>
                             <div style="display:flex; align-items:center; gap: 10px;">
                                 <span style="font-size: 13px; color: #6b7280;">${data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : '방금'}</span>
                                 <button class="delete-btn" onclick="deleteSubmission('${data.docId}')">삭제</button>
                             </div>
                         </div>
-                        
-                        <details style="margin-bottom: 12px;">
-                            <summary style="cursor: pointer; color: #b45309; font-weight: bold; font-size: 15px; outline: none;">📖 사료 분석 답변 열어보기</summary>
-                            <div class="chat-log-box" style="background: #fffbeb; border-color: #fde68a;">${sourceSummary}</div>
-                        </details>
-
+                        <details style="margin-bottom: 12px;"><summary style="cursor: pointer; color: #b45309; font-weight: bold; font-size: 15px; outline: none;">📖 사료 분석 답변 열어보기</summary><div class="chat-log-box" style="background: #fffbeb; border-color: #fde68a;">${sourceSummary}</div></details>
                         <div style="background: #f9fafb; padding: 18px; border-radius: 8px; margin-bottom: 12px;">
                             <p style="margin: 0 0 10px 0; font-size: 15px; font-weight: bold; color: #4f46e5;">[제출 내용: ${data.studentRole === 'member' ? '지역 요약본' : '논술문'}]</p>
                             <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #374151;">${data.essay || '없음'}</p>
@@ -1241,6 +1106,22 @@
 
         window.openOverlayModal = function() {
             document.getElementById("overlay-modal").style.display = "flex";
+            window.drawOverlayMap('filtered'); // 기본은 필터된 데이터
+        }
+
+        // ✨ 2번 기능: 오버레이 지도 모드 전환 기능
+        window.drawOverlayMap = function(mode) {
+            const btnFiltered = document.getElementById("btn-overlay-filtered");
+            const btnAll = document.getElementById("btn-overlay-all");
+
+            if (mode === 'filtered') {
+                btnFiltered.classList.remove('secondary-btn'); btnFiltered.style.background = "var(--primary-gradient)"; btnFiltered.style.color = "white";
+                btnAll.classList.add('secondary-btn'); btnAll.style.background = "#6b7280"; btnAll.style.color = "white";
+            } else {
+                btnAll.classList.remove('secondary-btn'); btnAll.style.background = "var(--primary-gradient)"; btnAll.style.color = "white";
+                btnFiltered.classList.add('secondary-btn'); btnFiltered.style.background = "#6b7280"; btnFiltered.style.color = "white";
+            }
+
             const canvas = document.getElementById("overlayCanvas");
             const ctx = canvas.getContext("2d");
             const rect = canvas.getBoundingClientRect();
@@ -1249,17 +1130,23 @@
             
             ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            for (const key in nodes) {
-                const node = nodes[key];
+            // 노드 그리기
+            for (const key in window.nodes) {
+                const node = window.nodes[key];
                 const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
                 ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2 * Math.min(scaleX, scaleY); ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
                 ctx.fillStyle = "#212529"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
             }
 
-            window.filteredSubmissionsData.forEach(item => {
+            // 화살표 데이터 타겟 설정
+            const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
+            
+            targetData.forEach(item => {
                 if (item.arrows && Array.isArray(item.arrows)) {
                     item.arrows.forEach(arrow => {
-                        if (nodes[arrow.from] && nodes[arrow.to]) { drawArrow(ctx, nodes[arrow.from].x * scaleX, nodes[arrow.from].y * scaleY, nodes[arrow.to].x * scaleX, nodes[arrow.to].y * scaleY, "rgba(124, 58, 237, 0.35)"); }
+                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { 
+                            window.drawArrow(ctx, window.nodes[arrow.from].x * scaleX, window.nodes[arrow.from].y * scaleY, window.nodes[arrow.to].x * scaleX, window.nodes[arrow.to].y * scaleY, "rgba(124, 58, 237, 0.35)"); 
+                        }
                     });
                 }
             });
@@ -1275,8 +1162,7 @@
 
             worksheet.columns = [
                 { header: '학년도', key: 'year', width: 10 }, { header: '모드', key: 'mode', width: 10 }, { header: '반', key: 'cls', width: 6 }, { header: '조', key: 'group', width: 6 }, { header: '역할', key: 'role', width: 12 }, { header: '학번', key: 'id', width: 12 }, { header: '제출시간', key: 'time', width: 22 }, { header: 'AI점수', key: 'score', width: 12 }, 
-                { header: '사료학습답변', key: 'sourceAns', width: 60 },
-                { header: '작성내용(논술/요약)', key: 'essay', width: 60 }, { header: 'AI총평/피드백', key: 'feedback', width: 45 }, { header: '무역로', key: 'arrows', width: 25 }, { header: '챗봇대화기록', key: 'chat', width: 70 }
+                { header: '사료학습답변', key: 'sourceAns', width: 60 }, { header: '작성내용(논술/요약)', key: 'essay', width: 60 }, { header: 'AI총평/피드백', key: 'feedback', width: 45 }, { header: '무역로', key: 'arrows', width: 25 }, { header: '챗봇대화기록', key: 'chat', width: 70 }
             ];
 
             window.filteredSubmissionsData.forEach(item => {
@@ -1285,7 +1171,7 @@
                     for (const merchant in item.chatContexts) {
                         if (item.chatContexts[merchant].length > 0) {
                             chatLog += `[${merchant.toUpperCase()}]\n`;
-                            item.chatContexts[merchant].forEach(msg => { if (msg.role !== "system") { chatLog += `${msg.role === "user" ? "학생" : "상인"}: ${msg.content}\n`; } });
+                            item.chatContexts[merchant].forEach(msg => { if (msg.role !== "system") { chatLog += `${msg.role === "user" ? "학생" : "상인/광부"}: ${msg.content}\n`; } });
                             chatLog += `\n`;
                         }
                     }
@@ -1295,16 +1181,13 @@
                 if(item.sourceAnswers) {
                     for(const region in item.sourceAnswers) {
                         const ans = item.sourceAnswers[region];
-                        if(ans.a1 || ans.a2) {
-                            sourceSummary += `[${sourceData[region].title}]\nQ1 답: ${ans.a1 || "미작성"}\nQ2 답: ${ans.a2 || "미작성"}\n\n`;
-                        }
+                        if(ans.a1 || ans.a2) sourceSummary += `[${sourceData[region].title}]\nQ1 답: ${ans.a1 || "미작성"}\nQ2 답: ${ans.a2 || "미작성"}\n\n`;
                     }
                 }
 
                 worksheet.addRow({
                     year: item.academicYear || "2025", mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
-                    sourceAns: sourceSummary.trim() || "없음",
-                    essay: item.essay || "", feedback: (item.aiFeedback || "").replace(/\[채점 점수: [^\]]+\]\n?/g, '').trim(), arrows: item.arrows ? item.arrows.map(a => `${a.from}->${a.to}`).join(", ") : "", chat: chatLog.trim()
+                    sourceAns: sourceSummary.trim() || "없음", essay: item.essay || "", feedback: (item.aiFeedback || "").replace(/\[채점 점수: [^\]]+\]\n?/g, '').trim(), arrows: item.arrows ? item.arrows.map(a => `${a.from}->${a.to}`).join(", ") : "", chat: chatLog.trim()
                 });
             });
 
@@ -1313,7 +1196,7 @@
             worksheet.eachRow((row, rowNumber) => {
                 if (rowNumber === 1) return; 
                 row.eachCell((cell) => { cell.alignment = { vertical: 'middle', wrapText: true }; cell.border = { top: {style:'thin', color: {argb:'FFE5E7EB'}}, bottom: {style:'thin', color: {argb:'FFE5E7EB'}} }; cell.font = { name: '맑은 고딕' }; });
-                if (rowNumber % 2 === 0) { row.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; }); }
+                if (rowNumber % 2 === 0) row.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
             });
             worksheet.autoFilter = { from: 'A1', to: 'L1' };
 
