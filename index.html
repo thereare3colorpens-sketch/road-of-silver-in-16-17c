@@ -292,7 +292,7 @@
                     <button id="btn-india" onclick="selectMerchant('india')">🇮🇳 무굴 상인</button>
                     <button id="btn-china" onclick="selectMerchant('china')">🇨🇳 명·청 상인</button>
                     <button id="btn-japan" onclick="selectMerchant('japan')">🇯🇵 에도 상인</button>
-                    <!-- ✨ 포토시 광부 챗봇 버튼 추가 -->
+                    <!-- 포토시 광부 챗봇 버튼 -->
                     <button id="btn-miner" onclick="selectMerchant('miner')" style="border-color: #ef4444; color: #b91c1c;">⛏️ 포토시 광부</button>
                 </div>
                 
@@ -465,7 +465,7 @@
             <h3 style="margin-top:0; font-size: 26px;">🌍 <span class="text-gradient">무역로 종합 데이터</span></h3>
             <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 15px;">아래 버튼을 눌러 지도에 표시할 데이터를 선택하세요.</p>
             
-            <!-- ✨ 오버레이 모달 내 필터 전환 버튼 -->
+            <!-- 오버레이 모달 내 필터 전환 버튼 -->
             <div style="display:flex; justify-content:center; gap:10px; margin-bottom: 25px;">
                 <button id="btn-overlay-filtered" class="gradient-btn" style="padding:10px 15px; font-size:15px; flex:1;" onclick="drawOverlayMap('filtered')">현재 필터(반/학년) 데이터</button>
                 <button id="btn-overlay-all" class="gradient-btn secondary-btn" style="padding:10px 15px; font-size:15px; flex:1; background: #6b7280; box-shadow:none;" onclick="drawOverlayMap('all')">전체 누적 데이터</button>
@@ -485,7 +485,6 @@
         window.studentRole = 'individual'; 
 
         window.currentMerchant = null;
-        // ✨ 광부(miner) 페르소나 추가
         window.chatHistoriesHTML = { europe: "", africa: "", america: "", china: "", japan: "", india: "", miner: "" };
         window.chatContexts = { europe: [], africa: [], america: [], china: [], japan: [], india: [], miner: [] };
         window.isFirstVisit = { europe: true, africa: true, america: true, china: true, japan: true, india: true, miner: true };
@@ -499,7 +498,7 @@
             china: {a1: "", a2: ""}, japan: {a1: "", a2: ""}, india: {a1: "", a2: ""}
         };
 
-        // ✨ 관리자 비밀번호 ASCII 치환 (코드상 노출 방지)
+        // 관리자 비밀번호 ASCII 치환 (코드상 노출 방지)
         const getDefPw = () => [99, 114, 101, 97, 116, 101, 110, 101, 119, 105, 100].map(c => String.fromCharCode(c)).join('');
 
         const baseRule = `[절대 규칙: 17세기 상인 페르소나 및 요즘 중학생 맞춤형 대화] 
@@ -514,7 +513,6 @@
             china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. "유럽 상인들이 우리의 차, 비단, 도자기를 사고 은으로만 값을 치르니, 전 세계 은이 광저우로 빨려 들어오는 거 실화요? 우리 정부도 세금을 은으로 걷고 있지. 서양 상인들은 오직 공행을 통해서만 무역할 수 있으니 대청제국 경제 폼 미쳤구려!"`,
             japan: `너는 에도 막부 데지마 섬 상인이다. "이 좁은 인공섬 데지마에 갇혀 네덜란드, 중국만 상대해야 하니 알빠노 싶지만, 우리에겐 세계 은 생산량 3분의 1을 차지하는 이와미 은광이 있소! 조선 제련법을 도입해 뽑아낸 은으로 서양 조총과 중국 비단을 사들이니 에도 막부 교역도 폼 미쳤다 할 수 있지."`,
             india: `너는 무굴 제국 캘리컷 상인이다. "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 면직물 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 오히려 좋구려. 들어온 은화로 국제 무역 폼 미쳤다!"`,
-            // ✨ 광부 페르소나 (새로 추가됨)
             miner: `너는 17세기 아메리카 포토시 은광에서 강제 노역(미타 제도)을 하는 원주민 또는 아프리카 출신 노예다. "이 어둡고 매캐한 갱도에서 햇빛도 못 보고 은을 캐는 거 실화냐? 우리가 피땀 흘려 캔 은이 갈레온 선을 타고 태평양을 건너 명나라로 가고, 대서양을 건너 스페인으로 간다 들었소. 가혹한 노동과 유럽놈들이 옮긴 전염병 때문에 내 형제들이 죽어가는데, 저들은 우리 은으로 비단과 도자기를 산다니... 이게 진정 누굴 위한 럭키비키란 말이오? 완전 킹받네!"`
         };
 
@@ -713,11 +711,10 @@
             }
         }
 
-        // ✨ 1번 기능: 역사적 무역로 검증 로직 추가
+        // ✨ 검증 로직: india->china (은 유입) 경로 추가 반영
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length === 0) { alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!"); return; }
 
-            // 17세기 핵심 무역로 및 은의 흐름 정의
             const validRoutes = [
                 "america->europe", // 아메리카 -> 유럽 (은, 설탕)
                 "america->china",  // 아메리카 -> 중국 (마닐라 갈레온 - 은)
@@ -725,6 +722,7 @@
                 "africa->america", // 아프리카 -> 아메리카 (노예 / 삼각무역)
                 "europe->india",   // 유럽 -> 인도 (은 지불)
                 "india->europe",   // 인도 -> 유럽 (캘리코 면직물)
+                "india->china",    // 인도 -> 중국 (은을 지불하고 비단/도자기 수입) ✨ 추가
                 "europe->china",   // 유럽 -> 중국 (은 지불)
                 "china->europe",   // 중국 -> 유럽 (차, 비단, 도자기)
                 "japan->china"     // 일본 -> 중국 (은 유출)
@@ -742,12 +740,8 @@
                 }
             }
 
-            if(!isAllValid) {
-                alert("⚠️ 피드백: " + invalidRouteMsg);
-                return; // ❌ 오답일 경우 다음 단계로 안 넘어감
-            }
+            if(!isAllValid) { alert("⚠️ 피드백: " + invalidRouteMsg); return; }
 
-            // ✅ 모두 정답일 경우에만 통과
             transitionToScreen("source-study-screen");
         }
 
@@ -1042,7 +1036,7 @@
 
             let filtered = window.globalSubmissionsData.slice(); 
             if (modeFilter !== "all") filtered = filtered.filter(item => item.studyMode === modeFilter);
-            if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || "2025") === yearFilter);
+            if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || new Date().getFullYear().toString()) === yearFilter);
             if (classFilter !== "all") filtered = filtered.filter(item => item.studentClass === classFilter);
             if (groupFilter !== "all") filtered = filtered.filter(item => item.studentGroup === groupFilter);
             if (sortOrder === "studentId") filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || ""));
@@ -1057,6 +1051,8 @@
                 const isGroup = data.studyMode === 'group';
                 const roleBadge = data.studentRole === 'writer' ? '<span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✍️ 서기(가산점)</span>' : data.studentRole === 'member' ? '<span style="background:#d1fae5; color:#047857; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">📝 조원(요약)</span>' : '<span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🙋‍♂️ 개인 탐구</span>';
                 const groupBadge = isGroup ? `<span style="background:#f3f4f6; color:#4b5563; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
+                // ✨ 학년도 뱃지 추가
+                const yearBadge = `<span style="background:#e5e7eb; color:#374151; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🗓️ ${data.academicYear || new Date().getFullYear().toString()}학년도</span>`;
                 const scoreDisplay = data.aiScore ? `<span style="background: var(--primary-gradient); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px;">AI 점수: ${data.aiScore}</span>` : "";
 
                 let chatSummary = "";
@@ -1084,7 +1080,7 @@
                     <div class="submission-card">
                         <div class="submission-header">
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                ${groupBadge} ${roleBadge} <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> ${scoreDisplay}
+                                ${yearBadge} ${groupBadge} ${roleBadge} <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> ${scoreDisplay}
                             </div>
                             <div style="display:flex; align-items:center; gap: 10px;">
                                 <span style="font-size: 13px; color: #6b7280;">${data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : '방금'}</span>
@@ -1106,10 +1102,9 @@
 
         window.openOverlayModal = function() {
             document.getElementById("overlay-modal").style.display = "flex";
-            window.drawOverlayMap('filtered'); // 기본은 필터된 데이터
+            window.drawOverlayMap('filtered'); 
         }
 
-        // ✨ 2번 기능: 오버레이 지도 모드 전환 기능
         window.drawOverlayMap = function(mode) {
             const btnFiltered = document.getElementById("btn-overlay-filtered");
             const btnAll = document.getElementById("btn-overlay-all");
@@ -1130,7 +1125,6 @@
             
             ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // 노드 그리기
             for (const key in window.nodes) {
                 const node = window.nodes[key];
                 const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
@@ -1138,7 +1132,6 @@
                 ctx.fillStyle = "#212529"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
             }
 
-            // 화살표 데이터 타겟 설정
             const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
             
             targetData.forEach(item => {
@@ -1186,7 +1179,7 @@
                 }
 
                 worksheet.addRow({
-                    year: item.academicYear || "2025", mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
+                    year: item.academicYear || new Date().getFullYear().toString(), mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
                     sourceAns: sourceSummary.trim() || "없음", essay: item.essay || "", feedback: (item.aiFeedback || "").replace(/\[채점 점수: [^\]]+\]\n?/g, '').trim(), arrows: item.arrows ? item.arrows.map(a => `${a.from}->${a.to}`).join(", ") : "", chat: chatLog.trim()
                 });
             });
