@@ -8,15 +8,12 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
     <style>
-        /* 눈누 페이퍼로지 폰트 (제목용) */
         @font-face {
             font-family: 'Paperlogy-8ExtraBold';
             src: url('https://fastly.jsdelivr.net/gh/projectnoonnu/2408-3@1.0/Paperlogy-8ExtraBold.woff2') format('woff2');
             font-weight: 800;
             font-style: normal;
         }
-
-        /* 눈누 프리텐다드 폰트 (본문용) */
         @font-face {
             font-family: 'Pretendard-Regular';
             src: url('https://fastly.jsdelivr.net/gh/Project-Noonnu/noonfonts_2107@1.1/Pretendard-Regular.woff') format('woff');
@@ -711,7 +708,7 @@
             }
         }
 
-        // ✨ 검증 로직: india->china (은 유입) 경로 추가 반영
+        // 검증 로직: india->china (은 유입) 경로 반영
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length === 0) { alert("최소 1개 이상의 무역로(화살표)를 지도에 그려주세요!"); return; }
 
@@ -722,7 +719,7 @@
                 "africa->america", // 아프리카 -> 아메리카 (노예 / 삼각무역)
                 "europe->india",   // 유럽 -> 인도 (은 지불)
                 "india->europe",   // 인도 -> 유럽 (캘리코 면직물)
-                "india->china",    // 인도 -> 중국 (은을 지불하고 비단/도자기 수입) ✨ 추가
+                "india->china",    // 인도 -> 중국 (은을 지불하고 비단/도자기 수입) ✨
                 "europe->china",   // 유럽 -> 중국 (은 지불)
                 "china->europe",   // 중국 -> 유럽 (차, 비단, 도자기)
                 "japan->china"     // 일본 -> 중국 (은 유출)
@@ -832,11 +829,12 @@
     </script>
 
     <script type="module">
+        // ✨ [중요] 선생님의 원래 Firebase 설정(Config) 값으로 반드시 복구해주세요!
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         const firebaseConfig = {
-            apiKey: "AIzaSyDfg5dOdccdNRvQxpkueWfMTGAEObPfmM0",
+            apiKey: "AIzaSyDfg5dOdccdNRvQxpkueWfMTGAEObPfmM0", // 원래 값으로 교체
             authDomain: "history-class-innovation.firebaseapp.com",
             projectId: "history-class-innovation",
             storageBucket: "history-class-innovation.firebasestorage.app",
@@ -854,7 +852,7 @@
             china:   { x: 380, y: 180, label: "중국", color: "#ef4444" },
             japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
         };
-        window.nodes = nodes; // 전역 접근용
+        window.nodes = nodes; 
 
         window.drawMap = function() {
             const canvas = document.getElementById('mapCanvas'); if (!canvas) return;
@@ -999,8 +997,10 @@
                 listContainer.innerHTML = "<p>데이터를 불러오는 중...</p>";
 
                 try {
-                    const q = query(collection(db, "trade_submissions"), orderBy("timestamp", "desc"));
+                    // ✨ 데이터 로드 에러 원인 해결: orderBy 속성을 제거하고 무조건 모든 데이터를 불러오도록 수정
+                    const q = collection(db, "trade_submissions");
                     const querySnapshot = await getDocs(q);
+                    
                     window.globalSubmissionsData = [];
                     const currentYear = new Date().getFullYear();
                     let uniqueYears = new Set([currentYear.toString()]); 
@@ -1016,9 +1016,15 @@
                     const yearSelect = document.getElementById("yearFilter");
                     yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
                     Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => { yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`; });
-                    yearSelect.value = currentYear.toString(); 
+                    
+                    // ✨ 이전 데이터 사라짐 문제 해결: 기본 필터값을 무조건 '전체 학년도'로 설정
+                    yearSelect.value = "all"; 
+                    
                     window.renderDashboardList();
-                } catch (error) { listContainer.innerHTML = "<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.</p>"; }
+                } catch (error) { 
+                    console.error("데이터 로드 에러:", error);
+                    listContainer.innerHTML = `<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.<br>에러 메시지: ${error.message}</p>`; 
+                }
             });
         }
 
@@ -1039,8 +1045,13 @@
             if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || new Date().getFullYear().toString()) === yearFilter);
             if (classFilter !== "all") filtered = filtered.filter(item => item.studentClass === classFilter);
             if (groupFilter !== "all") filtered = filtered.filter(item => item.studentGroup === groupFilter);
-            if (sortOrder === "studentId") filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || ""));
-            else filtered.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+            
+            // ✨ 에러 방지용: 불러온 뒤 자바스크립트에서 안전하게 정렬 처리
+            if (sortOrder === "studentId") {
+                filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || ""));
+            } else {
+                filtered.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0));
+            }
 
             window.filteredSubmissionsData = filtered;
 
@@ -1051,8 +1062,10 @@
                 const isGroup = data.studyMode === 'group';
                 const roleBadge = data.studentRole === 'writer' ? '<span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✍️ 서기(가산점)</span>' : data.studentRole === 'member' ? '<span style="background:#d1fae5; color:#047857; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">📝 조원(요약)</span>' : '<span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🙋‍♂️ 개인 탐구</span>';
                 const groupBadge = isGroup ? `<span style="background:#f3f4f6; color:#4b5563; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
-                // ✨ 학년도 뱃지 추가
+                
+                // ✨ UI 개선: 학년도를 직관적으로 표시
                 const yearBadge = `<span style="background:#e5e7eb; color:#374151; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🗓️ ${data.academicYear || new Date().getFullYear().toString()}학년도</span>`;
+                
                 const scoreDisplay = data.aiScore ? `<span style="background: var(--primary-gradient); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px;">AI 점수: ${data.aiScore}</span>` : "";
 
                 let chatSummary = "";
