@@ -150,7 +150,6 @@
         
         .source-desc-box { background: #f3f4f6; padding: 18px; border-radius: 8px; margin-bottom: 25px; font-size: 14.5px; line-height: 1.6; color: #374151; border: 1px solid #e5e7eb; }
 
-        /* ✨ 자동 저장 상태 표시 UI */
         #auto-save-indicator {
             position: fixed; top: 15px; right: 15px; background: rgba(0, 0, 0, 0.6); color: white; padding: 8px 14px; 
             border-radius: 20px; font-size: 13px; font-weight: bold; display: none; z-index: 1000; backdrop-filter: blur(5px);
@@ -177,7 +176,6 @@
     </style>
 </head>
 <body>
-    <!-- 자동 저장 인디케이터 -->
     <div id="auto-save-indicator">☁️ 저장 중...</div>
 
     <!-- 1. 학번 입력 & 모드 선택 화면 -->
@@ -191,6 +189,17 @@
             <div class="mode-btn-group">
                 <button id="btn-mode-individual" class="mode-btn active" onclick="setStudyMode('individual')">🙋‍♂️ 개인 탐구</button>
                 <button id="btn-mode-group" class="mode-btn" onclick="setStudyMode('group')">👨‍👩‍👧‍👦 조별 토의</button>
+            </div>
+
+            <!-- 학년도 선택 추가 -->
+            <div class="input-group">
+                <label>학년도 선택</label>
+                <select id="login-year">
+                    <option value="2025">2025학년도</option>
+                    <option value="2026" selected>2026학년도</option>
+                    <option value="2027">2027학년도</option>
+                    <option value="2028">2028학년도</option>
+                </select>
             </div>
 
             <div class="input-group">
@@ -482,11 +491,11 @@
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
 
         window.studyMode = 'individual'; 
+        window.academicYear = '2026';
         window.studentClass = '1';
         window.studentGroup = 'none';
         window.studentRole = 'individual'; 
         
-        // ✨ 자동 저장용 고유 ID 변수
         window.progressDocId = null;
         window.autoSaveInterval = null;
 
@@ -550,7 +559,6 @@
             if (document.startViewTransition) document.startViewTransition(doChange); else doChange();
         }
 
-        // ✨ UI용 자동저장 시각 알림 함수
         function showAutoSaveIndicator() {
             const indicator = document.getElementById("auto-save-indicator");
             indicator.style.display = "block";
@@ -600,7 +608,7 @@
                 localStorage.removeItem("studentId"); 
                 document.getElementById("student-id").value = ""; 
                 if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
-                location.reload(); // 완벽한 초기화를 위해 새로고침
+                location.reload();
             }
         }
 
@@ -676,7 +684,7 @@
                     let aiReply = data.choices[0].message.content;
                     addMessage(aiReply, 'ai-msg', false);
                     window.chatContexts[window.currentMerchant].push({ role: "assistant", content: aiReply });
-                    if(window.saveProgress) window.saveProgress(); // 대화 후 자동 저장
+                    if(window.saveProgress) window.saveProgress();
                 }
             } catch (error) {
                 document.getElementById('typing-indicator')?.remove();
@@ -703,7 +711,7 @@
             if(!isAllValid) { alert("⚠️ 피드백: " + invalidRouteMsg); return; }
 
             transitionToScreen("source-study-screen");
-            if(window.saveProgress) window.saveProgress(); // 화면 전환 시 저장
+            if(window.saveProgress) window.saveProgress();
         }
 
         window.openSourceModal = function(region) {
@@ -732,7 +740,7 @@
                 }
             }
             document.getElementById('source-modal').style.display = 'none';
-            if(window.saveProgress) window.saveProgress(); // 사료 분석 완료 시 저장
+            if(window.saveProgress) window.saveProgress();
         }
 
         window.goToDiscussionOrEssay = function() {
@@ -783,12 +791,12 @@
     </script>
 
     <script type="module">
-        // ✨ [중요] 선생님의 원래 Firebase 설정(Config) 값으로 반드시 복구해주세요!
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
+        // ✨ [중요] 선생님의 원래 Firebase 설정(Config) 값으로 반드시 복구해주세요!
         const firebaseConfig = {
-            apiKey: "AIzaSyDfg5dOdccdNRvQxpkueWfMTGAEObPfmM0", // 원래 값으로 교체하세요
+            apiKey: "AIzaSyDfg5dOdccdNRvQxpkueWfMTGAEObPfmM0", 
             authDomain: "history-class-innovation.firebaseapp.com",
             projectId: "history-class-innovation",
             storageBucket: "history-class-innovation.firebasestorage.app",
@@ -798,20 +806,19 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // ✨ 로그인 시 진행 상황(Progress) 체크 및 복원 로직
         window.checkLogin = async function() {
             const studentId = document.getElementById("student-id").value.trim();
             if(!/^20[0-9]{3}$/.test(studentId)) { alert("⚠️ 학번 형식(예: 20101)으로 정확히 입력해 주세요."); return; }
             
+            // ✨ 학년도를 명시적으로 가져와서 저장
+            window.academicYear = document.getElementById('login-year').value;
             window.studentClass = document.getElementById('login-class').value;
             window.studentGroup = window.studyMode === 'group' ? document.getElementById('login-group').value : 'none';
             window.studentRole = window.studyMode === 'individual' ? 'individual' : null;
             localStorage.setItem("studentId", studentId);
 
-            const currentYear = new Date().getFullYear().toString();
-            window.progressDocId = `${currentYear}_${window.studentClass}_${studentId}`; // 학년도_반_학번 을 고유 키로 지정
+            window.progressDocId = `${window.academicYear}_${window.studentClass}_${studentId}`; 
 
-            // 데이터베이스에서 기존 진행 상황 불러오기
             try {
                 const docRef = doc(db, "trade_progress", window.progressDocId);
                 const docSnap = await getDoc(docRef);
@@ -826,7 +833,6 @@
                     if(data.essay) document.getElementById("essay-input").value = data.essay;
                     if(data.summary) document.getElementById("summary-input").value = data.summary;
                     
-                    // 작성된 사료가 있다면 버튼 색상 변경 처리
                     for(const region in window.sourceAnswers) {
                         if(window.sourceAnswers[region].a1 || window.sourceAnswers[region].a2) {
                             const btn = document.getElementById(`btn-source-${region}`);
@@ -841,22 +847,19 @@
                 document.getElementById('map-instruction').innerHTML = window.studyMode === 'group' ? "<b>[조별 미션]</b> 각자 자신이 맡은 상인(또는 광부)과 집중 인터뷰한 뒤, 무역로를 그려보세요!" : "상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 역사적으로 올바른 무역로를 그려보세요!";
             });
 
-            // ✨ 30초마다 자동 저장 실행 (반복)
             if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
             window.autoSaveInterval = setInterval(window.saveProgress, 30000);
         }
 
-        // ✨ 백그라운드 자동 저장 (Auto-save) 함수
         window.saveProgress = async function() {
             if (!window.progressDocId) return;
             try {
-                // 현재 챗봇창 내용도 HTML 업데이트
                 const chatBox = document.getElementById('chat-box');
                 if (window.currentMerchant && chatBox) window.chatHistoriesHTML[window.currentMerchant] = chatBox.innerHTML;
 
                 await setDoc(doc(db, "trade_progress", window.progressDocId), {
                     studentId: localStorage.getItem("studentId"),
-                    academicYear: new Date().getFullYear().toString(),
+                    academicYear: window.academicYear, // 명시적 학년도 사용
                     studentClass: window.studentClass,
                     studentGroup: window.studentGroup,
                     studyMode: window.studyMode,
@@ -991,7 +994,7 @@
         window.finalSubmit = async function() {
             if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
             const studentId = localStorage.getItem("studentId");
-            const currentYear = new Date().getFullYear().toString();
+            const currentYear = window.academicYear; // 저장된 학년도 명시적 사용
             let finalEssay = window.studentRole === 'member' ? document.getElementById("summary-input").value.trim() : document.getElementById("essay-input").value.trim();
             if(window.studentRole === 'member' && !window.lastGradingScore) window.lastGradingScore = "요약 (피드백 패스)"; 
             if(!finalEssay) { alert("내용을 작성해 주세요."); return; }
@@ -1002,7 +1005,6 @@
                     arrows: window.userArrows || [], chatContexts: window.chatContexts || {}, sourceAnswers: window.sourceAnswers || {},
                     essay: finalEssay, aiScore: window.lastGradingScore, aiFeedback: window.lastGradingFeedback || "-", timestamp: serverTimestamp()
                 });
-                // 최종 제출 완료 시 임시 진행 데이터 삭제
                 if (window.progressDocId) { await deleteDoc(doc(db, "trade_progress", window.progressDocId)); }
                 
                 alert("🎉 최종 제출이 완벽하게 완료되었습니다! 수고하셨습니다."); location.reload(); 
@@ -1019,8 +1021,7 @@
                     const querySnapshot = await getDocs(q);
                     
                     window.globalSubmissionsData = [];
-                    const currentYear = new Date().getFullYear();
-                    let uniqueYears = new Set([currentYear.toString()]); 
+                    let uniqueYears = new Set(); 
 
                     if (!querySnapshot.empty) { 
                         querySnapshot.forEach((docSnap) => {
@@ -1054,7 +1055,7 @@
 
             let filtered = window.globalSubmissionsData.slice(); 
             if (modeFilter !== "all") filtered = filtered.filter(item => item.studyMode === modeFilter);
-            if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || new Date().getFullYear().toString()) === yearFilter);
+            if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || "") === yearFilter);
             if (classFilter !== "all") filtered = filtered.filter(item => item.studentClass === classFilter);
             if (groupFilter !== "all") filtered = filtered.filter(item => item.studentGroup === groupFilter);
             
@@ -1069,7 +1070,7 @@
                 const isGroup = data.studyMode === 'group';
                 const roleBadge = data.studentRole === 'writer' ? '<span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✍️ 서기(가산점)</span>' : data.studentRole === 'member' ? '<span style="background:#d1fae5; color:#047857; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">📝 조원(요약)</span>' : '<span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🙋‍♂️ 개인 탐구</span>';
                 const groupBadge = isGroup ? `<span style="background:#f3f4f6; color:#4b5563; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
-                const yearBadge = `<span style="background:#e5e7eb; color:#374151; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🗓️ ${data.academicYear || new Date().getFullYear().toString()}학년도</span>`;
+                const yearBadge = `<span style="background:#e5e7eb; color:#374151; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🗓️ ${data.academicYear || '미지정'}학년도</span>`;
                 const scoreDisplay = data.aiScore ? `<span style="background: var(--primary-gradient); color: white; padding: 4px 10px; border-radius: 6px; font-weight: 700; font-size: 13px;">AI 점수: ${data.aiScore}</span>` : "";
 
                 let chatSummary = "";
@@ -1186,7 +1187,7 @@
                 }
 
                 worksheet.addRow({
-                    year: item.academicYear || new Date().getFullYear().toString(), mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
+                    year: item.academicYear || "미지정", mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
                     sourceAns: sourceSummary.trim() || "없음", essay: item.essay || "", feedback: (item.aiFeedback || "").replace(/\[채점 점수: [^\]]+\]\n?/g, '').trim(), arrows: item.arrows ? item.arrows.map(a => `${a.from}->${a.to}`).join(", ") : "", chat: chatLog.trim()
                 });
             });
