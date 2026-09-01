@@ -60,8 +60,8 @@
         .mode-btn.active { border-color: #7c3aed; background: #f3e8ff; color: #6d28d9; }
         .input-group { margin-bottom: 20px; text-align: left; }
         .input-group label { display: block; font-size: 14.5px; color: var(--text-gray); margin-bottom: 8px; font-weight: 700; }
-        .input-group select, .input-group input { width: 100%; padding: 15px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; outline: none; transition: border 0.2s; }
-        .input-group select:focus, .input-group input:focus { border-color: #7c3aed; }
+        .input-group select, .input-group input, .input-group textarea { width: 100%; padding: 15px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; outline: none; transition: border 0.2s; font-family: 'Pretendard-Regular', sans-serif;}
+        .input-group select:focus, .input-group input:focus, .input-group textarea:focus { border-color: #7c3aed; }
 
         #quiz-screen { flex-direction: column; align-items: center; justify-content: center; }
         .quiz-container { width: 100%; max-width: 650px; }
@@ -138,9 +138,9 @@
         @keyframes modalPop { 0% { opacity: 0; transform: scale(0.9); } 100% { opacity: 1; transform: scale(1); } }
         .modal-overlay { display: none; position: fixed; top: 0; left: 0; width: 100vw; height: 100vh; height: 100dvh; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 999; justify-content: center; align-items: center; animation: fadeIn 0.3s ease-out; padding: 15px; box-sizing: border-box;}
         
-        .pw-modal-content { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 340px; text-align: center; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
-        .pw-modal-content input { width: 100%; padding: 14px; font-size: 16px; margin: 20px 0; border: 1px solid var(--border-color); border-radius: 10px; text-align: center; letter-spacing: 3px; outline: none; }
-        .pw-modal-content input:focus { border-color: #7c3aed; }
+        .pw-modal-content { background: white; padding: 40px; border-radius: 20px; width: 100%; max-width: 500px; text-align: center; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
+        .pw-modal-content input, .pw-modal-content textarea { width: 100%; padding: 14px; font-size: 16px; border: 1px solid var(--border-color); border-radius: 10px; box-sizing: border-box; outline: none; transition: border 0.2s; font-family: 'Pretendard-Regular', sans-serif;}
+        .pw-modal-content input:focus, .pw-modal-content textarea:focus { border-color: #7c3aed; }
 
         .source-modal-content { background: white; padding: 35px 30px; border-radius: 20px; width: 100%; max-width: 700px; text-align: left; box-shadow: var(--shadow-hover); animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; max-height: 90dvh; overflow-y: auto; }
         #overlay-modal .card { animation: modalPop 0.4s cubic-bezier(0.25, 1, 0.5, 1) forwards; }
@@ -205,7 +205,7 @@
             </div>
 
             <div class="input-group" id="group-select-container" style="display: none;">
-                <label>조 선택</label>
+                <label>조 선택 (사전 배정 시 자동 무시)</label>
                 <select id="login-group">
                     <option value="1">1조</option><option value="2">2조</option><option value="3">3조</option>
                     <option value="4">4조</option><option value="5">5조</option><option value="6">6조</option>
@@ -219,21 +219,63 @@
             </div>
             
             <button class="gradient-btn" onclick="checkLogin()">입장하기 🚀</button>
-            <div style="margin-top: 25px; text-align: center;">
-                <span onclick="openPasswordModal()" style="font-size: 13px; color: #d1d5db; cursor: pointer; user-select: none;">⚙️ 교사 관리자 모드</span>
+            
+            <div style="margin-top: 25px; text-align: center; display: flex; justify-content: center; gap: 20px;">
+                <span onclick="openPasswordModal()" style="font-size: 13px; color: #9ca3af; cursor: pointer; user-select: none;">⚙️ 교사 관리자 모드</span>
+                <span onclick="openGroupMakerModal()" style="font-size: 13px; color: #9ca3af; cursor: pointer; user-select: none;">🎲 교사용 사전 조 편성</span>
             </div>
         </div>
     </div>
 
     <!-- 🔐 비밀번호 입력 모달 -->
     <div id="password-modal" class="modal-overlay">
-        <div class="pw-modal-content">
+        <div class="pw-modal-content" style="max-width: 340px;">
             <h3 style="margin-top: 0; font-size: 26px;">🔐 <span class="text-gradient">관리자 인증</span></h3>
             <p style="font-size: 14.5px; color: var(--text-gray); margin: 0;">교사 비밀번호를 입력해 주세요.</p>
-            <input type="password" id="admin-pw-input" placeholder="비밀번호" onkeypress="if(event.key === 'Enter') verifyPassword()">
+            <input type="password" id="admin-pw-input" placeholder="비밀번호" style="margin: 20px 0; text-align: center; letter-spacing: 3px;" onkeypress="if(event.key === 'Enter') verifyPassword()">
             <div style="display: flex; gap: 10px; justify-content: center;">
                 <button class="gradient-btn" style="padding: 12px;" onclick="verifyPassword()">확인</button>
                 <button class="gradient-btn" style="padding: 12px; background: #9ca3af; box-shadow: none;" onclick="closePasswordModal()">취소</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- 🎲 교사용 사전 조 편성 시스템 모달 -->
+    <div id="group-maker-modal" class="modal-overlay">
+        <div class="pw-modal-content" style="max-width: 500px; text-align: left;">
+            <h3 style="margin-top: 0; font-size: 26px; text-align:center;">🎲 <span class="text-gradient">사전 조 편성 시스템</span></h3>
+            <p style="font-size: 14.5px; color: var(--text-gray); margin-bottom: 20px; text-align:center; line-height: 1.5;">선생님이 미리 조를 섞어두면 학생들이 접속 시 <b>자동으로 지정된 조에 배정</b>됩니다.</p>
+            
+            <div class="input-group" style="display:flex; gap:10px;">
+                <div style="flex:1;">
+                    <label>적용 학급</label>
+                    <select id="gm-class">
+                        <option value="1">1반</option><option value="2">2반</option>
+                        <option value="3">3반</option><option value="4">4반</option><option value="5">5반</option>
+                    </select>
+                </div>
+                <div style="flex:1;">
+                    <label>생성할 조 개수</label>
+                    <select id="gm-count">
+                        <option value="4">4개 조</option><option value="5">5개 조</option><option value="6" selected>6개 조</option>
+                        <option value="7">7개 조</option><option value="8">8개 조</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="input-group">
+                <label>참여 학생 학번 (쉼표로 구분)</label>
+                <textarea id="gm-ids" style="height: 80px; font-size: 14px;" placeholder="아래 버튼을 눌러 학번을 생성한 뒤, 없는 번호를 자유롭게 지워주세요."></textarea>
+                <button class="gradient-btn secondary-btn" style="padding: 8px 12px; font-size: 13px; margin-top: -10px; width: auto;" onclick="autoFillIds()">학생 명단 자동 채우기 (마지막 번호 지정)</button>
+            </div>
+
+            <button class="gradient-btn" style="margin-bottom: 15px;" onclick="generateRandomGroups()">🔀 랜덤 조 짜기 실행</button>
+            
+            <div id="gm-result" style="background: #f9fafb; padding: 15px; border-radius: 8px; font-size: 14.5px; line-height: 1.6; margin-bottom: 15px; min-height: 50px; border: 1px solid #e5e7eb;">결과가 이곳에 표시됩니다.</div>
+
+            <div style="display: flex; gap: 10px; justify-content: center;">
+                <button id="gm-save-btn" class="gradient-btn" style="flex: 1;" disabled onclick="saveGroupSettings()">💾 서버에 자동 연동하기</button>
+                <button class="gradient-btn go-back-action-btn" style="flex: 0.5; padding: 12px;" onclick="closeGroupMakerModal()">닫기</button>
             </div>
         </div>
     </div>
@@ -281,7 +323,6 @@
                     <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
                 </div>
                 <h2 style="margin-bottom: 5px; font-size: 24px;">💬 17세기 상인 인터뷰</h2>
-                <!-- ✨ 경고 문구 추가 -->
                 <p style="font-size: 13.5px; color: #ef4444; font-weight: 700; margin-top: 0; margin-bottom: 15px; background: #fee2e2; padding: 8px 12px; border-radius: 8px; display: inline-block;">⚠️ 여러분이 나눈 모든 대화 기록은 서버에 저장되어 선생님이 확인합니다. 신중하게 질문하세요!</p>
                 
                 <div class="merchant-selector">
@@ -504,6 +545,7 @@
         
         window.progressDocId = null;
         window.autoSaveInterval = null;
+        window.tempGroupMapping = {}; 
 
         window.currentMerchant = null;
         window.chatHistoriesHTML = { europe: "", africa: "", america: "", china: "", japan: "", india: "", miner: "" };
@@ -521,12 +563,12 @@
 
         const getDefPw = () => [99, 114, 101, 97, 116, 101, 110, 101, 119, 105, 100].map(c => String.fromCharCode(c)).join('');
 
-        // ✨ 팩트 체크 조건이 추가되고 순화된 프롬프트
+        // ✨ 팩트 체크 조건 및 입체적 페르소나 적용된 프롬프트
         const baseRule = `[절대 규칙: 17세기 상인 페르소나 및 요즘 중학생 맞춤형 대화] 
 1. 너는 17세기 상인(또는 광부)이다. 번역투를 쓰지 말고, 사극 톤(~하오, ~구려, ~느냐)에 '완전 럭키비키잖아', '폼 미쳤다', '실화냐', '완전 꿀이잖아', '오히려 좋아' 등 건전한 유행어를 찰지게 섞어서 말해라. 절대 비속어나 혐오 표현을 사용하지 마라.
-2. 학생이 장난치면 짧게 대꾸한 뒤 본론(무역 이야기)으로 돌려라.
-3. 철저히 역사적 사실에 기반하되, 정답을 주지 말고 힌트만 줘라. 답변은 3~4문장 내외로 짧게 해라.
-4. [중요 팩트 체크]: 유럽은 아프리카에서 노예를 살 때 은이 아니라 '무기와 수공업품'을 지불했다. 일본은 은을 수입하는 곳이 아니라 중국으로 '은을 수출'하는 곳이다. 중국은 은을 블랙홀처럼 빨아들일 뿐 은을 다른 곳으로 수출하지 않는다. 이 팩트를 절대 틀리지 마라.\n\n[역할 정보]:\n`;
+2. [오류 방지 및 철저한 역사적 고증]: 미래의 역사나 현대의 개념을 아는 척하지 마라. 17세기 당시의 시대적 상황(은의 흐름, 신대륙, 삼각무역 등) 안에서만 대답해라. 
+3. [다채로운 반응 및 장난 대처]: 학생이 무역과 상관없는 딴소리나 장난을 치면 가끔은 친절하게 받아주지 말고 "지금 은화 계산하느라 바쁘니 허튼소리 할 거면 가보시오!", "장사 방해하지 말고 딴 데 가보시오. 완전 킹받네!"라며 퉁명스럽게 면박을 주거나 무시해서 현실감을 높여라. 정답을 바로 주지 말고 힌트만 주며 3~4문장 내외로 짧게 답해라.
+4. [중요 팩트 체크]: ① 유럽은 아프리카에서 노예를 살 때 은이 아니라 '무기와 면직물, 수공업품'을 지불했다. ② 일본은 은을 수입하는 곳이 아니라 조선의 제련법을 도입해 캔 '은을 중국으로 수출'하는 곳이다. ③ 중국은 은을 블랙홀처럼 빨아들일 뿐(차, 도자기, 비단 수출), 은을 다른 곳으로 빼내지 않는다. 이 팩트를 절대 틀리지 마라.\n\n[역할 정보]:\n`;
         
         const prompts = {
             europe: `너는 17세기 유럽 국가(영국/스페인)의 상인이다. "우리가 아프리카에 무기와 일용품을 팔고 노예를 사서 아메리카로 보내는 삼각 무역을 주도하는 거 실화냐? 아메리카에서 얻은 막대한 은화로 인도산 면직물 '캘리코', 중국산 비단/도자기를 사들이니 우리 유럽 경제 폼 미쳤구려. 완전 럭키비키 아니겠소?"`,
@@ -588,6 +630,59 @@
             const inputPw = document.getElementById("admin-pw-input").value;
             if (inputPw === savedPassword) { closePasswordModal(); if(window.loadTeacherDashboard) window.loadTeacherDashboard(); } 
             else { alert("❌ 비밀번호가 일치하지 않습니다."); document.getElementById("admin-pw-input").value = ""; document.getElementById("admin-pw-input").focus(); }
+        }
+
+        window.openGroupMakerModal = function() {
+            const savedPassword = localStorage.getItem("teacherPassword") || getDefPw();
+            const inputPw = prompt("교사 관리자 비밀번호를 입력하세요:");
+            if (inputPw !== savedPassword) { if(inputPw !== null) alert("비밀번호가 일치하지 않습니다."); return; }
+            document.getElementById('group-maker-modal').style.display = 'flex';
+        }
+        window.closeGroupMakerModal = function() { document.getElementById('group-maker-modal').style.display = 'none'; }
+        
+        window.autoFillIds = function() {
+            const classNum = document.getElementById('gm-class').value;
+            const prefix = `20${classNum}`;
+            const lastNumStr = prompt("해당 학급의 마지막 출석 번호를 입력하세요. (예: 24, 26 등)", "25");
+            
+            if(!lastNumStr) return;
+            const lastNum = parseInt(lastNumStr);
+            if(isNaN(lastNum) || lastNum < 1 || lastNum > 50) {
+                alert("올바른 번호를 입력해주세요."); return;
+            }
+
+            let ids = [];
+            for(let i=1; i<=lastNum; i++) { ids.push(prefix + (i < 10 ? '0' + i : i)); }
+            document.getElementById('gm-ids').value = ids.join(', ');
+            alert(`1번부터 ${lastNum}번까지 자동 입력되었습니다.\n결석생이나 전출생 번호가 있다면 명단 텍스트 박스에서 직접 지워주세요!`);
+        }
+
+        window.generateRandomGroups = function() {
+            const groupCount = parseInt(document.getElementById('gm-count').value);
+            const idText = document.getElementById('gm-ids').value;
+            const ids = idText.split(',').map(id => id.trim()).filter(id => id);
+            
+            if(ids.length === 0) { alert("학번 명단을 입력해주세요."); return; }
+            
+            for (let i = ids.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [ids[i], ids[j]] = [ids[j], ids[i]];
+            }
+            
+            const mapping = {};
+            ids.forEach((id, index) => {
+                const groupNum = (index % groupCount) + 1;
+                mapping[id] = groupNum.toString();
+            });
+            window.tempGroupMapping = mapping;
+            
+            let resultHTML = "";
+            for(let i=1; i<=groupCount; i++) {
+                const members = Object.keys(mapping).filter(k => mapping[k] === i.toString()).sort();
+                resultHTML += `<div style="margin-bottom:8px;"><b>${i}조:</b> ${members.join(', ')}</div>`;
+            }
+            document.getElementById('gm-result').innerHTML = resultHTML;
+            document.getElementById('gm-save-btn').disabled = false;
         }
 
         window.submitQuiz = function() {
@@ -701,7 +796,6 @@
             }
         }
 
-        // ✨ 화살표 제출 시 1개만 허용하는 검증 로직 추가
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length !== 1) { 
                 alert("가장 중요하다고 생각하는 은의 이동 경로(화살표)를 딱 1개만 지도에 그려주세요!"); 
@@ -783,7 +877,7 @@
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
         import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
-        // ✨ [중요] 선생님의 원래 Firebase 설정(Config) 값으로 반드시 복구해주세요!
+        // 선생님의 API 키로 꼭 변경해주세요.
         const firebaseConfig = {
             apiKey: "AIzaSyDfg5dOdccdNRvQxpkueWfMTGAEObPfmM0", 
             authDomain: "history-class-innovation.firebaseapp.com",
@@ -795,7 +889,6 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
-        // 연도 드롭다운 자동 생성 (매년 고칠 필요 없이 자동 연장)
         document.addEventListener('DOMContentLoaded', () => {
             const yearSelect = document.getElementById('login-year');
             if (yearSelect) {
@@ -810,6 +903,21 @@
             }
         });
 
+        window.saveGroupSettings = async function() {
+            const academicYear = document.getElementById('login-year').value;
+            const classNum = document.getElementById('gm-class').value;
+            const docId = `${academicYear}_${classNum}`;
+            
+            try {
+                await setDoc(doc(db, "trade_group_settings", docId), {
+                    mapping: window.tempGroupMapping,
+                    updatedAt: serverTimestamp()
+                });
+                alert("✅ 조 편성 결과가 서버에 저장되었습니다! 이제 학생들이 로그인할 때 자동으로 조가 배정됩니다.");
+                document.getElementById('group-maker-modal').style.display = 'none';
+            } catch(e) { alert("저장 실패: " + e.message); }
+        }
+
         window.checkLogin = async function() {
             const studentId = document.getElementById("student-id").value.trim();
             if(!/^20[0-9]{3}$/.test(studentId)) { alert("⚠️ 학번 형식(예: 20101)으로 정확히 입력해 주세요."); return; }
@@ -819,6 +927,17 @@
             window.studentGroup = window.studyMode === 'group' ? document.getElementById('login-group').value : 'none';
             window.studentRole = window.studyMode === 'individual' ? 'individual' : null;
             localStorage.setItem("studentId", studentId);
+
+            if(window.studyMode === 'group') {
+                try {
+                    const groupSettingRef = doc(db, "trade_group_settings", `${window.academicYear}_${window.studentClass}`);
+                    const groupSettingSnap = await getDoc(groupSettingRef);
+                    if (groupSettingSnap.exists() && groupSettingSnap.data().mapping[studentId]) {
+                        window.studentGroup = groupSettingSnap.data().mapping[studentId];
+                        alert(`🎲 선생님의 사전 조 편성에 따라 [${window.studentGroup}조]로 자동 배정되었습니다!`);
+                    }
+                } catch(e) { console.error("조 편성 로드 실패", e); }
+            }
 
             window.progressDocId = `${window.academicYear}_${window.studentClass}_${studentId}`; 
 
@@ -862,7 +981,7 @@
                     studentClass: window.studentClass,
                     studentGroup: window.studentGroup,
                     studyMode: window.studyMode,
-                    chatContexts: window.chatContexts, // 텍스트만 저장하여 트래픽 최적화
+                    chatContexts: window.chatContexts, 
                     isFirstVisit: window.isFirstVisit,
                     userArrows: window.userArrows,
                     sourceAnswers: window.sourceAnswers,
@@ -873,78 +992,6 @@
                 showAutoSaveIndicator();
             } catch(e) { console.error("자동 저장 실패:", e); }
         }
-
-        const nodes = {
-            america: { x: 70, y: 120, label: "아메리카", color: "#06b6d4" }, europe:  { x: 190, y: 80, label: "유럽", color: "#f59f00" },
-            africa:  { x: 180, y: 220, label: "아프리카", color: "#eab308" }, india:   { x: 260, y: 250, label: "인도", color: "#10b981" },
-            china:   { x: 380, y: 180, label: "중국", color: "#ef4444" }, japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
-        };
-        window.nodes = nodes; 
-
-        window.drawMap = function() {
-            const canvas = document.getElementById('mapCanvas'); if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width; canvas.height = rect.width * (350 / 500);
-            const scaleX = canvas.width / 500; const scaleY = canvas.height / 350;
-
-            ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            if(window.userArrows) {
-                window.userArrows.forEach(arrow => {
-                    if (nodes[arrow.from] && nodes[arrow.to]) { drawArrow(ctx, nodes[arrow.from].x * scaleX, nodes[arrow.from].y * scaleY, nodes[arrow.to].x * scaleX, nodes[arrow.to].y * scaleY, "#4f46e5"); }
-                });
-            }
-
-            for (const key in nodes) {
-                const node = nodes[key]; const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
-                ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
-                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 * Math.min(scaleX, scaleY) : 0; ctx.strokeStyle = "#b45309"; ctx.fill();
-                if(window.selectedNodeKey === key) ctx.stroke();
-                
-                ctx.fillStyle = "#ffffff"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
-            }
-        }
-
-        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
-            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
-            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
-            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
-
-            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(endX, endY);
-            ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
-        }
-        
-        window.addEventListener('resize', () => { if (document.getElementById('chatbot-screen').style.display !== 'none') window.drawMap(); });
-
-        // ✨ 1개만 그리도록 강제하는 클릭 이벤트 수정
-        document.getElementById('mapCanvas').addEventListener('click', function(event) {
-            const rect = this.getBoundingClientRect(); const clickX = event.clientX - rect.left; const clickY = event.clientY - rect.top;
-            const scaleX = rect.width / 500; const scaleY = rect.height / 350;
-
-            let clickedKey = null;
-            for (const key in nodes) {
-                const nx = nodes[key].x * scaleX; const ny = nodes[key].y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
-                if (Math.sqrt((clickX - nx) ** 2 + (clickY - ny) ** 2) <= r) { clickedKey = key; break; }
-            }
-
-            if (clickedKey) {
-                if (!window.selectedNodeKey) { window.selectedNodeKey = clickedKey; } 
-                else {
-                    if (window.selectedNodeKey !== clickedKey) { 
-                        window.userArrows = [{ from: window.selectedNodeKey, to: clickedKey }]; // 덮어쓰기 (1개 제한)
-                        if(window.saveProgress) window.saveProgress(); 
-                    }
-                    window.selectedNodeKey = null;
-                }
-                window.drawMap();
-            }
-        });
-
-        window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.drawMap(); if(window.saveProgress) window.saveProgress(); }
 
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
@@ -996,7 +1043,7 @@
         window.finalSubmit = async function() {
             if(window.autoSaveInterval) clearInterval(window.autoSaveInterval);
             const studentId = localStorage.getItem("studentId");
-            const currentYear = window.academicYear;
+            const currentYear = window.academicYear; 
             let finalEssay = window.studentRole === 'member' ? document.getElementById("summary-input").value.trim() : document.getElementById("essay-input").value.trim();
             if(window.studentRole === 'member' && !window.lastGradingScore) window.lastGradingScore = "요약 (피드백 패스)"; 
             if(!finalEssay) { alert("내용을 작성해 주세요."); return; }
