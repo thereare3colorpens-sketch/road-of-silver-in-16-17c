@@ -1197,6 +1197,23 @@
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
 
+                // ✨ 누락되었던 chatSummary 변수 복구
+                let chatSummary = "";
+                if (data.chatContexts) {
+                    for (const merchant in data.chatContexts) {
+                        if (data.chatContexts[merchant].length > 0) {
+                            chatSummary += `=== [${merchant.toUpperCase()}] ===\n`;
+                            data.chatContexts[merchant].forEach(msg => { 
+                                if (msg.role !== "system") { 
+                                    chatSummary += `${msg.role === "user" ? "학생" : "상인/광부"}: ${msg.content}\n`; 
+                                } 
+                            });
+                            chatSummary += `\n`;
+                        }
+                    }
+                }
+                if (!chatSummary.trim()) chatSummary = "대화 기록 없음";
+
                 const essayContent = data.essay || '없음';
 
                 htmlContent += `
