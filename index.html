@@ -35,7 +35,11 @@
 
         body { font-family: 'Pretendard-Regular', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         input, select, textarea, button { font-family: 'Pretendard-Regular', sans-serif; }
-        h2, h3, h4, .text-gradient { font-family: 'Paperlogy-8ExtraBold', sans-serif !important; }
+        
+        /* 페이퍼로지 폰트 적용 강제 */
+        h1, h2, h3, h4, .text-gradient, .paperlogy-font { 
+            font-family: 'Paperlogy-8ExtraBold', sans-serif !important; 
+        }
 
         ::view-transition-old(root), ::view-transition-new(root) { animation-duration: 0.6s; animation-timing-function: cubic-bezier(0.22, 1, 0.36, 1); }
         .morph-target { view-transition-name: morph-card; }
@@ -73,7 +77,6 @@
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
-        /* ✨ 캔버스 CSS: 화면 크기에 맞춰 조절되지만 내부 화질은 보호됨 */
         canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500 / 350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; display: block; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -181,10 +184,9 @@
 <body>
     <div id="auto-save-indicator">☁️ 저장 중...</div>
 
-    <!-- 1. 학번 입력 & 모드 선택 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
         <div id="login-box" class="card morph-target">
-            <h2 style="font-size: 30px; margin-bottom: 15px;">
+            <h2 style="font-size: 30px; margin-bottom: 15px;" class="paperlogy-font">
                 🌍 <span class="text-gradient">17세기 국제 무역</span>
             </h2>
             <p style="color: var(--text-gray); margin-bottom: 30px; font-size: 16px;">탐구 방식을 선택하고 정보를 입력하세요.</p>
@@ -230,10 +232,9 @@
         </div>
     </div>
 
-    <!-- 🔐 공통 비밀번호 입력 모달 -->
     <div id="password-modal" class="modal-overlay">
         <div class="pw-modal-content" style="max-width: 340px;">
-            <h3 style="margin-top: 0; font-size: 26px;">🔐 <span class="text-gradient">관리자 인증</span></h3>
+            <h3 style="margin-top: 0; font-size: 26px;" class="paperlogy-font">🔐 <span class="text-gradient">관리자 인증</span></h3>
             <p style="font-size: 14.5px; color: var(--text-gray); margin: 0;">교사 비밀번호를 입력해 주세요.</p>
             <input type="password" id="admin-pw-input" placeholder="비밀번호" style="margin: 20px 0; text-align: center; letter-spacing: 3px;" onkeypress="if(event.key === 'Enter') verifyPassword()">
             <div style="display: flex; gap: 10px; justify-content: center;">
@@ -243,10 +244,9 @@
         </div>
     </div>
 
-    <!-- 🎲 교사용 사전 조 편성 시스템 모달 -->
     <div id="group-maker-modal" class="modal-overlay">
         <div class="pw-modal-content" style="text-align: left;">
-            <h3 style="margin-top: 0; font-size: 28px; text-align:center;">🎲 <span class="text-gradient">사전 조 편성 시스템</span></h3>
+            <h3 style="margin-top: 0; font-size: 28px; text-align:center;" class="paperlogy-font">🎲 <span class="text-gradient">사전 조 편성 시스템</span></h3>
             <p style="font-size: 15px; color: var(--text-gray); margin-bottom: 25px; text-align:center; line-height: 1.5;">선생님이 미리 조를 섞어두면 학생들이 접속 시 <b>자동으로 지정된 조에 배정</b>됩니다.<br>(※ 새로 저장하면 기존 조 편성은 덮어씌워집니다.)</p>
             
             <div class="input-group" style="display:flex; gap:15px;">
@@ -283,11 +283,10 @@
         </div>
     </div>
 
-    <!-- 2. 미니 퀴즈 화면 -->
     <div id="quiz-screen" class="screen center-screen">
         <div class="card quiz-container morph-target">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
-                <h2 style="margin: 0; font-size: 28px;">📝 <span class="text-gradient">사전 개념 퀴즈</span></h2>
+                <h2 style="margin: 0; font-size: 28px;" class="paperlogy-font">📝 <span class="text-gradient">사전 개념 퀴즈</span></h2>
                 <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
             </div>
             <p style="color: var(--text-gray); font-size: 16px; margin-bottom: 25px; text-align: left; line-height: 1.5;">17세기 은 무역 핵심 3문제를 모두 맞히고 탐구 세계로 입장하세요!<br>(※ 이미 진행 기록이 있다면 퀴즈 통과 후 그대로 이어집니다.)</p>
@@ -307,14 +306,12 @@
         </div>
     </div>
 
-    <!-- 3. 챗봇 + 지도 메인 화면 -->
     <div id="chatbot-screen" class="screen">
         <div class="main-layout morph-target">
             <div id="left-panel">
-                <h2 style="font-size: 28px; margin-top: 0;">🗺️ <span class="text-gradient">은의 이동 경로 추적하기</span></h2>
+                <h2 style="font-size: 28px; margin-top: 0;" class="paperlogy-font">🗺️ <span class="text-gradient">은의 이동 경로 추적하기</span></h2>
                 <p class="instruction" id="map-instruction" style="font-size: 15.5px; line-height: 1.5; color: var(--text-gray);">상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 가장 핵심적인 은의 이동 경로 1개를 그려보세요!</p>
                 
-                <!-- ✨ 메인 캔버스 명시적 해상도 지정 -->
                 <canvas id="mapCanvas" width="500" height="350"></canvas>
                 
                 <div style="margin-top: 25px; display: flex; gap: 12px; width: 100%; justify-content: center; max-width: 500px;">
@@ -328,7 +325,7 @@
                     <span id="display-student-id" style="font-weight: 700; color: #4f46e5; font-size: 15.5px; background: white; padding: 8px 14px; border-radius: 20px; box-shadow: 0 2px 4px rgba(0,0,0,0.05);"></span>
                     <button onclick="logout()" style="padding: 8px 14px; font-size: 13px; background-color: #ef4444; color: white; border: none; border-radius: 20px; cursor: pointer; font-weight: bold;">🔄 학번 재설정</button>
                 </div>
-                <h2 style="margin-bottom: 5px; font-size: 24px;">💬 17세기 상인 인터뷰</h2>
+                <h2 style="margin-bottom: 5px; font-size: 24px;" class="paperlogy-font">💬 17세기 상인 인터뷰</h2>
                 <p style="font-size: 13.5px; color: #ef4444; font-weight: 700; margin-top: 0; margin-bottom: 15px; background: #fee2e2; padding: 8px 12px; border-radius: 8px; display: inline-block;">⚠️ 여러분이 나눈 모든 대화 기록은 서버에 저장되어 선생님이 확인합니다. 신중하게 질문하세요!</p>
                 
                 <div class="merchant-selector">
@@ -350,11 +347,10 @@
         </div>
     </div>
 
-    <!-- 3.5. 사료 학습 화면 -->
     <div id="source-study-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
-                <h3 style="font-size: 26px;">📖 사료 학습: 무역의 명과 암</h3>
+                <h3 style="font-size: 26px;" class="paperlogy-font">📖 사료 학습: 무역의 명과 암</h3>
                 <p>본격적인 토론과 논술에 앞서, 각 대륙의 진짜 사료를 읽고 분석해 봅시다.</p>
             </div>
             
@@ -378,10 +374,9 @@
         </div>
     </div>
 
-    <!-- 3.6. 사료 팝업 모달 창 -->
     <div id="source-modal" class="modal-overlay">
         <div class="source-modal-content">
-            <h3 id="source-modal-title" style="margin-top: 0; font-size: 26px;"></h3>
+            <h3 id="source-modal-title" style="margin-top: 0; font-size: 26px;" class="paperlogy-font"></h3>
             <div id="source-modal-content"></div>
             
             <p style="font-weight: 700; color: #4f46e5; margin-bottom: 8px; font-size: 16px;">✏️ Q1. <span id="source-modal-q1" style="font-weight: 500; color: var(--text-dark);"></span></p>
@@ -397,11 +392,10 @@
         </div>
     </div>
 
-    <!-- 4. 조별 토의 화면 -->
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
-                <h3 style="font-size: 26px;">🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
+                <h3 style="font-size: 26px;" class="paperlogy-font">🗣️ 조별 토의: 역사를 보는 새로운 시선</h3>
                 <p>유럽 중심의 '대항해 시대'라는 명칭, 과연 모두에게 올바를까요?</p>
             </div>
             
@@ -410,7 +404,7 @@
             </div>
 
             <div class="discussion-points">
-                <h4 style="font-size: 20px;">💡 조별 토의 미션 (조별 작성 시 근거 3가지 이상 필수!)</h4>
+                <h4 style="font-size: 20px;" class="paperlogy-font">💡 조별 토의 미션 (조별 작성 시 근거 3가지 이상 필수!)</h4>
                 <ol>
                     <li>각자 챗봇과 인터뷰한 상인의 입장에서 <b>자신이 맡은 지역의 17세기 무역 상황을 조원들에게 설명</b>해주세요.</li>
                     <li>유럽 중심적 시각을 비판하고, 여러 대륙이 연결된 이 시기를 잘 나타낼 수 있는 <b>'우리 조만의 새로운 역사적 명칭'</b>을 정해보세요.</li>
@@ -425,16 +419,15 @@
         </div>
     </div>
 
-    <!-- 5. 논술/요약 역할 선택 및 과제 화면 -->
     <div id="essay-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
-                <h3 style="font-size: 26px;">📜 최종 제출: 세계사의 시선 바로 세우기</h3>
+                <h3 style="font-size: 26px;" class="paperlogy-font">📜 최종 제출: 세계사의 시선 바로 세우기</h3>
                 <p>'대항해 시대'를 대체할 우리만의 멋진 명칭과 근거를 제출해 주세요!</p>
             </div>
 
             <div id="role-selection-section" style="display: none; background: #f5f3ff; border: 1px solid #e0e7ff; padding: 25px; border-radius: 12px; margin-bottom: 25px;">
-                <h4 style="margin-top: 0; color: #3730a3; font-size: 20px; text-align: center;">👨‍👩‍👧‍👦 역할 선택 (조별 토의 작성 모드)</h4>
+                <h4 style="margin-top: 0; color: #3730a3; font-size: 20px; text-align: center;" class="paperlogy-font">👨‍👩‍👧‍👦 역할 선택 (조별 토의 작성 모드)</h4>
                 <p style="font-size: 15.5px; color: #4f46e5; margin-bottom: 35px; text-align: center; line-height: 1.5;">
                     완성된 논술 점수는 <b>조원 모두에게 동일하게 부여</b>됩니다!<br>단, 총대를 매고 논술문을 <b>대표로 작성하는 서기에게는 가산점</b>이 부여될 수 있습니다.<br>본인의 역할을 선택해 주세요.
                 </p>
@@ -479,11 +472,10 @@
         </div>
     </div>
 
-    <!-- 6. 👨‍🏫 교사 대시보드 화면 -->
     <div id="teacher-dashboard" class="screen">
         <div class="dashboard-container card morph-target">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
-                <h2 style="margin:0; font-size: 28px;">📊 <span class="text-gradient">학생 제출 현황 대시보드</span></h2>
+                <h2 style="margin:0; font-size: 28px;" class="paperlogy-font">📊 <span class="text-gradient">학생 제출 현황 대시보드</span></h2>
                 <div class="dashboard-actions">
                     <button class="gradient-btn secondary-btn" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
                     <button class="gradient-btn" style="background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
@@ -504,38 +496,34 @@
         </div>
     </div>
 
-    <!-- 🗺️ 전체 무역로 오버레이 모달 창 -->
     <div id="overlay-modal" class="modal-overlay">
         <div class="card" style="width: 100%; max-width: 650px; text-align: center; padding: 30px;">
-            <h3 style="margin-top:0; font-size: 26px;">🌍 <span class="text-gradient">무역로 종합 데이터</span></h3>
+            <h3 style="margin-top:0; font-size: 26px;" class="paperlogy-font">🌍 <span class="text-gradient">무역로 종합 데이터</span></h3>
             <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 15px;">아래 버튼을 눌러 지도에 표시할 데이터를 선택하세요.</p>
             <div style="display:flex; justify-content:center; gap:10px; margin-bottom: 25px;">
                 <button id="btn-overlay-filtered" class="gradient-btn" style="padding:10px 15px; font-size:15px; flex:1;" onclick="drawOverlayMap('filtered')">현재 필터(반/학년) 데이터</button>
                 <button id="btn-overlay-all" class="gradient-btn secondary-btn" style="padding:10px 15px; font-size:15px; flex:1; background: #6b7280; box-shadow:none;" onclick="drawOverlayMap('all')">전체 누적 데이터</button>
             </div>
-            <!-- ✨ 오버레이 캔버스 명시적 해상도 지정 -->
             <canvas id="overlayCanvas" width="500" height="350"></canvas>
             <button class="gradient-btn" style="margin-top: 25px; background: #4b5563;" onclick="closeOverlayModal()">닫기</button>
         </div>
     </div>
 
-    <!-- 📺 조별 발표용 클린 뷰 모달 창 -->
     <div id="presentation-modal" class="modal-overlay">
         <div class="presentation-modal-content">
-            <h2 id="present-title" class="presentation-title"></h2>
+            <h2 id="present-title" class="presentation-title paperlogy-font"></h2>
             <div style="display: flex; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 300px; text-align: center;">
-                    <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">🗺️ 연결한 은의 이동 경로</h4>
-                    <!-- ✨ 발표용 캔버스 명시적 해상도 지정 -->
+                    <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;" class="paperlogy-font">🗺️ 연결한 은의 이동 경로</h4>
                     <canvas id="presentCanvas" width="500" height="350"></canvas>
                 </div>
                 <div style="flex: 1.5; min-width: 300px;">
-                    <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">📜 작성 내용</h4>
+                    <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;" class="paperlogy-font">📜 작성 내용</h4>
                     <div id="present-essay" class="presentation-essay"></div>
                 </div>
             </div>
             <div>
-                <h4 style="font-size: 22px; color: #4b5563; margin-bottom: 10px;">💬 핵심 대화 기록</h4>
+                <h4 style="font-size: 22px; color: #4b5563; margin-bottom: 10px;" class="paperlogy-font">💬 핵심 대화 기록</h4>
                 <div id="present-chat" class="presentation-chat" style="background: #f3f4f6; padding: 20px; border-radius: 12px; max-height: 300px; overflow-y: auto;"></div>
             </div>
             <button class="gradient-btn" style="margin-top: 30px; background: #4b5563; font-size: 18px;" onclick="closePresentation()">닫기</button>
@@ -572,25 +560,34 @@
 
         const defaultPwB64 = "Y3JlYXRlbmV3aWQ=";
 
-        const baseRule = `[절대 규칙: 17세기 상인 페르소나 및 요즘 중학생 맞춤형 대화] 
-1. 너는 17세기 상인(또는 광부)이다. 번역투를 쓰지 말고, 사극 톤(~하오, ~구려, ~느냐)에 '완전 럭키비키잖아', '폼 미쳤다', '실화냐', '완전 꿀이잖아', '오히려 좋아' 등 건전한 유행어를 찰지게 섞어서 말해라. 절대 비속어나 혐오 표현을 사용하지 마라.
-2. [오류 방지 및 철저한 역사적 고증]: 미래의 역사나 현대의 개념을 아는 척하지 마라. 17세기 당시의 시대적 상황(은의 흐름, 신대륙, 삼각무역 등) 안에서만 대답해라. 
-3. [다채로운 반응 및 장난 대처]: 학생이 무역과 상관없는 딴소리나 장난을 치면 가끔은 친절하게 받아주지 말고 "지금 은화 계산하느라 바쁘니 허튼소리 할 거면 가보시오!", "장사 방해하지 말고 딴 데 가보시오. 완전 킹받네!"라며 퉁명스럽게 면박을 주거나 무시해서 현실감을 높여라. 정답을 바로 주지 말고 힌트만 주며 3~4문장 내외로 짧게 답해라.
-4. [중요 팩트 체크 - 역사적 사실]:
-- [은의 생산]: 아메리카 포토시 은광(스페인이 원주민 미타 제도로 착취)과 일본 이와미 은광(조선 연은분리법 도입)이 전 세계 은의 핵심 공급처다.
-- [은의 이동]: 아메리카의 은은 대서양을 건너 유럽으로 가거나(가격 혁명 유발), 마닐라 갈레온 무역을 통해 태평양을 건너 아시아(필리핀 마닐라 거쳐 중국)로 갔다. 일본의 은도 중국으로 향했다.
-- [은의 종착지, 중국]: 명나라(일조편법)와 청나라(지정은제)는 세금을 은으로 걷었기에, 유럽/일본/아메리카의 은이 블랙홀처럼 중국으로 빨려 들어왔다. 대세적으로 은은 중국으로 유입되는 흐름이었으며 중국 바깥으로 유출되는 양은 미미했다.
-- [삼각 무역]: 유럽은 아프리카에 은이 아니라 '총기, 화약, 유리구슬, 직물'을 주고 흑인 노예를 샀다. 이 노예들은 아메리카의 광산과 사탕수수 대농장에 팔렸다.
-- [인도의 역할]: 무굴 제국의 화사한 면직물 '캘리코'는 유럽에서 엄청난 인기를 끌었고(모직물 산업 위협), 유럽은 캘리코를 사기 위해 인도에 막대한 은을 지불했다.\n\n[역할 정보]:\n`;
+        // ✨ 핵심 정제된 프롬프트 (비역사적 답변 방지 및 다채로운 면박 지시)
+        const baseRule = `[절대 규칙: 17세기 페르소나 및 중학생 맞춤형 대화] 
+1. 너는 17세기 인물(상인 또는 광부)이다. 번역투를 쓰지 말고, 정중하면서도 당대 사극 톤(~하오, ~구려, ~느냐)으로 대화해라. 
+2. 무분별한 현대 유행어 사용은 자제하되, 맥락에 맞을 때만 자연스럽게 아주 드물게 써라.
+3. [역사적 사실 엄수 및 환각 차단]: 17세기 역사적 사실에 부합하게 대답해라. 
+   - 아메리카 포토시 광산 노동자(미타 제도 착취, 수은 중독, 고통)는 은화나 돈을 소유한 상인이 아니다! 노역의 참상과 은이 스페인/아시아로 흘러가는 비극을 말해라. 절대 '꿀이다', '은화를 계산한다'는 식의 비역사적 표현을 쓰지 마라.
+   - 아프리카 부족장은 은을 대가로 받지 않는다! 유럽 상인에게 총기, 화약, 수공업품을 받고 부족민을 노예로 넘긴 대서양 삼각무역의 비극을 말해라.
+   - 유럽 상인은 삼각무역(아프리카에 무기/수공업품 제공 -> 노예 확보 -> 아메리카 광산/농장 투입)과 아메리카 은으로 아시아 직물/도자기/차를 사는 거래를 담당한다.
+   - 중국(명·청)은 일조편법·지정은제로 은을 대세적으로 흡수하는 블랙홀 역할을 한다.
+   - 일본(에도)은 조선 연은분리법으로 채굴한 이와미 은을 중국에 지불하고 비단/조총을 구입한다.
+4. [장난/딴소리 대처 - 캐릭터별 다채로운 면박]:
+   학생이 역사 탐구와 무관한 장난이나 딴소리를 하면, 매번 똑같은 문장을 쓰지 말고 인물 성격에 맞게 다양하게 퉁명스럽게 면박을 주고 대화를 끊어라:
+   - 포토시 광부: "매캐한 수은 연기와 어둠 속에서 형제가 죽어가는데... 장난칠 기분이오?", "갱도가 무너질까 두려운데 한가한 소릴랑 치우시오!"
+   - 유럽 상인: "대서양 풍랑을 뚫고 온 내게 그따위 헛소리를 하오? 장부 기장하기도 바쁘니 가보시오.", "뼛속까지 시린 바닷바람이나 맞으며 정신 차리시오."
+   - 중국 공행 거상: "차와 비단 장부 작성하느라 시경(時刻)이 모자라네. 쓸데없는 소리로 공행 바깥을 기웃거리지 마시게."
+   - 아프리카 부족장: "마을 청년들이 끌려가 부족의 통곡 소리가 높은데, 어찌 그리 철없는 소리를 하오?"
+   - 에도 상인: "데지마에서 헛소리를 하다간 막부 관리에게 경을 칠 것이오. 장사 방해 말고 물러가시오!"
+   - 무굴 상인: "캘리코 면직물 궤짝을 배에 실어야 하오. 쓸데없는 물음으로 시간을 뺏지 마시오."
+5. 질문의 정답을 바로 주지 말고, 스스로 생각하도록 3~4문장으로 힌트만 줘라.\n\n[역할 정보]:\n`;
         
         const prompts = {
-            europe: `너는 17세기 유럽 국가(영국/스페인)의 상인이다. "우리가 아프리카에 무기와 일용품을 팔고 노예를 사서 아메리카로 보내는 삼각 무역을 주도하는 거 실화냐? 아메리카에서 얻은 막대한 은화로 인도산 면직물 '캘리코', 중국산 비단/도자기를 사들이니 우리 유럽 경제 폼 미쳤구려. 완전 럭키비키 아니겠소?"`,
-            africa: `너는 17세기 서아프리카 연안의 부족장이다. "유럽 놈들이 가져온 총, 화약, 수공업품에 혹해서 동족들을 노예로 넘긴 거 실화냐... 우리 아프리카 인구가 줄고 성비가 무너지며, 부족 갈등만 심해지는 중이오. 강제로 끌려가는 형제들을 생각하면 과연 이 교역이 축복인지 묻고 싶구려."`,
-            america: `너는 17세기 아메리카 대륙 포토시 은광과 대농장의 스페인 상인/감독관이다. "여기 포토시 은광에서 캔 은이 전 세계 은 생산량의 절반인 거 실화냐? 대농장에서는 사탕수수를 재배해 유럽으로 보내지. 근데 가혹한 노동으로 원주민과 흑인 노예들이 죽어가니, 이 엄청난 부가 진정 누구를 위한 건지 팩트 체크 해봐야 하네."`,
-            china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. "유럽 상인들이 우리의 차, 비단, 도자기를 사고 오직 '은'으로만 값을 치르니, 유럽 은이고 마닐라 거쳐온 은이고 일본 은이고 전 세계 은이 광저우로 빨려 들어오는 거 완전 꿀이잖아? 우리 정부도 세금을 은으로 걷고 있지. 서양 상인들은 오직 공행을 통해서만 무역할 수 있으니 대청제국 경제 폼 미쳤구려!"`,
-            japan: `너는 에도 막부 데지마 섬 상인이다. "이 좁은 인공섬 데지마에 갇혀 네덜란드, 중국만 상대해야 하는 건 아쉽지만, 우리에겐 세계 은 생산량 3분의 1을 차지하는 이와미 은광이 있소! 우리가 직접 캔 은을 중국에 지불하고 중국산 고급 비단과 서양 조총을 사들이니 에도 막부 교역도 폼 미쳤다 할 수 있지."`,
-            india: `너는 무굴 제국 캘리컷 상인이다. "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 면직물 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 쏟아져 들어온 은화로 국제 무역 폼 미쳤다! 일부 은은 우리가 다시 동남아나 중국 물건 살 때 쓰기도 하지."`,
-            miner: `너는 17세기 아메리카 포토시 은광에서 강제 노역(미타 제도)을 하는 원주민 또는 아프리카 출신 노예다. "이 어둡고 매캐한 갱도에서 햇빛도 못 보고 은을 캐는 거 실화냐? 우리가 피땀 흘려 캔 은이 갈레온 선을 타고 태평양을 건너 명나라로 가고, 대서양을 건너 스페인으로 간다 들었소. 가혹한 노동 때문에 내 형제들이 죽어가는데, 저들은 우리 은으로 비단과 도자기를 산다니... 진짜 억울해서 못 살겠소!"`
+            europe: `너는 17세기 유럽 국가(영국/스페인)의 상인이다. "우리가 아프리카에 무기와 수공업품을 팔고 노예를 사서 아메리카로 보내는 삼각 무역을 주도하는 거 실화요? 아메리카에서 얻은 막대한 은화로 인도산 면직물 '캘리코', 중국산 비단·도자기를 사들이니 우리 유럽 경제 폼 미쳤구려!"`,
+            africa: `너는 17세기 서아프리카 연안의 부족장이다. "유럽 놈들이 가져온 총, 화약, 수공업품에 혹해서 동족들을 노예로 넘긴 거 실화냐... 우리 아프리카 인구가 줄고 성비가 무너지며, 부족 갈등만 심해지는 중이오. 강제로 끌려가는 형제들을 생각하면 참으로 가슴이 찢어지오."`,
+            america: `너는 17세기 아메리카 대륙 포토시 은광과 대농장의 스페인 상인/감독관이다. "여기 포토시 은광에서 캔 은이 전 세계 은 생산량의 절반인 거 실화냐? 대농장에서는 사탕수수를 재배해 유럽으로 보내지. 근데 가혹한 노동으로 원주민과 흑인 노예들이 죽어가니, 이 엄청난 부가 진정 누구를 위한 건지 생각해보게 되네."`,
+            china: `너는 명·청 시기 광저우 공행(十三行)의 거상이다. "유럽 상인들이 우리의 차, 비단, 도자기를 사고 오직 '은'으로만 값을 치르니, 전 세계 은이 광저우로 빨려 들어오는 거 완전 꿀이잖아? 우리 정부도 세금을 은으로 걷고 있지. 서양 상인들은 오직 공행을 통해서만 무역할 수 있으니 대청제국 경제 폼 미쳤구려!"`,
+            japan: `너는 에도 막부 데지마 섬 상인이다. "이 좁은 인공섬 데지마에 갇혀 네덜란드, 중국만 상대해야 하는 건 아쉽지만, 우리에겐 세계 은 생산량 3분의 1을 차지하는 이와미 은광이 있소! 우리가 직접 캔 은을 중국에 지불하고 중국산 고급 비단과 서양 조총을 사들이니 교역 폼 미쳤다 할 수 있지."`,
+            india: `너는 무굴 제국 캘리컷 상인이다. "저 멀리 유럽 놈들이 아메리카 은화를 바리바리 싸들고 와서 우리 면직물 '캘리코'를 싹쓸이해가는 거 실화요? 모직물보다 화사한 우리 캘리코가 유럽에서 큰 인기를 끌어 쏟아져 들어온 은화로 국제 무역 폼 미쳤다!"`,
+            miner: `너는 17세기 아메리카 포토시 은광에서 강제 노역(미타 제도)을 하는 원주민 또는 아프리카 출신 노예다. "이 어둡고 매캐한 갱도에서 햇빛도 못 보고 은을 캐는 거 실화냐... 우리가 피땀 흘려 캔 은이 갈레온 선을 타고 태평양을 건너 명나라로 가고, 대서양을 건너 스페인으로 간다 들었소. 가혹한 노동과 수은 중독으로 내 형제들이 죽어가는데 저들은 비단과 도자기를 산다니 진짜 원통하오!"`
         };
 
         const sourceData = {
@@ -730,7 +727,7 @@
                 const members = Object.keys(mapping).filter(k => mapping[k] === i.toString()).sort();
                 resultHTML += `
                     <div style="background: white; border: 2px solid #e5e7eb; border-top: 5px solid #7c3aed; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <h4 style="margin: 0 0 10px 0; color: #4f46e5; font-size: 20px;">${i}조</h4>
+                        <h4 style="margin: 0 0 10px 0; color: #4f46e5; font-size: 20px;" class="paperlogy-font">${i}조</h4>
                         <div style="font-size: 16px; color: #374151; line-height: 1.6;">
                             ${members.join('<br>')}
                         </div>
@@ -949,6 +946,15 @@
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
+        // 노드 정보 전역 고정
+        const nodes = {
+            america: { x: 70, y: 120, label: "아메리카", color: "#06b6d4" }, 유럽: { x: 190, y: 80, label: "유럽", color: "#f59f00" },
+            europe:  { x: 190, y: 80, label: "유럽", color: "#f59f00" },
+            africa:  { x: 180, y: 220, label: "아프리카", color: "#eab308" }, india:   { x: 260, y: 250, label: "인도", color: "#10b981" },
+            china:   { x: 380, y: 180, label: "중국", color: "#ef4444" }, japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
+        };
+        window.nodes = nodes; 
+
         document.addEventListener('DOMContentLoaded', () => {
             const yearSelect = document.getElementById('login-year');
             if (yearSelect) {
@@ -1051,6 +1057,100 @@
                 showAutoSaveIndicator();
             } catch(e) { console.error("자동 저장 실패:", e); }
         }
+
+        // ✨ 핵심 맵 그리기 로직 (내부 해상도 500x350 완전 고정)
+        window.drawMap = function() {
+            const canvas = document.getElementById('mapCanvas'); 
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            canvas.width = 500; 
+            canvas.height = 350;
+
+            ctx.clearRect(0, 0, 500, 350); 
+            ctx.fillStyle = "#ffffff"; 
+            ctx.fillRect(0, 0, 500, 350);
+
+            if(window.userArrows) {
+                window.userArrows.forEach(arrow => {
+                    if (window.nodes[arrow.from] && window.nodes[arrow.to]) { 
+                        window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); 
+                    }
+                });
+            }
+
+            for (const key in window.nodes) {
+                if(key === '유럽') continue; // 중복 노드 키 방지
+                const node = window.nodes[key]; 
+                const nx = node.x; 
+                const ny = node.y; 
+                const r = 36;
+                
+                ctx.beginPath(); 
+                ctx.arc(nx, ny, r, 0, Math.PI * 2); 
+                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 : 0; 
+                ctx.strokeStyle = "#b45309"; 
+                ctx.fill();
+                if(window.selectedNodeKey === key) ctx.stroke();
+                
+                ctx.fillStyle = "#ffffff"; 
+                ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; 
+                ctx.textAlign = "center"; 
+                ctx.textBaseline = "middle"; 
+                ctx.fillText(node.label, nx, ny);
+            }
+        }
+
+        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
+            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
+            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
+
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
+        }
+
+        document.getElementById('mapCanvas').addEventListener('click', function(event) {
+            const rect = this.getBoundingClientRect(); 
+            if(rect.width === 0 || rect.height === 0) return; 
+
+            const clickX = event.clientX - rect.left; 
+            const clickY = event.clientY - rect.top;
+
+            const scaleX = 500 / rect.width; 
+            const scaleY = 350 / rect.height;
+
+            const actualX = clickX * scaleX;
+            const actualY = clickY * scaleY;
+
+            let clickedKey = null;
+            for (const key in window.nodes) {
+                if(key === '유럽') continue;
+                const nx = window.nodes[key].x; 
+                const ny = window.nodes[key].y; 
+                const r = 36;
+                if (Math.sqrt((actualX - nx) ** 2 + (actualY - ny) ** 2) <= r) { clickedKey = key; break; }
+            }
+
+            if (clickedKey) {
+                if (!window.selectedNodeKey) { 
+                    window.selectedNodeKey = clickedKey; 
+                } else {
+                    if (window.selectedNodeKey !== clickedKey) { 
+                        window.userArrows = [{ from: window.selectedNodeKey, to: clickedKey }];
+                        if(window.saveProgress) window.saveProgress(); 
+                    }
+                    window.selectedNodeKey = null;
+                }
+                window.drawMap();
+            }
+        });
+
+        window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.drawMap(); if(window.saveProgress) window.saveProgress(); }
 
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
@@ -1192,6 +1292,22 @@
 
                 const essayContent = data.essay || '없음';
 
+                let chatSummary = "";
+                if (data.chatContexts) {
+                    for (const merchant in data.chatContexts) {
+                        if (data.chatContexts[merchant].length > 0) {
+                            chatSummary += `=== [${merchant.toUpperCase()}] ===\n`;
+                            data.chatContexts[merchant].forEach(msg => { 
+                                if (msg.role !== "system") { 
+                                    chatSummary += `${msg.role === "user" ? "학생" : "상인/광부"}: ${msg.content}\n`; 
+                                } 
+                            });
+                            chatSummary += `\n`;
+                        }
+                    }
+                }
+                if (!chatSummary.trim()) chatSummary = "대화 기록 없음";
+
                 htmlContent += `
                     <div class="submission-card">
                         <div class="submission-header">
@@ -1213,6 +1329,7 @@
                             </div>
                         </details>
                         <p style="margin: 6px 0 15px 0; font-size: 15px; color: #047857; line-height: 1.6;"><b>AI 피드백:</b> ${data.aiFeedback || '없음'}</p>
+                        <details><summary style="cursor: pointer; color: #6d28d9; font-weight: bold; font-size: 14.5px; outline: none;">💬 챗봇 대화 기록 열어보기</summary><div class="chat-log-box">${chatSummary}</div></details>
                     </div>
                 `;
             });
@@ -1247,7 +1364,6 @@
                 const canvas = document.getElementById("presentCanvas"); 
                 const ctx = canvas.getContext("2d");
                 
-                // ✨ 발표용 지도 캔버스 해상도 고정!
                 canvas.width = 500;
                 canvas.height = 350;
                 ctx.clearRect(0, 0, 500, 350); 
@@ -1255,6 +1371,7 @@
                 ctx.fillRect(0, 0, 500, 350);
 
                 for (const key in window.nodes) {
+                    if(key === '유럽') continue;
                     const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
                     ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
                     ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
@@ -1284,13 +1401,13 @@
             const canvas = document.getElementById("overlayCanvas"); 
             const ctx = canvas.getContext("2d"); 
             
-            // ✨ 누적 오버레이 지도 캔버스 해상도 고정!
             canvas.width = 500; canvas.height = 350;
             ctx.clearRect(0, 0, 500, 350); 
             ctx.fillStyle = "#ffffff"; 
             ctx.fillRect(0, 0, 500, 350);
 
             for (const key in window.nodes) {
+                if(key === '유럽') continue;
                 const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
                 ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
                 ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
