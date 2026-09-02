@@ -73,8 +73,8 @@
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
-        /* ✨ 캔버스 CSS 유지 */
-        canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500/350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; }
+        /* ✨ 캔버스 비율 및 크기 완전 고정 (백지화 현상 방지) */
+        canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500 / 350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; display: block; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .merchant-selector button { padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background-color: white; color: var(--text-gray); font-size: 14.5px; font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -167,16 +167,6 @@
             .card { padding: 35px 20px; }
             .center-screen, #login-screen { justify-content: flex-start; padding: 40px 20px; box-sizing: border-box; }
             #teacher-dashboard { padding: 30px 20px; box-sizing: border-box; }
-            /* 캔버스 미디어 쿼리 100% 활용 유지 */
-            canvas { width: 100%; height: auto; aspect-ratio: 500 / 350; margin-top: 15px; }
-            .action-grid { grid-template-columns: 1fr; }
-            .bottom-action-bar { flex-direction: column; }
-            .bottom-action-bar button { flex: none; width: 100%; }
-            #role-selection-section > div { flex-direction: column; }
-            #role-selection-section > div > div:first-child { flex: auto; width: 100%; margin-bottom: 15px; height: 60px; }
-            #role-selection-section > div > div:first-child button { flex-direction: row; gap: 15px; }
-            .source-grid { grid-template-columns: 1fr; }
-            #chat-box { min-height: 400px; }
         }
     </style>
 </head>
@@ -315,7 +305,7 @@
             <div id="left-panel">
                 <h2 style="font-size: 28px; margin-top: 0;">🗺️ <span class="text-gradient">은의 이동 경로 추적하기</span></h2>
                 <p class="instruction" id="map-instruction" style="font-size: 15.5px; line-height: 1.5; color: var(--text-gray);">상인들과 대화한 뒤, 출발 국가와 도착 국가를 눌러 가장 핵심적인 은의 이동 경로 1개를 그려보세요!</p>
-                <canvas id="mapCanvas" width="500" height="350"></canvas>
+                <canvas id="mapCanvas"></canvas>
                 <div style="margin-top: 25px; display: flex; gap: 12px; width: 100%; justify-content: center; max-width: 500px;">
                     <button class="gradient-btn" style="flex: 1; background: #6b7280; box-shadow: none;" onclick="resetUserArrows()">🔄 초기화</button>
                     <button class="gradient-btn" style="flex: 2;" onclick="goToSourceStudy()">제출하고 다음 단계로 ➡️</button>
@@ -512,7 +502,7 @@
                 <button id="btn-overlay-filtered" class="gradient-btn" style="padding:10px 15px; font-size:15px; flex:1;" onclick="drawOverlayMap('filtered')">현재 필터(반/학년) 데이터</button>
                 <button id="btn-overlay-all" class="gradient-btn secondary-btn" style="padding:10px 15px; font-size:15px; flex:1; background: #6b7280; box-shadow:none;" onclick="drawOverlayMap('all')">전체 누적 데이터</button>
             </div>
-            <canvas id="overlayCanvas" width="500" height="350" style="margin: 0 auto; display:block; border-radius: 12px; max-width: 100%; height: auto; aspect-ratio: 500/350;"></canvas>
+            <canvas id="overlayCanvas"></canvas>
             <button class="gradient-btn" style="margin-top: 25px; background: #4b5563;" onclick="closeOverlayModal()">닫기</button>
         </div>
     </div>
@@ -524,8 +514,7 @@
             <div style="display: flex; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 300px; text-align: center;">
                     <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">🗺️ 연결한 은의 이동 경로</h4>
-                    <!-- 캔버스 고정 해상도로 수정 완료 -->
-                    <canvas id="presentCanvas" width="500" height="350" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; width: 100%; height: auto; aspect-ratio: 500/350; max-width: 500px;"></canvas>
+                    <canvas id="presentCanvas"></canvas>
                 </div>
                 <div style="flex: 1.5; min-width: 300px;">
                     <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">📜 작성 내용</h4>
@@ -641,12 +630,9 @@
             
             let isValid = false;
             const savedB64 = localStorage.getItem("teacherB64");
-            const savedPlain = localStorage.getItem("teacherPassword");
 
             if (savedB64) {
                 isValid = (btoa(encodeURIComponent(oldInput)) === savedB64);
-            } else if (savedPlain) {
-                isValid = (oldInput === savedPlain);
             } else {
                 isValid = (btoa(encodeURIComponent(oldInput)) === defaultPwB64);
             }
@@ -656,7 +642,6 @@
             const newInput = prompt("새로 사용할 비밀번호를 입력하세요:");
             if (newInput && newInput.trim() !== "") { 
                 localStorage.setItem("teacherB64", btoa(encodeURIComponent(newInput.trim())));
-                localStorage.removeItem("teacherPassword");
                 alert("🔒 관리자 비밀번호가 성공적으로 변경되었습니다!"); 
             }
         }
@@ -668,16 +653,9 @@
             let isValid = false;
 
             const savedB64 = localStorage.getItem("teacherB64");
-            const savedPlain = localStorage.getItem("teacherPassword");
 
             if (savedB64) {
                 isValid = (btoa(encodeURIComponent(inputPw)) === savedB64);
-            } else if (savedPlain) {
-                if (inputPw === savedPlain) {
-                    localStorage.setItem("teacherB64", btoa(encodeURIComponent(inputPw)));
-                    localStorage.removeItem("teacherPassword");
-                    isValid = true;
-                }
             } else {
                 isValid = (btoa(encodeURIComponent(inputPw)) === defaultPwB64);
             }
@@ -1128,7 +1106,6 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        // ✨ 캔버스 그리기 관련 변수 수정으로 인해 초기화 로직 보완
         window.loadTeacherDashboard = async function() {
             transitionToScreen("teacher-dashboard", async () => {
                 const listContainer = document.getElementById("submissions-list");
@@ -1200,23 +1177,6 @@
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
 
-                // ✨ 누락되었던 chatSummary 복구 완료
-                let chatSummary = "";
-                if (data.chatContexts) {
-                    for (const merchant in data.chatContexts) {
-                        if (data.chatContexts[merchant].length > 0) {
-                            chatSummary += `=== [${merchant.toUpperCase()}] ===\n`;
-                            data.chatContexts[merchant].forEach(msg => { 
-                                if (msg.role !== "system") { 
-                                    chatSummary += `${msg.role === "user" ? "학생" : "상인/광부"}: ${msg.content}\n`; 
-                                } 
-                            });
-                            chatSummary += `\n`;
-                        }
-                    }
-                }
-                if (!chatSummary.trim()) chatSummary = "대화 기록 없음";
-
                 const essayContent = data.essay || '없음';
 
                 htmlContent += `
@@ -1240,13 +1200,13 @@
                             </div>
                         </details>
                         <p style="margin: 6px 0 15px 0; font-size: 15px; color: #047857; line-height: 1.6;"><b>AI 피드백:</b> ${data.aiFeedback || '없음'}</p>
-                        <details><summary style="cursor: pointer; color: #6d28d9; font-weight: bold; font-size: 14.5px; outline: none;">💬 챗봇 대화 기록 열어보기</summary><div class="chat-log-box">${chatSummary}</div></details>
                     </div>
                 `;
             });
             listContainer.innerHTML = htmlContent;
         }
 
+        // ✨ 발표 모드 캔버스도 해상도 고정 로직 완벽 적용
         window.openPresentation = function(docId) {
             const data = window.filteredSubmissionsData.find(d => d.docId === docId);
             if(!data) return;
@@ -1272,9 +1232,9 @@
             document.getElementById('presentation-modal').style.display = "flex";
 
             setTimeout(() => {
-                const canvas = document.getElementById("presentCanvas"); const ctx = canvas.getContext("2d");
+                const canvas = document.getElementById("presentCanvas"); 
+                const ctx = canvas.getContext("2d");
                 
-                // 그리기 고정 해상도로 복원
                 canvas.width = 500;
                 canvas.height = 350;
                 ctx.clearRect(0, 0, 500, 350); 
@@ -1308,9 +1268,14 @@
                 btnFiltered.classList.add('secondary-btn'); btnFiltered.style.background = "#6b7280"; btnFiltered.style.color = "white";
             }
 
-            const canvas = document.getElementById("overlayCanvas"); const ctx = canvas.getContext("2d"); 
+            // ✨ 누적 오버레이 캔버스도 해상도 고정 완벽 적용
+            const canvas = document.getElementById("overlayCanvas"); 
+            const ctx = canvas.getContext("2d"); 
+            
             canvas.width = 500; canvas.height = 350;
-            ctx.clearRect(0, 0, 500, 350); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 500, 350);
+            ctx.clearRect(0, 0, 500, 350); 
+            ctx.fillStyle = "#ffffff"; 
+            ctx.fillRect(0, 0, 500, 350);
 
             for (const key in window.nodes) {
                 const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
