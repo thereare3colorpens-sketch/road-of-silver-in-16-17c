@@ -72,7 +72,9 @@
         .main-layout { display: flex; width: 100%; height: 100vh; height: 100dvh; background: white; flex-direction: row; }
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
-        canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: 350px; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; }
+        
+        /* ✨ 캔버스 CSS 유지 */
+        canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500/350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
         .merchant-selector button { padding: 14px 18px; border: 1px solid var(--border-color); border-radius: 10px; cursor: pointer; background-color: white; color: var(--text-gray); font-size: 14.5px; font-weight: 700; transition: all 0.2s; box-shadow: 0 2px 4px rgba(0,0,0,0.02); }
@@ -165,6 +167,7 @@
             .card { padding: 35px 20px; }
             .center-screen, #login-screen { justify-content: flex-start; padding: 40px 20px; box-sizing: border-box; }
             #teacher-dashboard { padding: 30px 20px; box-sizing: border-box; }
+            /* 캔버스 미디어 쿼리 100% 활용 유지 */
             canvas { width: 100%; height: auto; aspect-ratio: 500 / 350; margin-top: 15px; }
             .action-grid { grid-template-columns: 1fr; }
             .bottom-action-bar { flex-direction: column; }
@@ -521,7 +524,8 @@
             <div style="display: flex; gap: 30px; margin-bottom: 20px; flex-wrap: wrap;">
                 <div style="flex: 1; min-width: 300px; text-align: center;">
                     <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">🗺️ 연결한 은의 이동 경로</h4>
-                    <canvas id="presentCanvas" width="500" height="350" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; width: 100%; max-width: 500px;"></canvas>
+                    <!-- 캔버스 고정 해상도로 수정 완료 -->
+                    <canvas id="presentCanvas" width="500" height="350" style="background: white; border: 2px solid #e5e7eb; border-radius: 12px; width: 100%; height: auto; aspect-ratio: 500/350; max-width: 500px;"></canvas>
                 </div>
                 <div style="flex: 1.5; min-width: 300px;">
                     <h4 style="font-size: 22px; color: #4b5563; margin-top: 0;">📜 작성 내용</h4>
@@ -563,8 +567,6 @@
             europe: {a1: "", a2: ""}, africa: {a1: "", a2: ""}, america: {a1: "", a2: ""},
             china: {a1: "", a2: ""}, japan: {a1: "", a2: ""}, india: {a1: "", a2: ""}
         };
-
-        const getDefPw = () => [99, 114, 101, 97, 116, 101, 110, 101, 119, 105, 100].map(c => String.fromCharCode(c)).join('');
 
         const defaultPwB64 = "Y3JlYXRlbmV3aWQ=";
 
@@ -1126,6 +1128,7 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
+        // ✨ 캔버스 그리기 관련 변수 수정으로 인해 초기화 로직 보완
         window.loadTeacherDashboard = async function() {
             transitionToScreen("teacher-dashboard", async () => {
                 const listContainer = document.getElementById("submissions-list");
@@ -1197,7 +1200,7 @@
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
 
-                // ✨ 누락되었던 chatSummary 변수 복구
+                // ✨ 누락되었던 chatSummary 복구 완료
                 let chatSummary = "";
                 if (data.chatContexts) {
                     for (const merchant in data.chatContexts) {
@@ -1270,18 +1273,23 @@
 
             setTimeout(() => {
                 const canvas = document.getElementById("presentCanvas"); const ctx = canvas.getContext("2d");
-                const scaleX = canvas.width / 500; const scaleY = canvas.height / 350;
-                ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                
+                // 그리기 고정 해상도로 복원
+                canvas.width = 500;
+                canvas.height = 350;
+                ctx.clearRect(0, 0, 500, 350); 
+                ctx.fillStyle = "#ffffff"; 
+                ctx.fillRect(0, 0, 500, 350);
 
                 for (const key in window.nodes) {
-                    const node = window.nodes[key]; const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
-                    ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2 * Math.min(scaleX, scaleY); ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
-                    ctx.fillStyle = "#212529"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
+                    const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
+                    ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
                 }
 
                 if (data.arrows && Array.isArray(data.arrows)) {
                     data.arrows.forEach(arrow => {
-                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x * scaleX, window.nodes[arrow.from].y * scaleY, window.nodes[arrow.to].x * scaleX, window.nodes[arrow.to].y * scaleY, "#4f46e5"); }
+                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); }
                     });
                 }
             }, 100);
@@ -1300,22 +1308,21 @@
                 btnFiltered.classList.add('secondary-btn'); btnFiltered.style.background = "#6b7280"; btnFiltered.style.color = "white";
             }
 
-            const canvas = document.getElementById("overlayCanvas"); const ctx = canvas.getContext("2d"); const rect = canvas.getBoundingClientRect();
-            canvas.width = rect.width; canvas.height = rect.width * (350 / 500);
-            const scaleX = canvas.width / 500; const scaleY = canvas.height / 350;
-            ctx.clearRect(0, 0, canvas.width, canvas.height); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, canvas.width, canvas.height);
+            const canvas = document.getElementById("overlayCanvas"); const ctx = canvas.getContext("2d"); 
+            canvas.width = 500; canvas.height = 350;
+            ctx.clearRect(0, 0, 500, 350); ctx.fillStyle = "#ffffff"; ctx.fillRect(0, 0, 500, 350);
 
             for (const key in window.nodes) {
-                const node = window.nodes[key]; const nx = node.x * scaleX; const ny = node.y * scaleY; const r = 36 * Math.min(scaleX, scaleY);
-                ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2 * Math.min(scaleX, scaleY); ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#212529"; ctx.font = `bold ${14 * Math.min(scaleX, scaleY)}px 'Paperlogy-8ExtraBold', sans-serif`; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
+                const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
+                ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
+                ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
             }
 
             const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
             targetData.forEach(item => {
                 if (item.arrows && Array.isArray(item.arrows)) {
                     item.arrows.forEach(arrow => {
-                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x * scaleX, window.nodes[arrow.from].y * scaleY, window.nodes[arrow.to].x * scaleX, window.nodes[arrow.to].y * scaleY, "rgba(124, 58, 237, 0.35)"); }
+                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "rgba(124, 58, 237, 0.35)"); }
                     });
                 }
             });
