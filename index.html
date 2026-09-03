@@ -128,7 +128,10 @@
         .dashboard-container { width: 100%; max-width: 1200px; }
         .dashboard-actions { display: flex; gap: 10px; flex-wrap: wrap; }
         .dashboard-actions button { flex: 1; width: auto; padding: 12px 14px; font-size: 14.5px; white-space: nowrap; min-width: max-content; }
-        .dashboard-controls { display: flex; gap: 12px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; align-items: center; flex-wrap: wrap; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
+        
+        /* ✨ 대시보드 컨트롤 패널 구조 분리 개선 */
+        .dashboard-controls { display: flex; flex-direction: column; gap: 15px; margin-bottom: 25px; background: white; padding: 20px; border-radius: 16px; box-shadow: var(--shadow-soft); border: 1px solid var(--border-color); }
+        .control-row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; width: 100%; }
         .dashboard-controls select { padding: 12px 15px; border-radius: 8px; border: 1px solid var(--border-color); font-size: 15px; outline: none; min-width: 120px; }
         
         .submission-card { background: white; border: 1px solid var(--border-color); border-radius: 16px; padding: 25px; margin-bottom: 20px; box-shadow: 0 4px 6px rgba(0,0,0,0.02); transition: 0.2s; }
@@ -487,20 +490,34 @@
                 <h2 style="margin:0; font-size: 28px;" class="paperlogy-font">📊 <span class="text-gradient">학생 제출 현황 대시보드</span></h2>
                 <div class="dashboard-actions">
                     <button class="gradient-btn secondary-btn" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
-                    <button class="gradient-btn" style="background: #10b981;" onclick="loadTeacherDashboard()">🔄 실시간 새로고침</button>
                     <button class="gradient-btn" style="background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
                     <button class="gradient-btn" onclick="downloadExcel()">📊 엑셀 다운로드</button>
                     <button class="gradient-btn" style="background: #6b7280;" onclick="closeTeacherDashboard()">닫기</button>
                 </div>
             </div>
             
-            <div class="dashboard-controls">
-                <span style="font-weight: 900; font-size: 16px; color: var(--text-dark); width: 100%;">🔍 조회 필터:</span>
-                <select id="modeFilterDash" onchange="renderDashboardList()"><option value="all">전체 활동</option><option value="individual">개별 탐구</option><option value="group">조별 토의</option></select>
-                <select id="yearFilter" onchange="renderDashboardList()"></select>
-                <select id="classFilterDash" onchange="renderDashboardList()"><option value="all">전체 학급</option><option value="1">1반</option><option value="2">2반</option><option value="3">3반</option><option value="4">4반</option><option value="5">5반</option></select>
-                <select id="groupFilterDash" onchange="renderDashboardList()"><option value="all">전체 조</option><option value="1">1조</option><option value="2">2조</option><option value="3">3조</option><option value="4">4조</option><option value="5">5조</option><option value="6">6조</option><option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option></select>
-                <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 등록순</option><option value="studentId">학번 오름차순</option></select>
+            <!-- ✨ 대시보드 조건 분리 (선택형 온디맨드 로딩) -->
+            <div class="dashboard-controls" style="flex-direction: column; align-items: flex-start; gap: 15px;">
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; width: 100%; border-bottom: 2px dashed #e5e7eb; padding-bottom: 15px;">
+                    <span style="font-weight: 900; font-size: 16px; color: #4f46e5;">📥 데이터 불러오기:</span>
+                    <select id="yearFilter" style="width: 140px;"></select>
+                    <select id="classFilterDash" style="width: 140px;">
+                        <option value="all">학급 선택(필수)</option>
+                        <option value="1">1반</option>
+                        <option value="2">2반</option>
+                        <option value="3">3반</option>
+                        <option value="4">4반</option>
+                        <option value="5">5반</option>
+                    </select>
+                    <button class="gradient-btn" style="width: auto; padding: 12px 20px; font-size: 15px;" onclick="fetchDashData()">🔍 조회하기 (새로고침)</button>
+                </div>
+                
+                <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap; width: 100%;">
+                    <span style="font-weight: 900; font-size: 16px; color: var(--text-dark);">🔽 결과 내 필터:</span>
+                    <select id="modeFilterDash" onchange="renderDashboardList()"><option value="all">전체 활동</option><option value="individual">개별 탐구</option><option value="group">조별 토의</option></select>
+                    <select id="groupFilterDash" onchange="renderDashboardList()"><option value="all">전체 조</option><option value="1">1조</option><option value="2">2조</option><option value="3">3조</option><option value="4">4조</option><option value="5">5조</option><option value="6">6조</option><option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option></select>
+                    <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 등록순</option><option value="studentId">학번 오름차순</option></select>
+                </div>
             </div>
             <div id="submissions-list" style="font-size: 16px;"></div>
         </div>
@@ -645,7 +662,6 @@
             if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw(); 
         });
 
-        // ✨ 화면 전환과 데이터 비동기 통신 충돌 원천 분리!
         window.transitionToScreen = function(screenId, callback = null) {
             const doChange = () => {
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
@@ -711,7 +727,6 @@
             }
         }
         
-        // ✨ 안전하게 모달에서 선생님 대시보드로 이동
         window.verifyPassword = function() {
             const inputPw = document.getElementById("admin-pw-input").value;
             let isValid = false;
@@ -738,20 +753,6 @@
             }
         }
         
-        // ✨ 대시보드 로딩 트리거 (애니메이션 꼬임 방지)
-        window.loadTeacherDashboard = function() {
-            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
-                 transitionToScreen("teacher-dashboard", () => {
-                     if (window.fetchDashData) window.fetchDashData();
-                     else alert("데이터베이스를 준비 중입니다. 새로고침을 눌러주세요.");
-                 });
-            } else {
-                 if (window.fetchDashData) window.fetchDashData();
-            }
-        }
-        
-        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
-
         window.closeGroupMakerModal = function() { document.getElementById('group-maker-modal').style.display = 'none'; }
         
         window.autoFillIds = function() {
@@ -1100,10 +1101,10 @@
         }
     </script>
 
-    <!-- ✨ 가장 처음 파이어베이스가 아무 문제 없이 즉각 로딩되던 오리지널 연결 모듈로 완전 복구! -->
     <script type="module">
+        // ✨ 파이어베이스 Lite 모듈 임포트 유지 (조건부 필터 쿼리에 where 추가)
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, where, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-lite.js";
 
         // 선생님의 API 키로 꼭 변경해주세요.
         const firebaseConfig = {
@@ -1287,29 +1288,50 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        // ✨ 렌더링 꼬임 방지를 위해 순정 데이터를 병렬(Promise.all)로 안전하게 호출
+        // ✨ 대시보드 로딩 시 데이터 호출 금지 (버튼 누를 때만 호출하도록 구조 분리)
+        window.loadTeacherDashboard = function() {
+            transitionToScreen("teacher-dashboard", () => {
+                const yearSelect = document.getElementById('yearFilter');
+                if (yearSelect.options.length === 0) {
+                    const currentYear = new Date().getFullYear();
+                    for (let y = currentYear - 1; y <= currentYear + 3; y++) {
+                        const option = document.createElement('option');
+                        option.value = y.toString(); option.text = `${y}학년도`;
+                        if (y === currentYear) option.selected = true;
+                        yearSelect.appendChild(option);
+                    }
+                }
+                const listContainer = document.getElementById("submissions-list");
+                listContainer.innerHTML = `<div style="text-align:center; padding:40px;"><p style="color: #4b5563; font-weight: bold; font-size: 18px;">👆 상단의 <span style="color:#4f46e5;">[학년도]</span>와 <span style="color:#4f46e5;">[학급]</span>을 선택한 후 <b>[조회하기]</b> 버튼을 눌러주세요.</p></div>`;
+            });
+        }
+
+        // ✨ 선택형 온디맨드 데이터 호출 (원하는 학년/반만 빠르게 쏙 뽑아옵니다!)
         window.fetchDashData = async function() {
-            const listContainer = document.getElementById("submissions-list");
+            const year = document.getElementById("yearFilter").value;
+            const cls = document.getElementById("classFilterDash").value;
             
-            const setStatus = (msg) => {
-                listContainer.innerHTML = `<p style="color: #4f46e5; font-weight: bold; padding: 20px; font-size: 16px;">⏳ ${msg}</p>`;
-            };
+            if(cls === "all") {
+                alert("원활한 데이터 로딩을 위해 조회할 '학급'을 반드시 선택해주세요. (예: 1반)");
+                return;
+            }
+
+            const listContainer = document.getElementById("submissions-list");
+            listContainer.innerHTML = `<div style="text-align:center; padding:40px;"><p style="color: #4f46e5; font-weight: bold; font-size: 18px;">⏳ ${year}학년도 ${cls}반 데이터를 불러오는 중입니다...</p></div>`;
 
             try {
-                setStatus("서버에서 학생들의 최신 데이터를 가져오고 있습니다...");
                 window.globalSubmissionsData = [];
-                let uniqueYears = new Set(); 
 
-                const [subSnap, progSnap] = await Promise.all([
-                    getDocs(collection(db, "trade_submissions")),
-                    getDocs(collection(db, "trade_progress"))
-                ]);
+                // 데이터베이스에서 전체가 아닌 "해당 학년도 + 해당 반" 데이터만 즉시 검색
+                const qSub = query(collection(db, "trade_submissions"), where("academicYear", "==", year), where("studentClass", "==", cls));
+                const qProg = query(collection(db, "trade_progress"), where("academicYear", "==", year), where("studentClass", "==", cls));
+
+                const [subSnap, progSnap] = await Promise.all([getDocs(qSub), getDocs(qProg)]);
                 
                 subSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
                     data.docId = docSnap.id; 
                     data.status = 'submitted'; 
-                    if(data.academicYear) uniqueYears.add(data.academicYear);
                     window.globalSubmissionsData.push(data);
                 });
                 
@@ -1321,25 +1343,16 @@
                     
                     const alreadySubmitted = window.globalSubmissionsData.find(s => s.studentId === data.studentId && s.status === 'submitted');
                     if(!alreadySubmitted) {
-                        if(data.academicYear) uniqueYears.add(data.academicYear);
                         window.globalSubmissionsData.push(data);
                     }
                 });
-                
-                const yearSelect = document.getElementById("yearFilter");
-                const currentVal = yearSelect.value;
-                yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
-                Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => { yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`; });
-                if(Array.from(uniqueYears).includes(currentVal)) { yearSelect.value = currentVal; } 
-                else { yearSelect.value = "all"; }
                 
                 window.renderDashboardList();
             } catch (error) { 
                 console.error("데이터 로드 에러:", error);
                 listContainer.innerHTML = `<div style="background:#fee2e2; color:#b91c1c; padding:20px; border-radius:12px; font-weight:bold; line-height:1.6;">
                     ❌ 데이터 로드 중 오류가 발생했습니다.<br><br>
-                    에러 내용: ${error.message}<br><br>
-                    새로고침(F5) 후 다시 시도해 주세요.
+                    에러 내용: ${error.message}
                 </div>`; 
             }
         }
@@ -1355,16 +1368,16 @@
             }
         }
 
+        // 학년/반은 이미 fetchDashData에서 걸러왔으므로, 여기선 화면 필터(조, 정렬 등)만 수행
         window.renderDashboardList = function() {
             try {
-                const modeFilter = document.getElementById("modeFilterDash").value; const yearFilter = document.getElementById("yearFilter").value;
-                const classFilter = document.getElementById("classFilterDash").value; const groupFilter = document.getElementById("groupFilterDash").value;
-                const sortOrder = document.getElementById("sortOrder").value; const listContainer = document.getElementById("submissions-list");
+                const modeFilter = document.getElementById("modeFilterDash").value; 
+                const groupFilter = document.getElementById("groupFilterDash").value;
+                const sortOrder = document.getElementById("sortOrder").value; 
+                const listContainer = document.getElementById("submissions-list");
 
                 let filtered = window.globalSubmissionsData.slice(); 
                 if (modeFilter !== "all") filtered = filtered.filter(item => item.studyMode === modeFilter);
-                if (yearFilter !== "all") filtered = filtered.filter(item => (item.academicYear || "") === yearFilter);
-                if (classFilter !== "all") filtered = filtered.filter(item => item.studentClass === classFilter);
                 if (groupFilter !== "all") filtered = filtered.filter(item => item.studentGroup === groupFilter);
                 
                 if (sortOrder === "studentId") { filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || "")); } 
@@ -1377,7 +1390,7 @@
                 }
 
                 window.filteredSubmissionsData = filtered;
-                if (filtered.length === 0) { listContainer.innerHTML = "<p style='padding: 20px;'>해당 조건의 학생 데이터가 없습니다.</p>"; return; }
+                if (filtered.length === 0) { listContainer.innerHTML = "<p style='padding: 20px;'>조회된 학생 데이터가 없습니다.</p>"; return; }
 
                 let htmlContent = "";
                 filtered.forEach(data => {
