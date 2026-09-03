@@ -543,7 +543,6 @@
     </div>
 
     <script>
-        // 뒤로가기 및 스와이프 이탈 방지
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
         history.pushState(null, null, location.href);
         window.addEventListener('popstate', function(event) {
@@ -709,8 +708,6 @@
             }
         }
         
-        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
-        
         window.verifyPassword = function() {
             const inputPw = document.getElementById("admin-pw-input").value;
             let isValid = false;
@@ -756,7 +753,6 @@
             alert(`1번부터 ${lastNum}번까지 자동 입력되었습니다.\n결석생이나 전출생 번호가 있다면 명단 텍스트 박스에서 직접 지워주세요!`);
         }
 
-        // ✨ 조 짜기 및 교실 자리배치도 시각화 로직
         window.generateRandomGroups = function() {
             const groupCount = parseInt(document.getElementById('gm-count').value);
             const idText = document.getElementById('gm-ids').value;
@@ -776,7 +772,6 @@
             });
             window.tempGroupMapping = mapping;
             
-            // 칠판과 조별 책상 배열 (CSS Grid 활용)
             let resultHTML = `
                 <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
                     <div style="width: 80%; background: #334155; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 18px; font-weight: bold; letter-spacing: 5px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">칠 판 (교 탁)</div>
@@ -1089,7 +1084,8 @@
 
     <script type="module">
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        // ✨ Long-Polling 강제 활성화를 위해 initializeFirestore 호출
+        import { initializeFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // 선생님의 API 키로 꼭 변경해주세요.
         const firebaseConfig = {
@@ -1101,7 +1097,12 @@
             appId: "1:678019068245:web:5485f6e106659831ee3fdc"
         };
         const app = initializeApp(firebaseConfig);
-        const db = getFirestore(app);
+        
+        // ✨ 학교 방화벽 프리징 완벽 차단! (WebSocket 대신 HTTP 우회망 사용)
+        const db = initializeFirestore(app, {
+            experimentalForceLongPolling: true
+        });
+        window.db = db;
 
         document.addEventListener('DOMContentLoaded', () => {
             const yearSelect = document.getElementById('login-year');
@@ -1123,7 +1124,7 @@
             const docId = `${academicYear}_${classNum}`;
             
             try {
-                await setDoc(doc(db, "trade_group_settings", docId), {
+                await setDoc(doc(window.db, "trade_group_settings", docId), {
                     mapping: window.tempGroupMapping,
                     updatedAt: serverTimestamp()
                 });
@@ -1143,7 +1144,7 @@
 
             if(window.studyMode === 'group') {
                 try {
-                    const groupSettingRef = doc(db, "trade_group_settings", `${window.academicYear}_${window.studentClass}`);
+                    const groupSettingRef = doc(window.db, "trade_group_settings", `${window.academicYear}_${window.studentClass}`);
                     const groupSettingSnap = await getDoc(groupSettingRef);
                     if (groupSettingSnap.exists() && groupSettingSnap.data().mapping[studentId]) {
                         window.studentGroup = groupSettingSnap.data().mapping[studentId];
@@ -1155,7 +1156,7 @@
             window.progressDocId = `${window.academicYear}_${window.studentClass}_${studentId}`; 
 
             try {
-                const docRef = doc(db, "trade_progress", window.progressDocId);
+                const docRef = doc(window.db, "trade_progress", window.progressDocId);
                 const docSnap = await getDoc(docRef);
                 
                 if (docSnap.exists()) {
@@ -1188,7 +1189,7 @@
         window.saveProgress = async function() {
             if (!window.progressDocId) return;
             try {
-                await setDoc(doc(db, "trade_progress", window.progressDocId), {
+                await setDoc(doc(window.db, "trade_progress", window.progressDocId), {
                     studentId: localStorage.getItem("studentId"),
                     academicYear: window.academicYear,
                     studentClass: window.studentClass,
@@ -1262,32 +1263,41 @@
             if(!finalEssay) { alert("내용을 작성해 주세요."); return; }
 
             try {
-                await addDoc(collection(db, "trade_submissions"), {
+                await addDoc(collection(window.db, "trade_submissions"), {
                     studentId: studentId, academicYear: currentYear, studyMode: window.studyMode, studentClass: window.studentClass, studentGroup: window.studentGroup, studentRole: window.studentRole, 
                     arrows: window.userArrows || [], chatContexts: window.chatContexts || {}, sourceAnswers: window.sourceAnswers || {},
                     essay: finalEssay, aiScore: window.lastGradingScore, aiFeedback: window.lastGradingFeedback || "-", timestamp: serverTimestamp()
                 });
-                if (window.progressDocId) { await deleteDoc(doc(db, "trade_progress", window.progressDocId)); }
+                if (window.progressDocId) { await deleteDoc(doc(window.db, "trade_progress", window.progressDocId)); }
                 
                 alert("🎉 최종 제출이 완벽하게 완료되었습니다! 수고하셨습니다."); location.reload(); 
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        // ✨ 멈춤 현상 원천 차단: 안전 장치 완벽 적용 (타임아웃 삭제)
+        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
+
+        window.loadTeacherDashboard = async function() {
+            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
+                 transitionToScreen("teacher-dashboard", window.fetchDashData);
+            } else {
+                 window.fetchDashData();
+            }
+        }
+
+        // ✨ 타임아웃 삭제 및 무제한 대기 허용 (안정적 데이터 로드)
         window.fetchDashData = async function() {
             const listContainer = document.getElementById("submissions-list");
             
             const setStatus = (msg) => {
-                listContainer.innerHTML = `<p style="color: #4f46e5; font-weight: bold; padding: 20px;">⏳ ${msg}</p>`;
+                listContainer.innerHTML = `<p style="color: #4f46e5; font-weight: bold; padding: 20px; font-size: 16px;">⏳ ${msg}</p>`;
             };
 
             try {
-                setStatus("서버와 연결하여 제출 완료 데이터를 처리 중입니다... (1/3)");
+                setStatus("서버와 통신망을 우회하여 제출 데이터를 가져오고 있습니다... (1/3)");
                 window.globalSubmissionsData = [];
                 let uniqueYears = new Set(); 
 
-                // 강제 타임아웃을 없애고 Firebase의 자연스러운 통신을 기다립니다.
-                const qSub = collection(db, "trade_submissions");
+                const qSub = collection(window.db, "trade_submissions");
                 const subSnap = await getDocs(qSub); 
                 
                 subSnap.forEach((docSnap) => {
@@ -1299,7 +1309,7 @@
                 });
 
                 setStatus("작성 중인 실시간 데이터를 불러오는 중입니다... (2/3)");
-                const qProg = collection(db, "trade_progress");
+                const qProg = collection(window.db, "trade_progress");
                 const progSnap = await getDocs(qProg); 
                 
                 progSnap.forEach((docSnap) => {
@@ -1330,25 +1340,16 @@
                 listContainer.innerHTML = `<div style="background:#fee2e2; color:#b91c1c; padding:20px; border-radius:12px; font-weight:bold; line-height:1.6;">
                     ❌ 데이터 로드 중 오류가 발생했습니다.<br><br>
                     에러 내용: ${error.message}<br><br>
-                    1. 학교 인터넷 연결 상태를 확인해주세요.<br>
-                    2. 상단 중앙의 [🔄 실시간 새로고침] 버튼을 한 번 더 눌러주세요.
+                    새로고침(F5) 후 다시 시도해 주세요.
                 </div>`; 
-            }
-        }
-
-        window.loadTeacherDashboard = async function() {
-            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
-                 transitionToScreen("teacher-dashboard", window.fetchDashData);
-            } else {
-                 window.fetchDashData();
             }
         }
 
         window.deleteSubmission = async function(docId) {
             if(confirm("정말 이 학생의 데이터를 삭제하시겠습니까? (복구 불가)")) {
                 try { 
-                    await deleteDoc(doc(db, "trade_submissions", docId)); 
-                    await deleteDoc(doc(db, "trade_progress", docId)); 
+                    await deleteDoc(doc(window.db, "trade_submissions", docId)); 
+                    await deleteDoc(doc(window.db, "trade_progress", docId)); 
                     alert("성공적으로 삭제되었습니다."); 
                     window.loadTeacherDashboard(); 
                 } catch(e) { alert("삭제 중 오류가 발생했습니다."); }
