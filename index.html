@@ -5,10 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은의 여정: 17세기 국제 무역 탐구</title>
     
-    <!-- ✨ defer 속성 추가: 화면 렌더링을 막지 않고 백그라운드에서 로드하여 초기 접속 속도 대폭 향상 -->
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
     <script defer src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
-    
     <style>
         @font-face {
             font-family: 'Paperlogy-8ExtraBold';
@@ -504,7 +502,7 @@
                 <select id="groupFilterDash" onchange="renderDashboardList()"><option value="all">전체 조</option><option value="1">1조</option><option value="2">2조</option><option value="3">3조</option><option value="4">4조</option><option value="5">5조</option><option value="6">6조</option><option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option></select>
                 <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 등록순</option><option value="studentId">학번 오름차순</option></select>
             </div>
-            <div id="submissions-list" style="font-size: 16px;"><p>데이터를 불러오는 중입니다...</p></div>
+            <div id="submissions-list" style="font-size: 16px;"></div>
         </div>
     </div>
 
@@ -545,6 +543,7 @@
     </div>
 
     <script>
+        // 뒤로가기 및 스와이프 이탈 방지
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
         history.pushState(null, null, location.href);
         window.addEventListener('popstate', function(event) {
@@ -646,6 +645,7 @@
             if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw(); 
         });
 
+        // ✨ 화면 전환과 데이터 비동기 통신 충돌 원천 분리!
         window.transitionToScreen = function(screenId, callback = null) {
             const doChange = () => {
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
@@ -711,6 +711,7 @@
             }
         }
         
+        // ✨ 안전하게 모달에서 선생님 대시보드로 이동
         window.verifyPassword = function() {
             const inputPw = document.getElementById("admin-pw-input").value;
             let isValid = false;
@@ -726,7 +727,7 @@
             if (isValid) { 
                 closePasswordModal(); 
                 if (window.passwordTarget === 'dashboard') {
-                    if(window.loadTeacherDashboard) window.loadTeacherDashboard(); 
+                    window.loadTeacherDashboard(); 
                 } else if (window.passwordTarget === 'groupmaker') {
                     document.getElementById('group-maker-modal').style.display = 'flex';
                 }
@@ -737,6 +738,20 @@
             }
         }
         
+        // ✨ 대시보드 로딩 트리거 (애니메이션 꼬임 방지)
+        window.loadTeacherDashboard = function() {
+            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
+                 transitionToScreen("teacher-dashboard", () => {
+                     if (window.fetchDashData) window.fetchDashData();
+                     else alert("데이터베이스를 준비 중입니다. 새로고침을 눌러주세요.");
+                 });
+            } else {
+                 if (window.fetchDashData) window.fetchDashData();
+            }
+        }
+        
+        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
+
         window.closeGroupMakerModal = function() { document.getElementById('group-maker-modal').style.display = 'none'; }
         
         window.autoFillIds = function() {
@@ -1085,10 +1100,10 @@
         }
     </script>
 
+    <!-- ✨ 가장 처음 파이어베이스가 아무 문제 없이 즉각 로딩되던 오리지널 연결 모듈로 완전 복구! -->
     <script type="module">
-        // ✨ 파이어베이스 연결 방식 변경: 무거운 백그라운드 소켓 연결 대신, 단방향 REST API 호출(Lite 버전) 적용하여 방화벽 무한 대기 문제 해결
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-lite.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
 
         // 선생님의 API 키로 꼭 변경해주세요.
         const firebaseConfig = {
@@ -1272,9 +1287,8 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
-
-        window.loadTeacherDashboard = async function() {
+        // ✨ 렌더링 꼬임 방지를 위해 순정 데이터를 병렬(Promise.all)로 안전하게 호출
+        window.fetchDashData = async function() {
             const listContainer = document.getElementById("submissions-list");
             
             const setStatus = (msg) => {
@@ -1282,11 +1296,10 @@
             };
 
             try {
-                setStatus("서버에서 학생 제출 데이터를 고속으로 불러오는 중입니다...");
+                setStatus("서버에서 학생들의 최신 데이터를 가져오고 있습니다...");
                 window.globalSubmissionsData = [];
                 let uniqueYears = new Set(); 
 
-                // ✨ Promise.all로 병렬 처리 (가장 확실한 속도 향상 및 타임아웃 방지)
                 const [subSnap, progSnap] = await Promise.all([
                     getDocs(collection(db, "trade_submissions")),
                     getDocs(collection(db, "trade_progress"))
@@ -1337,7 +1350,7 @@
                     await deleteDoc(doc(db, "trade_submissions", docId)); 
                     await deleteDoc(doc(db, "trade_progress", docId)); 
                     alert("성공적으로 삭제되었습니다."); 
-                    window.loadTeacherDashboard(); 
+                    window.fetchDashData(); 
                 } catch(e) { alert("삭제 중 오류가 발생했습니다."); }
             }
         }
@@ -1548,7 +1561,6 @@
         window.downloadExcel = async function() {
             if (!window.filteredSubmissionsData || window.filteredSubmissionsData.length === 0) { alert("다운로드할 데이터가 없습니다."); return; }
             
-            // 동적 로드 (선생님만 무거운 엑셀 모듈 사용)
             if (!window.ExcelJS) {
                 alert("엑셀 변환 모듈을 불러오는 중입니다. 잠시만 기다려주세요...");
                 return;
