@@ -36,7 +36,6 @@
         body { font-family: 'Pretendard-Regular', sans-serif; margin: 0; background-color: var(--bg-color); color: var(--text-dark); }
         input, select, textarea, button { font-family: 'Pretendard-Regular', sans-serif; }
         
-        /* 페이퍼로지 폰트 적용 강제 */
         h1, h2, h3, h4, .text-gradient, .paperlogy-font { 
             font-family: 'Paperlogy-8ExtraBold', sans-serif !important; 
         }
@@ -77,7 +76,6 @@
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
-        /* 캔버스 CSS: 화면 크기에 맞춰 조절되지만 내부 화질은 보호됨 */
         canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500 / 350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; display: block; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -489,7 +487,6 @@
                 <h2 style="margin:0; font-size: 28px;" class="paperlogy-font">📊 <span class="text-gradient">학생 제출 현황 대시보드</span></h2>
                 <div class="dashboard-actions">
                     <button class="gradient-btn secondary-btn" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
-                    <!-- ✨ 대시보드 실시간 새로고침 버튼 추가 -->
                     <button class="gradient-btn" style="background: #10b981;" onclick="loadTeacherDashboard()">🔄 실시간 새로고침</button>
                     <button class="gradient-btn" style="background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
                     <button class="gradient-btn" onclick="downloadExcel()">📊 엑셀 다운로드</button>
@@ -546,7 +543,7 @@
     </div>
 
     <script>
-        // ✨ 뒤로가기 및 스와이프 이탈 방지 (디벗 호환)
+        // 뒤로가기 및 스와이프 이탈 방지 (디벗 호환)
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
         history.pushState(null, null, location.href);
         window.addEventListener('popstate', function(event) {
@@ -629,13 +626,43 @@
             india: { title: "🇮🇳 인도 (무굴 제국)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 17세기 후반 영국 의회의 기록]</strong>"인도에서 온 '캘리코'라 불리는 가볍고 화려한 면직물 때문에, 우리 영국의 전통 모직물 산업이 망하게 생겼다! 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 화사하여 큰 인기를 끌었고 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코 대금을 아메리카 은으로 지불하면서 인도에도 은이 들어왔다.</div>`, q1: "17세기 무굴 제국 수출품 중 가장 큰 비중을 차지했으며 유럽인들에게 큰 인기를 끌었던 면직물은?", q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도까지 흘러들어오게 되었을까요?" }
         };
 
+        // ✨ 절대 백지화 방지 렌더링 호출기
+        window.triggerMapRedraw = function() {
+            if (window.drawMap) {
+                window.drawMap();
+                requestAnimationFrame(window.drawMap);
+                setTimeout(window.drawMap, 100);
+                setTimeout(window.drawMap, 500);
+            }
+        };
+
+        // 폰트 로드가 완료되면 무조건 한 번 더 그립니다.
+        if (document.fonts) {
+            document.fonts.ready.then(() => {
+                if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw();
+            });
+        }
+
+        // 브라우저 크기 변경 대응
+        window.addEventListener('resize', () => { 
+            if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw(); 
+        });
+
+        // ✨ 화면 전환 시 렌더링 증발 방지
         window.transitionToScreen = function(screenId, callback = null) {
             const doChange = () => {
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
                 document.getElementById(screenId).style.display = "flex";
                 if (callback) callback();
             };
-            if (document.startViewTransition) document.startViewTransition(doChange); else doChange();
+            if (document.startViewTransition) {
+                const t = document.startViewTransition(doChange);
+                t.ready.then(() => { if (screenId === "chatbot-screen") window.triggerMapRedraw(); });
+                t.finished.then(() => { if (screenId === "chatbot-screen") window.triggerMapRedraw(); });
+            } else {
+                doChange();
+                if (screenId === "chatbot-screen") window.triggerMapRedraw();
+            }
         };
 
         window.setStudyMode = function(mode) {
@@ -781,7 +808,6 @@
                     if(window.studyMode === 'group') idText += ` (${window.studentClass}반 ${window.studentGroup}조)`;
                     document.getElementById("display-student-id").innerText = idText;
                     if(!window.currentMerchant) selectMerchant('europe');
-                    setTimeout(() => { if (window.drawMap) window.drawMap(); window.dispatchEvent(new Event('resize')); }, 100);
                 });
             } else { alert("❌ 오답이 포함되어 있습니다. 핵심 개념을 다시 생각하며 풀어보세요!"); }
         }
@@ -829,7 +855,7 @@
                 window.chatContexts[merchantType].push({ role: "assistant", content: greetings[merchantType] });
                 window.isFirstVisit[merchantType] = false;
             }
-            if (window.drawMap) window.drawMap();
+            if (window.triggerMapRedraw) window.triggerMapRedraw();
             chatBox.scrollTop = chatBox.scrollHeight;
         }
 
@@ -883,12 +909,105 @@
             }
         }
 
+        // ✨ 메인 지도 강제 렌더링 로직
+        window.drawMap = function() {
+            const canvas = document.getElementById('mapCanvas'); 
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            // 해상도가 날아가도 다시 잡아줌
+            if(canvas.width !== 500) canvas.width = 500; 
+            if(canvas.height !== 350) canvas.height = 350;
+
+            ctx.clearRect(0, 0, 500, 350); 
+            ctx.fillStyle = "#ffffff"; 
+            ctx.fillRect(0, 0, 500, 350);
+
+            if(window.userArrows) {
+                window.userArrows.forEach(arrow => {
+                    if (window.nodes[arrow.from] && window.nodes[arrow.to]) { 
+                        window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); 
+                    }
+                });
+            }
+
+            for (const key in window.nodes) {
+                const node = window.nodes[key]; 
+                const nx = node.x; 
+                const ny = node.y; 
+                const r = 36;
+                
+                ctx.beginPath(); 
+                ctx.arc(nx, ny, r, 0, Math.PI * 2); 
+                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 : 0; 
+                ctx.strokeStyle = "#b45309"; 
+                ctx.fill();
+                if(window.selectedNodeKey === key) ctx.stroke();
+                
+                ctx.fillStyle = "#ffffff"; 
+                ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; 
+                ctx.textAlign = "center"; 
+                ctx.textBaseline = "middle"; 
+                ctx.fillText(node.label, nx, ny);
+            }
+        }
+
+        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
+            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
+            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
+
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
+        }
+
+        // 클릭 좌표 수학적 보정 유지
+        document.getElementById('mapCanvas').addEventListener('click', function(event) {
+            const rect = this.getBoundingClientRect(); 
+            if(rect.width === 0 || rect.height === 0) return; 
+
+            const clickX = event.clientX - rect.left; 
+            const clickY = event.clientY - rect.top;
+
+            const scaleX = 500 / rect.width; 
+            const scaleY = 350 / rect.height;
+
+            const actualX = clickX * scaleX;
+            const actualY = clickY * scaleY;
+
+            let clickedKey = null;
+            for (const key in window.nodes) {
+                const nx = window.nodes[key].x; 
+                const ny = window.nodes[key].y; 
+                const r = 36;
+                if (Math.sqrt((actualX - nx) ** 2 + (actualY - ny) ** 2) <= r) { clickedKey = key; break; }
+            }
+
+            if (clickedKey) {
+                if (!window.selectedNodeKey) { 
+                    window.selectedNodeKey = clickedKey; 
+                } else {
+                    if (window.selectedNodeKey !== clickedKey) { 
+                        window.userArrows = [{ from: window.selectedNodeKey, to: clickedKey }];
+                        if(window.saveProgress) window.saveProgress(); 
+                    }
+                    window.selectedNodeKey = null;
+                }
+                window.triggerMapRedraw();
+            }
+        });
+
+        window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.triggerMapRedraw(); if(window.saveProgress) window.saveProgress(); }
+
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length !== 1) { 
                 alert("가장 중요하다고 생각하는 은의 이동 경로(화살표)를 딱 1개만 지도에 그려주세요!"); 
                 return; 
             }
-            // ✨ 일본 -> 유럽 허용 추가 완료!
             const validRoutes = [
                 "america->europe", "america->china", "europe->africa", "africa->america", 
                 "europe->india", "india->europe", "india->china", "europe->china", 
@@ -939,7 +1058,7 @@
             }
         }
         window.goBackToSourceStudy = function() { transitionToScreen("source-study-screen"); }
-        window.goBackToChat = function() { transitionToScreen("chatbot-screen", () => { if(window.drawMap) window.drawMap(); const chatBox = document.getElementById('chat-box'); chatBox.scrollTop = chatBox.scrollHeight; }); }
+        window.goBackToChat = function() { transitionToScreen("chatbot-screen"); }
         window.goToRoleSelection = function() { transitionToScreen("essay-screen", () => { document.getElementById('role-selection-section').style.display = 'block'; document.getElementById('essay-writer-area').style.display = 'none'; document.getElementById('essay-member-area').style.display = 'none'; }); }
 
         window.selectRole = function(role) {
@@ -1147,7 +1266,6 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        // ✨ 실시간 데이터 통합 로직 (최종 제출 + 현재 작성 중 데이터 모두 불러오기)
         window.loadTeacherDashboard = async function() {
             if(document.getElementById("teacher-dashboard").style.display !== "flex") {
                  transitionToScreen("teacher-dashboard", window.fetchDashData);
@@ -1164,27 +1282,24 @@
                 window.globalSubmissionsData = [];
                 let uniqueYears = new Set(); 
 
-                // 1. 최종 제출 데이터 로드
                 const qSub = collection(db, "trade_submissions");
                 const subSnap = await getDocs(qSub);
                 subSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
                     data.docId = docSnap.id; 
-                    data.status = 'submitted'; // 상태 표시 플래그 추가
+                    data.status = 'submitted'; 
                     if(data.academicYear) uniqueYears.add(data.academicYear);
                     window.globalSubmissionsData.push(data);
                 });
 
-                // 2. 현재 작성 중(Progress) 데이터 로드 및 병합
                 const qProg = collection(db, "trade_progress");
                 const progSnap = await getDocs(qProg);
                 progSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
                     data.docId = docSnap.id; 
-                    data.status = 'progress'; // 진행 중 플래그 추가
-                    data.arrows = data.userArrows || []; // 화살표 데이터 속성명 통일
+                    data.status = 'progress'; 
+                    data.arrows = data.userArrows || []; 
                     
-                    // 이미 제출 완료한 학생의 더미 진행데이터가 섞이지 않도록 방어 로직
                     const alreadySubmitted = window.globalSubmissionsData.find(s => s.studentId === data.studentId && s.status === 'submitted');
                     if(!alreadySubmitted) {
                         if(data.academicYear) uniqueYears.add(data.academicYear);
@@ -1206,7 +1321,6 @@
         window.deleteSubmission = async function(docId) {
             if(confirm("정말 이 학생의 데이터를 삭제하시겠습니까? (복구 불가)")) {
                 try { 
-                    // 두 컬렉션 모두에서 삭제 시도 (어디에 있든 지워지도록)
                     await deleteDoc(doc(db, "trade_submissions", docId)); 
                     await deleteDoc(doc(db, "trade_progress", docId)); 
                     alert("성공적으로 삭제되었습니다."); 
@@ -1228,7 +1342,6 @@
             
             if (sortOrder === "studentId") { filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || "")); } 
             else { 
-                // 진행 중인 데이터(lastSaved)와 제출 완료된 데이터(timestamp) 호환 정렬
                 filtered.sort((a, b) => {
                     const timeA = a.timestamp?.seconds || a.lastSaved?.seconds || 0;
                     const timeB = b.timestamp?.seconds || b.lastSaved?.seconds || 0;
@@ -1241,7 +1354,6 @@
 
             let htmlContent = "";
             filtered.forEach(data => {
-                // ✨ 상태 뱃지 생성 (진행 중 vs 제출 완료)
                 const statusBadge = data.status === 'progress' 
                     ? '<span style="background:#fef08a; color:#92400e; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">⏳ 작성 중</span>' 
                     : '<span style="background:#bfdbfe; color:#1e40af; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✅ 제출 완료</span>';
@@ -1261,7 +1373,6 @@
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
 
-                // 작성 중일 때 빈 에세이 처리
                 const essayContent = data.essay ? data.essay : (data.status === 'progress' ? '<span style="color:#9ca3af; font-style:italic;">(학생이 아직 글을 작성하지 않았거나 작성 중입니다...)</span>' : '없음');
 
                 let chatSummary = "";
@@ -1311,6 +1422,7 @@
             listContainer.innerHTML = htmlContent;
         }
 
+        // ✨ 교사용 발표 모달 강제 렌더링
         window.openPresentation = function(docId) {
             const data = window.filteredSubmissionsData.find(d => d.docId === docId);
             if(!data) return;
@@ -1335,8 +1447,9 @@
             document.getElementById('present-chat').innerHTML = chatLog || "대화 기록이 없습니다.";
             document.getElementById('presentation-modal').style.display = "flex";
 
-            setTimeout(() => {
+            const drawPresentMap = () => {
                 const canvas = document.getElementById("presentCanvas"); 
+                if(!canvas) return;
                 const ctx = canvas.getContext("2d");
                 
                 canvas.width = 500;
@@ -1346,7 +1459,6 @@
                 ctx.fillRect(0, 0, 500, 350);
 
                 for (const key in window.nodes) {
-                    if(key === '유럽') continue;
                     const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
                     ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
                     ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
@@ -1357,13 +1469,19 @@
                         if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); }
                     });
                 }
-            }, 100);
+            };
+
+            drawPresentMap();
+            requestAnimationFrame(drawPresentMap);
+            setTimeout(drawPresentMap, 100);
+            setTimeout(drawPresentMap, 500);
         }
 
         window.closePresentation = function() { document.getElementById("presentation-modal").style.display = "none"; }
 
         window.openOverlayModal = function() { document.getElementById("overlay-modal").style.display = "flex"; window.drawOverlayMap('filtered'); }
         
+        // ✨ 교사용 누적 오버레이 지도 강제 렌더링
         window.drawOverlayMap = function(mode) {
             const btnFiltered = document.getElementById("btn-overlay-filtered"); const btnAll = document.getElementById("btn-overlay-all");
             if (mode === 'filtered') {
@@ -1374,31 +1492,36 @@
                 btnFiltered.classList.add('secondary-btn'); btnFiltered.style.background = "#6b7280"; btnFiltered.style.color = "white";
             }
 
-            const canvas = document.getElementById("overlayCanvas"); 
-            const ctx = canvas.getContext("2d"); 
-            
-            canvas.width = 500; canvas.height = 350;
-            ctx.clearRect(0, 0, 500, 350); 
-            ctx.fillStyle = "#ffffff"; 
-            ctx.fillRect(0, 0, 500, 350);
+            const drawOverlay = () => {
+                const canvas = document.getElementById("overlayCanvas"); 
+                if(!canvas) return;
+                const ctx = canvas.getContext("2d"); 
+                
+                canvas.width = 500; canvas.height = 350;
+                ctx.clearRect(0, 0, 500, 350); 
+                ctx.fillStyle = "#ffffff"; 
+                ctx.fillRect(0, 0, 500, 350);
 
-            for (const key in window.nodes) {
-                if(key === '유럽') continue;
-                const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
-                ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
-                ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
-            }
-
-            const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
-            
-            // ✨ 작성 중인 학생의 화살표까지 모두 통합되어 실시간으로 그려짐
-            targetData.forEach(item => {
-                if (item.arrows && Array.isArray(item.arrows)) {
-                    item.arrows.forEach(arrow => {
-                        if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "rgba(124, 58, 237, 0.35)"); }
-                    });
+                for (const key in window.nodes) {
+                    const node = window.nodes[key]; const nx = node.x; const ny = node.y; const r = 36;
+                    ctx.beginPath(); ctx.arc(nx, ny, r, 0, Math.PI * 2); ctx.fillStyle = node.color; ctx.lineWidth = 2; ctx.strokeStyle = "#343a40"; ctx.fill(); ctx.stroke();
+                    ctx.fillStyle = "#212529"; ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; ctx.textAlign = "center"; ctx.textBaseline = "middle"; ctx.fillText(node.label, nx, ny);
                 }
-            });
+
+                const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
+                targetData.forEach(item => {
+                    if (item.arrows && Array.isArray(item.arrows)) {
+                        item.arrows.forEach(arrow => {
+                            if (window.nodes[arrow.from] && window.nodes[arrow.to]) { window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "rgba(124, 58, 237, 0.35)"); }
+                        });
+                    }
+                });
+            };
+
+            drawOverlay();
+            requestAnimationFrame(drawOverlay);
+            setTimeout(drawOverlay, 100);
+            setTimeout(drawOverlay, 500);
         }
         window.closeOverlayModal = function() { document.getElementById("overlay-modal").style.display = "none"; }
 
