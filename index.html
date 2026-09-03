@@ -5,8 +5,10 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>은의 여정: 17세기 국제 무역 탐구</title>
     
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    <!-- ✨ defer 속성 추가: 화면 렌더링을 막지 않고 백그라운드에서 로드하여 초기 접속 속도 대폭 향상 -->
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/exceljs/4.3.0/exceljs.min.js"></script>
+    <script defer src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
     <style>
         @font-face {
             font-family: 'Paperlogy-8ExtraBold';
@@ -543,7 +545,6 @@
     </div>
 
     <script>
-        // 뒤로가기 및 스와이프 이탈 방지
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
         history.pushState(null, null, location.href);
         window.addEventListener('popstate', function(event) {
@@ -622,7 +623,7 @@
             africa: { title: "🌍 아프리카", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 콩고 국왕 아폰소 1세의 편지, 1526년]</strong>"유럽 상인들이 매일같이 우리 백성들을 납치해 가고 있습니다. 이 나라는 완전히 인구를 잃어가고 있습니다. 우리 왕국에는 더 이상 상품이나 노예 상인이 필요하지 않습니다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>아메리카 원주민의 인구가 감소하여 노동력이 부족해지자 유럽인은 아프리카 원주민을 노예로 동원하였다. 노예 무역으로 아프리카는 인구가 줄고 성비가 불균형해졌으며 부족 간 갈등도 깊어졌다.</div>`, q1: "유럽, 아프리카, 아메리카 세 대륙을 노예와 은, 무기 및 일용품으로 이어주었던 대서양 무역의 형태를 무엇이라고 부르나요?", q2: "유럽 상인들이 가져온 무기와 일용품은 아프리카인들의 삶을 어떻게 바꾸어 놓았나요? 두 가지 이상의 비극적인 변화를 적어보세요." },
             america: { title: "🌎 아메리카", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 안토니오 데 에스피노사의 기록, 1620년대]</strong>"포토시 광산의 징용된 원주민(미타요스)들은 일주일 내내 햇빛을 보지 못하고 곡괭이질을 한다. 많은 이들이 가혹한 노동과 끔찍한 폐 질환으로 목숨을 잃는다. 이 거대한 산은 원주민들의 피와 눈물로 은을 토해내고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>당시 포토시에서 채굴된 은은 전 세계 생산량의 절반이 넘었고 국제 무역의 기준 화폐로 쓰였다. 하지만 아메리카 원주민은 가혹한 노동에 시달렸고, 유럽에서 들어온 천연두 같은 새로운 질병으로 수많은 이가 목숨을 잃었다.</div>`, q1: "16세기 중반 오늘날의 볼리비아 지역에서 발견된, 16~17세기 국제 무역의 기준 화폐가 될 막대한 양의 은이 채굴된 은광은?", q2: "에스파냐인들이 아메리카에서 막대한 은과 사탕수수 등을 얻어내는 과정에서, 원주민들이 겪어야 했던 두 가지 큰 고통은 무엇이었나요?" },
             china: { title: "🇨🇳 중국 (명·청)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 마테오 리치의 기록]</strong>"중국인들은 다른 어떤 서양 물건보다도 오직 '은'만을 원한다. 유럽 상인들은 막대한 은화를 바치고 나서야 질 좋은 비단, 차, 도자기를 배에 실을 수 있었다. 명나라 조정이 모든 세금을 은으로만 내도록 제도를 바꾸었기 때문이다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>명·청대에는 서양 상인들이 중국 물품을 오직 은으로 구입하면서 막대한 은이 들어왔다. 그 결과 중국에서는 세금 제도의 개혁(은납화)이 이루어졌고, 청은 나중에 광저우에 공행이라는 상인 조합을 두어 무역을 철저히 통제했다.</div>`, q1: "유럽 상인들이 열광했던 명·청 시대 중국의 대표적인 수출품을 두 가지 이상 적어보세요.", q2: "중국으로 막대한 은이 흘러 들어간 후, 중국 정부의 세금 납부 방식은 어떻게 변화했나요?" },
-            japan: { title: "🇯 ঐতিহ্য 일본 (에도 막부)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 16세기 서양 상인의 기록]</strong>"이 섬나라 사람들은 이와미 등지에서 막대한 은을 캐낸다. 그은으로 우리 유럽 상인들이 가져온 조총과 화약, 중국산 고급 비단을 엄청난 양으로 사들인다. 지금 일본은 전 세계에서 은이 가장 많이 쏟아져 나오는 곳 중 하나다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>16세기 일본은 조선에서 개발한 은 제련법을 도입해 은 생산량을 늘렸고 전 세계 은 생산량의 약 3분의 1을 차지하였다. 막부는 데지마라는 나가사키의 좁은 인공 섬을 통해서만 제한적으로 서양과 교류하였다.</div>`, q1: "16세기 일본이 조선의 은 제련법을 도입하여 개발했던 일본 최대의 은광 이름은 무엇인가요?", q2: "에도 막부는 이 은광에서 캐낸 막대한 은을 지불하여 네덜란드 등 서양 세력으로부터 어떤 물건들을 주로 사들였나요?" },
+            japan: { title: "🇯🇵 일본 (에도 막부)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 16세기 서양 상인의 기록]</strong>"이 섬나라 사람들은 이와미 등지에서 막대한 은을 캐낸다. 그은으로 우리 유럽 상인들이 가져온 조총과 화약, 중국산 고급 비단을 엄청난 양으로 사들인다. 지금 일본은 전 세계에서 은이 가장 많이 쏟아져 나오는 곳 중 하나다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>16세기 일본은 조선에서 개발한 은 제련법을 도입해 은 생산량을 늘렸고 전 세계 은 생산량의 약 3분의 1을 차지하였다. 막부는 데지마라는 나가사키의 좁은 인공 섬을 통해서만 제한적으로 서양과 교류하였다.</div>`, q1: "16세기 일본이 조선의 은 제련법을 도입하여 개발했던 일본 최대의 은광 이름은 무엇인가요?", q2: "에도 막부는 이 은광에서 캐낸 막대한 은을 지불하여 네덜란드 등 서양 세력으로부터 어떤 물건들을 주로 사들였나요?" },
             india: { title: "🇮🇳 인도 (무굴 제국)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 17세기 후반 영국 의회의 기록]</strong>"인도에서 온 '캘리코'라 불리는 가볍고 화려한 면직물 때문에, 우리 영국의 전통 모직물 산업이 망하게 생겼다! 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 화사하여 큰 인기를 끌었고 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코 대금을 아메리카 은으로 지불하면서 인도에도 은이 들어왔다.</div>`, q1: "17세기 무굴 제국 수출품 중 가장 큰 비중을 차지했으며 유럽인들에게 큰 인기를 끌었던 면직물은?", q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도까지 흘러들어오게 되었을까요?" }
         };
 
@@ -649,8 +650,9 @@
             const doChange = () => {
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
                 document.getElementById(screenId).style.display = "flex";
-                if (callback) callback();
+                if (callback) setTimeout(callback, 100);
             };
+            
             if (document.startViewTransition) {
                 const t = document.startViewTransition(doChange);
                 t.ready.then(() => { if (screenId === "chatbot-screen") window.triggerMapRedraw(); });
@@ -1084,9 +1086,9 @@
     </script>
 
     <script type="module">
-        // ✨ 파이어베이스 기본 초기화 방식으로 완벽하게 원상복구 (우회망 기능 삭제)
+        // ✨ 파이어베이스 연결 방식 변경: 무거운 백그라운드 소켓 연결 대신, 단방향 REST API 호출(Lite 버전) 적용하여 방화벽 무한 대기 문제 해결
         import { initializeApp } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-app.js";
-        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore.js";
+        import { getFirestore, collection, addDoc, getDocs, query, orderBy, serverTimestamp, doc, deleteDoc, getDoc, setDoc } from "https://www.gstatic.com/firebasejs/10.8.1/firebase-firestore-lite.js";
 
         // 선생님의 API 키로 꼭 변경해주세요.
         const firebaseConfig = {
@@ -1097,7 +1099,6 @@
             messagingSenderId: "678019068245",
             appId: "1:678019068245:web:5485f6e106659831ee3fdc"
         };
-        
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
 
@@ -1274,14 +1275,6 @@
         window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
 
         window.loadTeacherDashboard = async function() {
-            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
-                 transitionToScreen("teacher-dashboard", window.fetchDashData);
-            } else {
-                 window.fetchDashData();
-            }
-        }
-
-        window.fetchDashData = async function() {
             const listContainer = document.getElementById("submissions-list");
             
             const setStatus = (msg) => {
@@ -1289,12 +1282,15 @@
             };
 
             try {
-                setStatus("서버에서 학생 제출 데이터를 불러오는 중입니다... (1/3)");
+                setStatus("서버에서 학생 제출 데이터를 고속으로 불러오는 중입니다...");
                 window.globalSubmissionsData = [];
                 let uniqueYears = new Set(); 
 
-                const qSub = collection(db, "trade_submissions");
-                const subSnap = await getDocs(qSub); 
+                // ✨ Promise.all로 병렬 처리 (가장 확실한 속도 향상 및 타임아웃 방지)
+                const [subSnap, progSnap] = await Promise.all([
+                    getDocs(collection(db, "trade_submissions")),
+                    getDocs(collection(db, "trade_progress"))
+                ]);
                 
                 subSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
@@ -1303,10 +1299,6 @@
                     if(data.academicYear) uniqueYears.add(data.academicYear);
                     window.globalSubmissionsData.push(data);
                 });
-
-                setStatus("작성 중인 실시간 데이터를 불러오는 중입니다... (2/3)");
-                const qProg = collection(db, "trade_progress");
-                const progSnap = await getDocs(qProg); 
                 
                 progSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
@@ -1320,8 +1312,6 @@
                         window.globalSubmissionsData.push(data);
                     }
                 });
-
-                setStatus("데이터를 정리하여 화면을 그리고 있습니다... (3/3)");
                 
                 const yearSelect = document.getElementById("yearFilter");
                 const currentVal = yearSelect.value;
@@ -1557,6 +1547,13 @@
 
         window.downloadExcel = async function() {
             if (!window.filteredSubmissionsData || window.filteredSubmissionsData.length === 0) { alert("다운로드할 데이터가 없습니다."); return; }
+            
+            // 동적 로드 (선생님만 무거운 엑셀 모듈 사용)
+            if (!window.ExcelJS) {
+                alert("엑셀 변환 모듈을 불러오는 중입니다. 잠시만 기다려주세요...");
+                return;
+            }
+
             const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('학생데이터', { views: [{ state: 'frozen', xSplit: 0, ySplit: 1 }] });
 
             worksheet.columns = [
