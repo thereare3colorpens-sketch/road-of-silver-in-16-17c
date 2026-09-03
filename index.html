@@ -247,19 +247,19 @@
 
     <!-- 🎲 교사용 사전 조 편성 시스템 모달 -->
     <div id="group-maker-modal" class="modal-overlay">
-        <div class="pw-modal-content" style="text-align: left;">
-            <h3 style="margin-top: 0; font-size: 28px; text-align:center;" class="paperlogy-font">🎲 <span class="text-gradient">사전 조 편성 시스템</span></h3>
-            <p style="font-size: 15px; color: var(--text-gray); margin-bottom: 25px; text-align:center; line-height: 1.5;">선생님이 미리 조를 섞어두면 학생들이 접속 시 <b>자동으로 지정된 조에 배정</b>됩니다.<br>(※ 새로 저장하면 기존 조 편성은 덮어씌워집니다.)</p>
+        <div class="pw-modal-content" style="text-align: left; max-width: 900px; width: 95%;">
+            <h3 style="margin-top: 0; font-size: 28px; text-align:center;" class="paperlogy-font">🎲 <span class="text-gradient">사전 조 편성 및 자리 배치</span></h3>
+            <p style="font-size: 15px; color: var(--text-gray); margin-bottom: 25px; text-align:center; line-height: 1.5;">선생님이 미리 조를 섞어두면 학생들이 접속 시 <b>자동으로 지정된 조에 배정</b>됩니다.<br>(※ 조 짜기를 실행하면 아래에 칠판을 기준으로 한 자리 배치도가 생성됩니다.)</p>
             
-            <div class="input-group" style="display:flex; gap:15px;">
-                <div style="flex:1;">
+            <div class="input-group" style="display:flex; gap:15px; flex-wrap: wrap;">
+                <div style="flex:1; min-width: 150px;">
                     <label>적용 학급</label>
                     <select id="gm-class">
                         <option value="1">1반</option><option value="2">2반</option>
                         <option value="3">3반</option><option value="4">4반</option><option value="5">5반</option>
                     </select>
                 </div>
-                <div style="flex:1;">
+                <div style="flex:1; min-width: 150px;">
                     <label>생성할 조 개수</label>
                     <select id="gm-count">
                         <option value="4">4개 조</option><option value="5">5개 조</option><option value="6" selected>6개 조</option>
@@ -274,7 +274,7 @@
                 <button class="gradient-btn secondary-btn" style="padding: 10px 14px; font-size: 14px; margin-top: -5px; width: auto;" onclick="autoFillIds()">학생 명단 자동 채우기 (마지막 번호 지정)</button>
             </div>
 
-            <button class="gradient-btn" style="margin-bottom: 20px; font-size: 18px; padding: 18px;" onclick="generateRandomGroups()">🔀 랜덤 조 짜기 실행</button>
+            <button class="gradient-btn" style="margin-bottom: 20px; font-size: 18px; padding: 18px;" onclick="generateRandomGroups()">🔀 랜덤 조 짜기 실행 (자리 배치도 생성)</button>
             
             <div id="gm-result" style="display: none; margin-bottom: 25px; min-height: 100px;"></div>
 
@@ -502,7 +502,7 @@
                 <select id="groupFilterDash" onchange="renderDashboardList()"><option value="all">전체 조</option><option value="1">1조</option><option value="2">2조</option><option value="3">3조</option><option value="4">4조</option><option value="5">5조</option><option value="6">6조</option><option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option></select>
                 <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 등록순</option><option value="studentId">학번 오름차순</option></select>
             </div>
-            <div id="submissions-list" style="font-size: 16px;"></div>
+            <div id="submissions-list" style="font-size: 16px;"><p>데이터를 불러오는 중입니다...</p></div>
         </div>
     </div>
 
@@ -626,6 +626,25 @@
             india: { title: "🇮🇳 인도 (무굴 제국)", content: `<div class="source-quote-box"><strong>[실제 역사 사료: 17세기 후반 영국 의회의 기록]</strong>"인도에서 온 '캘리코'라 불리는 가볍고 화려한 면직물 때문에, 우리 영국의 전통 모직물 산업이 망하게 생겼다! 이 천조각을 사기 위해 영국의 소중한 은화가 쉴 새 없이 인도로 빠져나가고 있다."</div><div class="source-desc-box"><strong>📖 교과서 역사 배경</strong><br>인도의 무굴 제국에서 생산한 면직물은 '캘리코'라고 불리며 유럽에 전해졌다. 화사하여 큰 인기를 끌었고 인도의 수출품 중 가장 큰 비중을 차지하였다. 영국 동인도 회사가 캘리코 대금을 아메리카 은으로 지불하면서 인도에도 은이 들어왔다.</div>`, q1: "17세기 무굴 제국 수출품 중 가장 큰 비중을 차지했으며 유럽인들에게 큰 인기를 끌었던 면직물은?", q2: "아메리카 대륙에서 채굴된 에스파냐의 은화가 어떻게 머나먼 인도까지 흘러들어오게 되었을까요?" }
         };
 
+        window.triggerMapRedraw = function() {
+            if (window.drawMap) {
+                window.drawMap();
+                requestAnimationFrame(window.drawMap);
+                setTimeout(window.drawMap, 100);
+                setTimeout(window.drawMap, 500);
+            }
+        };
+
+        if (document.fonts) {
+            document.fonts.ready.then(() => {
+                if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw();
+            });
+        }
+
+        window.addEventListener('resize', () => { 
+            if(document.getElementById('chatbot-screen').style.display !== 'none') window.triggerMapRedraw(); 
+        });
+
         window.transitionToScreen = function(screenId, callback = null) {
             const doChange = () => {
                 document.querySelectorAll('.screen').forEach(s => s.style.display = "none");
@@ -690,6 +709,8 @@
             }
         }
         
+        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
+        
         window.verifyPassword = function() {
             const inputPw = document.getElementById("admin-pw-input").value;
             let isValid = false;
@@ -735,6 +756,7 @@
             alert(`1번부터 ${lastNum}번까지 자동 입력되었습니다.\n결석생이나 전출생 번호가 있다면 명단 텍스트 박스에서 직접 지워주세요!`);
         }
 
+        // ✨ 조 짜기 및 교실 자리배치도 시각화 로직
         window.generateRandomGroups = function() {
             const groupCount = parseInt(document.getElementById('gm-count').value);
             const idText = document.getElementById('gm-ids').value;
@@ -754,19 +776,31 @@
             });
             window.tempGroupMapping = mapping;
             
-            let resultHTML = `<div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 15px; margin-top: 15px;">`;
+            // 칠판과 조별 책상 배열 (CSS Grid 활용)
+            let resultHTML = `
+                <div style="background: #f8fafc; border: 2px solid #cbd5e1; border-radius: 12px; padding: 20px; display: flex; flex-direction: column; align-items: center; margin-top: 15px;">
+                    <div style="width: 80%; background: #334155; color: white; text-align: center; padding: 12px; border-radius: 8px; font-size: 18px; font-weight: bold; letter-spacing: 5px; margin-bottom: 30px; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">칠 판 (교 탁)</div>
+                    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 25px; width: 100%;">
+            `;
+            
             for(let i=1; i<=groupCount; i++) {
                 const members = Object.keys(mapping).filter(k => mapping[k] === i.toString()).sort();
+                
+                let desksHTML = '';
+                members.forEach(m => {
+                    desksHTML += `<div style="background: #e2e8f0; border: 1px solid #94a3b8; border-radius: 6px; padding: 12px 5px; font-size: 14px; font-weight: bold; color: #1e293b; text-align: center;">👤 ${m}</div>`;
+                });
+
                 resultHTML += `
-                    <div style="background: white; border: 2px solid #e5e7eb; border-top: 5px solid #7c3aed; border-radius: 12px; padding: 15px; text-align: center; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
-                        <h4 style="margin: 0 0 10px 0; color: #4f46e5; font-size: 20px;" class="paperlogy-font">${i}조</h4>
-                        <div style="font-size: 16px; color: #374151; line-height: 1.6;">
-                            ${members.join('<br>')}
+                    <div style="background: white; border: 3px solid #818cf8; border-radius: 12px; padding: 25px 15px 15px 15px; position: relative; box-shadow: 0 4px 6px rgba(0,0,0,0.05);">
+                        <div style="position: absolute; top: -14px; left: 50%; transform: translateX(-50%); background: #4f46e5; color: white; padding: 4px 16px; border-radius: 20px; font-size: 14px; font-weight: bold; white-space: nowrap;">${i}조</div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px;">
+                            ${desksHTML}
                         </div>
                     </div>
                 `;
             }
-            resultHTML += `</div>`;
+            resultHTML += `</div></div>`;
             
             const resultBox = document.getElementById('gm-result');
             resultBox.style.display = "block";
@@ -883,6 +917,98 @@
                 addMessage("⚠️ 통신이 원활하지 않습니다.", 'system-msg', false); inputField.disabled = false;
             }
         }
+
+        window.drawMap = function() {
+            const canvas = document.getElementById('mapCanvas'); 
+            if (!canvas) return;
+            const ctx = canvas.getContext('2d');
+            
+            if(canvas.width !== 500) canvas.width = 500; 
+            if(canvas.height !== 350) canvas.height = 350;
+
+            ctx.clearRect(0, 0, 500, 350); 
+            ctx.fillStyle = "#ffffff"; 
+            ctx.fillRect(0, 0, 500, 350);
+
+            if(window.userArrows) {
+                window.userArrows.forEach(arrow => {
+                    if (window.nodes[arrow.from] && window.nodes[arrow.to]) { 
+                        window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); 
+                    }
+                });
+            }
+
+            for (const key in window.nodes) {
+                const node = window.nodes[key]; 
+                const nx = node.x; 
+                const ny = node.y; 
+                const r = 36;
+                
+                ctx.beginPath(); 
+                ctx.arc(nx, ny, r, 0, Math.PI * 2); 
+                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
+                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 : 0; 
+                ctx.strokeStyle = "#b45309"; 
+                ctx.fill();
+                if(window.selectedNodeKey === key) ctx.stroke();
+                
+                ctx.fillStyle = "#ffffff"; 
+                ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; 
+                ctx.textAlign = "center"; 
+                ctx.textBaseline = "middle"; 
+                ctx.fillText(node.label, nx, ny);
+            }
+        }
+
+        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
+            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
+            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
+
+            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(endX, endY);
+            ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
+        }
+
+        document.getElementById('mapCanvas').addEventListener('click', function(event) {
+            const rect = this.getBoundingClientRect(); 
+            if(rect.width === 0 || rect.height === 0) return; 
+
+            const clickX = event.clientX - rect.left; 
+            const clickY = event.clientY - rect.top;
+
+            const scaleX = 500 / rect.width; 
+            const scaleY = 350 / rect.height;
+
+            const actualX = clickX * scaleX;
+            const actualY = clickY * scaleY;
+
+            let clickedKey = null;
+            for (const key in window.nodes) {
+                if(key === '유럽') continue;
+                const nx = window.nodes[key].x; 
+                const ny = window.nodes[key].y; 
+                const r = 36;
+                if (Math.sqrt((actualX - nx) ** 2 + (actualY - ny) ** 2) <= r) { clickedKey = key; break; }
+            }
+
+            if (clickedKey) {
+                if (!window.selectedNodeKey) { 
+                    window.selectedNodeKey = clickedKey; 
+                } else {
+                    if (window.selectedNodeKey !== clickedKey) { 
+                        window.userArrows = [{ from: window.selectedNodeKey, to: clickedKey }];
+                        if(window.saveProgress) window.saveProgress(); 
+                    }
+                    window.selectedNodeKey = null;
+                }
+                window.triggerMapRedraw();
+            }
+        });
+
+        window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.triggerMapRedraw(); if(window.saveProgress) window.saveProgress(); }
 
         window.goToSourceStudy = function() {
             if(!window.userArrows || window.userArrows.length !== 1) { 
@@ -1147,17 +1273,7 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
-        window.closeTeacherDashboard = function() { transitionToScreen("login-screen"); }
-
-        window.loadTeacherDashboard = async function() {
-            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
-                 transitionToScreen("teacher-dashboard", window.fetchDashData);
-            } else {
-                 window.fetchDashData();
-            }
-        }
-
-        // ✨ 멈춤 현상 원천 차단: 안전 장치(타임아웃 + 예외처리) 완벽 적용
+        // ✨ 멈춤 현상 원천 차단: 안전 장치 완벽 적용 (타임아웃 삭제)
         window.fetchDashData = async function() {
             const listContainer = document.getElementById("submissions-list");
             
@@ -1170,14 +1286,9 @@
                 window.globalSubmissionsData = [];
                 let uniqueYears = new Set(); 
 
-                // 10초 타임아웃 래퍼: 무한 대기 방지
-                const fetchWithTimeout = (queryPromise, ms) => Promise.race([
-                    queryPromise,
-                    new Promise((_, reject) => setTimeout(() => reject(new Error('네트워크 응답이 지연되었습니다. 학교 인터넷 연결을 확인해주세요.')), ms))
-                ]);
-
+                // 강제 타임아웃을 없애고 Firebase의 자연스러운 통신을 기다립니다.
                 const qSub = collection(db, "trade_submissions");
-                const subSnap = await fetchWithTimeout(getDocs(qSub), 10000);
+                const subSnap = await getDocs(qSub); 
                 
                 subSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
@@ -1189,7 +1300,7 @@
 
                 setStatus("작성 중인 실시간 데이터를 불러오는 중입니다... (2/3)");
                 const qProg = collection(db, "trade_progress");
-                const progSnap = await fetchWithTimeout(getDocs(qProg), 10000);
+                const progSnap = await getDocs(qProg); 
                 
                 progSnap.forEach((docSnap) => {
                     const data = docSnap.data(); 
@@ -1219,9 +1330,17 @@
                 listContainer.innerHTML = `<div style="background:#fee2e2; color:#b91c1c; padding:20px; border-radius:12px; font-weight:bold; line-height:1.6;">
                     ❌ 데이터 로드 중 오류가 발생했습니다.<br><br>
                     에러 내용: ${error.message}<br><br>
-                    1. 디벗(태블릿)의 와이파이 연결 상태를 확인해주세요.<br>
+                    1. 학교 인터넷 연결 상태를 확인해주세요.<br>
                     2. 상단 중앙의 [🔄 실시간 새로고침] 버튼을 한 번 더 눌러주세요.
                 </div>`; 
+            }
+        }
+
+        window.loadTeacherDashboard = async function() {
+            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
+                 transitionToScreen("teacher-dashboard", window.fetchDashData);
+            } else {
+                 window.fetchDashData();
             }
         }
 
@@ -1283,7 +1402,6 @@
 
                     const essayContent = data.essay ? data.essay : (data.status === 'progress' ? '<span style="color:#9ca3af; font-style:italic;">(학생이 아직 글을 작성하지 않았거나 작성 중입니다...)</span>' : '없음');
 
-                    // ✨ 불완전한 데이터에서도 절대 에러가 나지 않도록 엄격한 방어벽 추가
                     let chatSummary = "";
                     if (data.chatContexts && typeof data.chatContexts === 'object') {
                         for (const merchant in data.chatContexts) {
