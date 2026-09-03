@@ -77,6 +77,7 @@
         #left-panel { flex: 1; padding: 30px; background: white; border-right: 1px solid var(--border-color); display: flex; flex-direction: column; align-items: center; overflow-y: auto; }
         #right-panel { flex: 1.2; display: flex; flex-direction: column; padding: 30px; background-color: var(--bg-color); }
         
+        /* 캔버스 CSS: 화면 크기에 맞춰 조절되지만 내부 화질은 보호됨 */
         canvas { background-color: #ffffff; border: 2px solid #e5e7eb; border-radius: 16px; margin-top: 15px; width: 100%; max-width: 500px; height: auto; aspect-ratio: 500 / 350; box-shadow: 0 4px 10px rgba(0,0,0,0.05); cursor: crosshair; display: block; }
         
         .merchant-selector { margin-bottom: 20px; display: flex; justify-content: center; gap: 10px; flex-wrap: wrap; }
@@ -184,6 +185,7 @@
 <body>
     <div id="auto-save-indicator">☁️ 저장 중...</div>
 
+    <!-- 1. 학번 입력 & 모드 선택 화면 -->
     <div id="login-screen" class="screen" style="display: flex;">
         <div id="login-box" class="card morph-target">
             <h2 style="font-size: 30px; margin-bottom: 15px;" class="paperlogy-font">
@@ -232,6 +234,7 @@
         </div>
     </div>
 
+    <!-- 🔐 공통 비밀번호 입력 모달 -->
     <div id="password-modal" class="modal-overlay">
         <div class="pw-modal-content" style="max-width: 340px;">
             <h3 style="margin-top: 0; font-size: 26px;" class="paperlogy-font">🔐 <span class="text-gradient">관리자 인증</span></h3>
@@ -244,6 +247,7 @@
         </div>
     </div>
 
+    <!-- 🎲 교사용 사전 조 편성 시스템 모달 -->
     <div id="group-maker-modal" class="modal-overlay">
         <div class="pw-modal-content" style="text-align: left;">
             <h3 style="margin-top: 0; font-size: 28px; text-align:center;" class="paperlogy-font">🎲 <span class="text-gradient">사전 조 편성 시스템</span></h3>
@@ -283,6 +287,7 @@
         </div>
     </div>
 
+    <!-- 2. 미니 퀴즈 화면 -->
     <div id="quiz-screen" class="screen center-screen">
         <div class="card quiz-container morph-target">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
@@ -306,6 +311,7 @@
         </div>
     </div>
 
+    <!-- 3. 챗봇 + 지도 메인 화면 -->
     <div id="chatbot-screen" class="screen">
         <div class="main-layout morph-target">
             <div id="left-panel">
@@ -347,6 +353,7 @@
         </div>
     </div>
 
+    <!-- 3.5. 사료 학습 화면 -->
     <div id="source-study-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
@@ -374,6 +381,7 @@
         </div>
     </div>
 
+    <!-- 3.6. 사료 팝업 모달 창 -->
     <div id="source-modal" class="modal-overlay">
         <div class="source-modal-content">
             <h3 id="source-modal-title" style="margin-top: 0; font-size: 26px;" class="paperlogy-font"></h3>
@@ -392,6 +400,7 @@
         </div>
     </div>
 
+    <!-- 4. 조별 토의 화면 -->
     <div id="discussion-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
@@ -419,6 +428,7 @@
         </div>
     </div>
 
+    <!-- 5. 논술/요약 역할 선택 및 과제 화면 -->
     <div id="essay-screen" class="screen center-screen">
         <div class="card content-card morph-target">
             <div class="banner">
@@ -472,12 +482,15 @@
         </div>
     </div>
 
+    <!-- 6. 👨‍🏫 교사 대시보드 화면 -->
     <div id="teacher-dashboard" class="screen">
         <div class="dashboard-container card morph-target">
             <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 25px; flex-wrap: wrap; gap: 15px;">
                 <h2 style="margin:0; font-size: 28px;" class="paperlogy-font">📊 <span class="text-gradient">학생 제출 현황 대시보드</span></h2>
                 <div class="dashboard-actions">
                     <button class="gradient-btn secondary-btn" onclick="openOverlayModal()">🗺️ 무역로 오버레이</button>
+                    <!-- ✨ 대시보드 실시간 새로고침 버튼 추가 -->
+                    <button class="gradient-btn" style="background: #10b981;" onclick="loadTeacherDashboard()">🔄 실시간 새로고침</button>
                     <button class="gradient-btn" style="background: #f59f00;" onclick="changePassword()">🔐 암호 변경</button>
                     <button class="gradient-btn" onclick="downloadExcel()">📊 엑셀 다운로드</button>
                     <button class="gradient-btn" style="background: #6b7280;" onclick="closeTeacherDashboard()">닫기</button>
@@ -490,16 +503,17 @@
                 <select id="yearFilter" onchange="renderDashboardList()"></select>
                 <select id="classFilterDash" onchange="renderDashboardList()"><option value="all">전체 학급</option><option value="1">1반</option><option value="2">2반</option><option value="3">3반</option><option value="4">4반</option><option value="5">5반</option></select>
                 <select id="groupFilterDash" onchange="renderDashboardList()"><option value="all">전체 조</option><option value="1">1조</option><option value="2">2조</option><option value="3">3조</option><option value="4">4조</option><option value="5">5조</option><option value="6">6조</option><option value="7">7조</option><option value="8">8조</option><option value="9">9조</option><option value="10">10조</option></select>
-                <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 제출순</option><option value="studentId">학번 오름차순</option></select>
+                <select id="sortOrder" onchange="renderDashboardList()"><option value="latest">최신 등록순</option><option value="studentId">학번 오름차순</option></select>
             </div>
             <div id="submissions-list" style="font-size: 16px;"><p>데이터를 불러오는 중입니다...</p></div>
         </div>
     </div>
 
+    <!-- 🗺️ 전체 무역로 오버레이 모달 창 -->
     <div id="overlay-modal" class="modal-overlay">
         <div class="card" style="width: 100%; max-width: 650px; text-align: center; padding: 30px;">
             <h3 style="margin-top:0; font-size: 26px;" class="paperlogy-font">🌍 <span class="text-gradient">무역로 종합 데이터</span></h3>
-            <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 15px;">아래 버튼을 눌러 지도에 표시할 데이터를 선택하세요.</p>
+            <p style="font-size: 15px; color:var(--text-gray); margin-bottom: 15px;">학생들이 <b>현재 그리고 있는 화살표까지 모두 실시간으로 통합</b>되어 표시됩니다.</p>
             <div style="display:flex; justify-content:center; gap:10px; margin-bottom: 25px;">
                 <button id="btn-overlay-filtered" class="gradient-btn" style="padding:10px 15px; font-size:15px; flex:1;" onclick="drawOverlayMap('filtered')">현재 필터(반/학년) 데이터</button>
                 <button id="btn-overlay-all" class="gradient-btn secondary-btn" style="padding:10px 15px; font-size:15px; flex:1; background: #6b7280; box-shadow:none;" onclick="drawOverlayMap('all')">전체 누적 데이터</button>
@@ -509,6 +523,7 @@
         </div>
     </div>
 
+    <!-- 📺 조별 발표용 클린 뷰 모달 창 -->
     <div id="presentation-modal" class="modal-overlay">
         <div class="presentation-modal-content">
             <h2 id="present-title" class="presentation-title paperlogy-font"></h2>
@@ -531,7 +546,13 @@
     </div>
 
     <script>
+        // ✨ 뒤로가기 및 스와이프 이탈 방지 (디벗 호환)
         window.addEventListener('beforeunload', function (e) { e.preventDefault(); e.returnValue = ''; });
+        history.pushState(null, null, location.href);
+        window.addEventListener('popstate', function(event) {
+            history.pushState(null, null, location.href);
+            alert("⚠️ 현재 탐구 활동이 진행 중입니다.\n이전 화면으로 가려면 화면 안의 [⬅️ 이전 단계] 버튼을 이용해 주세요!");
+        });
 
         window.studyMode = 'individual'; 
         window.academicYear = new Date().getFullYear().toString();
@@ -560,7 +581,16 @@
 
         const defaultPwB64 = "Y3JlYXRlbmV3aWQ=";
 
-        // ✨ 핵심 정제된 프롬프트 (비역사적 답변 방지 및 다채로운 면박 지시)
+        const nodes = {
+            america: { x: 70, y: 120, label: "아메리카", color: "#06b6d4" }, 
+            europe:  { x: 190, y: 80, label: "유럽", color: "#f59f00" },
+            africa:  { x: 180, y: 220, label: "아프리카", color: "#eab308" }, 
+            india:   { x: 260, y: 250, label: "인도", color: "#10b981" },
+            china:   { x: 380, y: 180, label: "중국", color: "#ef4444" }, 
+            japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
+        };
+        window.nodes = nodes; 
+
         const baseRule = `[절대 규칙: 17세기 페르소나 및 중학생 맞춤형 대화] 
 1. 너는 17세기 인물(상인 또는 광부)이다. 번역투를 쓰지 말고, 정중하면서도 당대 사극 톤(~하오, ~구려, ~느냐)으로 대화해라. 
 2. 무분별한 현대 유행어 사용은 자제하되, 맥락에 맞을 때만 자연스럽게 아주 드물게 써라.
@@ -858,10 +888,11 @@
                 alert("가장 중요하다고 생각하는 은의 이동 경로(화살표)를 딱 1개만 지도에 그려주세요!"); 
                 return; 
             }
+            // ✨ 일본 -> 유럽 허용 추가 완료!
             const validRoutes = [
                 "america->europe", "america->china", "europe->africa", "africa->america", 
                 "europe->india", "india->europe", "india->china", "europe->china", 
-                "china->europe", "japan->china"
+                "china->europe", "japan->china", "japan->europe"
             ];
             let isAllValid = true; let invalidRouteMsg = "";
             for(let arrow of window.userArrows) {
@@ -945,15 +976,6 @@
         };
         const app = initializeApp(firebaseConfig);
         const db = getFirestore(app);
-
-        // 노드 정보 전역 고정
-        const nodes = {
-            america: { x: 70, y: 120, label: "아메리카", color: "#06b6d4" }, 유럽: { x: 190, y: 80, label: "유럽", color: "#f59f00" },
-            europe:  { x: 190, y: 80, label: "유럽", color: "#f59f00" },
-            africa:  { x: 180, y: 220, label: "아프리카", color: "#eab308" }, india:   { x: 260, y: 250, label: "인도", color: "#10b981" },
-            china:   { x: 380, y: 180, label: "중국", color: "#ef4444" }, japan:   { x: 440, y: 90, label: "데지마", color: "#8b5cf6" }
-        };
-        window.nodes = nodes; 
 
         document.addEventListener('DOMContentLoaded', () => {
             const yearSelect = document.getElementById('login-year');
@@ -1058,100 +1080,6 @@
             } catch(e) { console.error("자동 저장 실패:", e); }
         }
 
-        // ✨ 핵심 맵 그리기 로직 (내부 해상도 500x350 완전 고정)
-        window.drawMap = function() {
-            const canvas = document.getElementById('mapCanvas'); 
-            if (!canvas) return;
-            const ctx = canvas.getContext('2d');
-            
-            canvas.width = 500; 
-            canvas.height = 350;
-
-            ctx.clearRect(0, 0, 500, 350); 
-            ctx.fillStyle = "#ffffff"; 
-            ctx.fillRect(0, 0, 500, 350);
-
-            if(window.userArrows) {
-                window.userArrows.forEach(arrow => {
-                    if (window.nodes[arrow.from] && window.nodes[arrow.to]) { 
-                        window.drawArrow(ctx, window.nodes[arrow.from].x, window.nodes[arrow.from].y, window.nodes[arrow.to].x, window.nodes[arrow.to].y, "#4f46e5"); 
-                    }
-                });
-            }
-
-            for (const key in window.nodes) {
-                if(key === '유럽') continue; // 중복 노드 키 방지
-                const node = window.nodes[key]; 
-                const nx = node.x; 
-                const ny = node.y; 
-                const r = 36;
-                
-                ctx.beginPath(); 
-                ctx.arc(nx, ny, r, 0, Math.PI * 2); 
-                ctx.fillStyle = (window.selectedNodeKey === key) ? "#fde047" : node.color;
-                ctx.lineWidth = (window.selectedNodeKey === key) ? 5 : 0; 
-                ctx.strokeStyle = "#b45309"; 
-                ctx.fill();
-                if(window.selectedNodeKey === key) ctx.stroke();
-                
-                ctx.fillStyle = "#ffffff"; 
-                ctx.font = "bold 14px 'Paperlogy-8ExtraBold', sans-serif"; 
-                ctx.textAlign = "center"; 
-                ctx.textBaseline = "middle"; 
-                ctx.fillText(node.label, nx, ny);
-            }
-        }
-
-        window.drawArrow = function(ctx, fromX, fromY, toX, toY, color) {
-            const headlen = 12; const angle = Math.atan2(toY - fromY, toX - fromX);
-            const startX = fromX + 36 * Math.cos(angle); const startY = fromY + 36 * Math.sin(angle);
-            const endX = toX - 42 * Math.cos(angle); const endY = toY - 42 * Math.sin(angle);
-
-            ctx.beginPath(); ctx.lineWidth = 3; ctx.strokeStyle = color; ctx.moveTo(startX, startY); ctx.lineTo(endX, endY); ctx.stroke();
-            ctx.beginPath(); ctx.moveTo(endX, endY);
-            ctx.lineTo(endX - headlen * Math.cos(angle - Math.PI / 6), endY - headlen * Math.sin(angle - Math.PI / 6));
-            ctx.lineTo(endX - headlen * Math.cos(angle + Math.PI / 6), endY - headlen * Math.sin(angle + Math.PI / 6));
-            ctx.lineTo(endX, endY); ctx.fillStyle = color; ctx.fill();
-        }
-
-        document.getElementById('mapCanvas').addEventListener('click', function(event) {
-            const rect = this.getBoundingClientRect(); 
-            if(rect.width === 0 || rect.height === 0) return; 
-
-            const clickX = event.clientX - rect.left; 
-            const clickY = event.clientY - rect.top;
-
-            const scaleX = 500 / rect.width; 
-            const scaleY = 350 / rect.height;
-
-            const actualX = clickX * scaleX;
-            const actualY = clickY * scaleY;
-
-            let clickedKey = null;
-            for (const key in window.nodes) {
-                if(key === '유럽') continue;
-                const nx = window.nodes[key].x; 
-                const ny = window.nodes[key].y; 
-                const r = 36;
-                if (Math.sqrt((actualX - nx) ** 2 + (actualY - ny) ** 2) <= r) { clickedKey = key; break; }
-            }
-
-            if (clickedKey) {
-                if (!window.selectedNodeKey) { 
-                    window.selectedNodeKey = clickedKey; 
-                } else {
-                    if (window.selectedNodeKey !== clickedKey) { 
-                        window.userArrows = [{ from: window.selectedNodeKey, to: clickedKey }];
-                        if(window.saveProgress) window.saveProgress(); 
-                    }
-                    window.selectedNodeKey = null;
-                }
-                window.drawMap();
-            }
-        });
-
-        window.resetUserArrows = function() { window.userArrows = []; window.selectedNodeKey = null; window.drawMap(); if(window.saveProgress) window.saveProgress(); }
-
         window.getAIAutoGrading = async function() {
             const essayText = document.getElementById("essay-input").value.trim();
             if(!essayText) { alert("논술 답변을 먼저 작성해 주세요."); return; }
@@ -1219,40 +1147,71 @@
             } catch (err) { alert("⚠️ 제출 중 오류가 발생했습니다."); }
         }
 
+        // ✨ 실시간 데이터 통합 로직 (최종 제출 + 현재 작성 중 데이터 모두 불러오기)
         window.loadTeacherDashboard = async function() {
-            transitionToScreen("teacher-dashboard", async () => {
-                const listContainer = document.getElementById("submissions-list");
-                listContainer.innerHTML = "<p>데이터를 불러오는 중...</p>";
+            if(document.getElementById("teacher-dashboard").style.display !== "flex") {
+                 transitionToScreen("teacher-dashboard", window.fetchDashData);
+            } else {
+                 window.fetchDashData();
+            }
+        }
 
-                try {
-                    const q = collection(db, "trade_submissions");
-                    const querySnapshot = await getDocs(q);
+        window.fetchDashData = async function() {
+            const listContainer = document.getElementById("submissions-list");
+            listContainer.innerHTML = "<p>데이터를 실시간으로 불러오는 중...</p>";
+
+            try {
+                window.globalSubmissionsData = [];
+                let uniqueYears = new Set(); 
+
+                // 1. 최종 제출 데이터 로드
+                const qSub = collection(db, "trade_submissions");
+                const subSnap = await getDocs(qSub);
+                subSnap.forEach((docSnap) => {
+                    const data = docSnap.data(); 
+                    data.docId = docSnap.id; 
+                    data.status = 'submitted'; // 상태 표시 플래그 추가
+                    if(data.academicYear) uniqueYears.add(data.academicYear);
+                    window.globalSubmissionsData.push(data);
+                });
+
+                // 2. 현재 작성 중(Progress) 데이터 로드 및 병합
+                const qProg = collection(db, "trade_progress");
+                const progSnap = await getDocs(qProg);
+                progSnap.forEach((docSnap) => {
+                    const data = docSnap.data(); 
+                    data.docId = docSnap.id; 
+                    data.status = 'progress'; // 진행 중 플래그 추가
+                    data.arrows = data.userArrows || []; // 화살표 데이터 속성명 통일
                     
-                    window.globalSubmissionsData = [];
-                    let uniqueYears = new Set(); 
-
-                    if (!querySnapshot.empty) { 
-                        querySnapshot.forEach((docSnap) => {
-                            const data = docSnap.data(); data.docId = docSnap.id;
-                            if(data.academicYear) uniqueYears.add(data.academicYear);
-                            window.globalSubmissionsData.push(data);
-                        });
+                    // 이미 제출 완료한 학생의 더미 진행데이터가 섞이지 않도록 방어 로직
+                    const alreadySubmitted = window.globalSubmissionsData.find(s => s.studentId === data.studentId && s.status === 'submitted');
+                    if(!alreadySubmitted) {
+                        if(data.academicYear) uniqueYears.add(data.academicYear);
+                        window.globalSubmissionsData.push(data);
                     }
+                });
 
-                    const yearSelect = document.getElementById("yearFilter");
-                    yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
-                    Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => { yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`; });
-                    yearSelect.value = "all"; 
-                    
-                    window.renderDashboardList();
-                } catch (error) { listContainer.innerHTML = `<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.<br>에러 메시지: ${error.message}</p>`; }
-            });
+                const yearSelect = document.getElementById("yearFilter");
+                const currentVal = yearSelect.value;
+                yearSelect.innerHTML = '<option value="all">전체 학년도</option>';
+                Array.from(uniqueYears).sort((a,b)=>b-a).forEach(y => { yearSelect.innerHTML += `<option value="${y}">${y}학년도</option>`; });
+                if(Array.from(uniqueYears).includes(currentVal)) { yearSelect.value = currentVal; } 
+                else { yearSelect.value = "all"; }
+                
+                window.renderDashboardList();
+            } catch (error) { listContainer.innerHTML = `<p style='color: red;'>데이터 로드 중 오류가 발생했습니다.<br>에러 메시지: ${error.message}</p>`; }
         }
 
         window.deleteSubmission = async function(docId) {
             if(confirm("정말 이 학생의 데이터를 삭제하시겠습니까? (복구 불가)")) {
-                try { await deleteDoc(doc(db, "trade_submissions", docId)); alert("성공적으로 삭제되었습니다."); window.loadTeacherDashboard(); } 
-                catch(e) { alert("삭제 중 오류가 발생했습니다."); }
+                try { 
+                    // 두 컬렉션 모두에서 삭제 시도 (어디에 있든 지워지도록)
+                    await deleteDoc(doc(db, "trade_submissions", docId)); 
+                    await deleteDoc(doc(db, "trade_progress", docId)); 
+                    alert("성공적으로 삭제되었습니다."); 
+                    window.loadTeacherDashboard(); 
+                } catch(e) { alert("삭제 중 오류가 발생했습니다."); }
             }
         }
 
@@ -1268,13 +1227,25 @@
             if (groupFilter !== "all") filtered = filtered.filter(item => item.studentGroup === groupFilter);
             
             if (sortOrder === "studentId") { filtered.sort((a, b) => (a.studentId || "").localeCompare(b.studentId || "")); } 
-            else { filtered.sort((a, b) => (b.timestamp?.seconds || 0) - (a.timestamp?.seconds || 0)); }
+            else { 
+                // 진행 중인 데이터(lastSaved)와 제출 완료된 데이터(timestamp) 호환 정렬
+                filtered.sort((a, b) => {
+                    const timeA = a.timestamp?.seconds || a.lastSaved?.seconds || 0;
+                    const timeB = b.timestamp?.seconds || b.lastSaved?.seconds || 0;
+                    return timeB - timeA;
+                });
+            }
 
             window.filteredSubmissionsData = filtered;
-            if (filtered.length === 0) { listContainer.innerHTML = "<p>해당 조건의 제출 데이터가 없습니다.</p>"; return; }
+            if (filtered.length === 0) { listContainer.innerHTML = "<p>해당 조건의 학생 데이터가 없습니다.</p>"; return; }
 
             let htmlContent = "";
             filtered.forEach(data => {
+                // ✨ 상태 뱃지 생성 (진행 중 vs 제출 완료)
+                const statusBadge = data.status === 'progress' 
+                    ? '<span style="background:#fef08a; color:#92400e; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">⏳ 작성 중</span>' 
+                    : '<span style="background:#bfdbfe; color:#1e40af; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✅ 제출 완료</span>';
+
                 const isGroup = data.studyMode === 'group';
                 const roleBadge = data.studentRole === 'writer' ? '<span style="background:#fef3c7; color:#b45309; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">✍️ 서기(가산점)</span>' : data.studentRole === 'member' ? '<span style="background:#d1fae5; color:#047857; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">📝 조원(요약)</span>' : '<span style="background:#e0e7ff; color:#4338ca; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">🙋‍♂️ 개인 탐구</span>';
                 const groupBadge = isGroup ? `<span style="background:#f3f4f6; color:#4b5563; padding:4px 8px; border-radius:6px; font-size:12px; font-weight:bold;">${data.studentClass}반 ${data.studentGroup}조</span>` : '';
@@ -1290,7 +1261,8 @@
                 }
                 if(!sourceSummary.trim()) sourceSummary = "작성된 사료 답변 없음";
 
-                const essayContent = data.essay || '없음';
+                // 작성 중일 때 빈 에세이 처리
+                const essayContent = data.essay ? data.essay : (data.status === 'progress' ? '<span style="color:#9ca3af; font-style:italic;">(학생이 아직 글을 작성하지 않았거나 작성 중입니다...)</span>' : '없음');
 
                 let chatSummary = "";
                 if (data.chatContexts) {
@@ -1307,15 +1279,18 @@
                     }
                 }
                 if (!chatSummary.trim()) chatSummary = "대화 기록 없음";
+                
+                const timeStampSecs = data.timestamp?.seconds || data.lastSaved?.seconds;
+                const timeString = timeStampSecs ? new Date(timeStampSecs * 1000).toLocaleString() : '방금 전';
 
                 htmlContent += `
                     <div class="submission-card">
                         <div class="submission-header">
                             <div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-                                ${yearBadge} ${groupBadge} ${roleBadge} <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> ${scoreDisplay}
+                                ${statusBadge} ${yearBadge} ${groupBadge} ${roleBadge} <span style="margin-left: 5px;">🎓 학번: ${data.studentId || '미입력'}</span> ${scoreDisplay}
                             </div>
                             <div style="display:flex; align-items:center; gap: 10px;">
-                                <span style="font-size: 13px; color: #6b7280;">${data.timestamp ? new Date(data.timestamp.seconds * 1000).toLocaleString() : '방금'}</span>
+                                <span style="font-size: 13px; color: #6b7280;">${timeString}</span>
                                 <button class="gradient-btn" style="background: #3b82f6; padding: 8px 14px; font-size: 13px; box-shadow: none; width: auto;" onclick="openPresentation('${data.docId}')">📺 화면 띄우기</button>
                                 <button class="delete-btn" onclick="deleteSubmission('${data.docId}')">삭제</button>
                             </div>
@@ -1323,7 +1298,7 @@
                         <details style="margin-bottom: 12px;"><summary style="cursor: pointer; color: #b45309; font-weight: bold; font-size: 15px; outline: none;">📖 사료 분석 답변 열어보기</summary><div class="chat-log-box" style="background: #fffbeb; border-color: #fde68a;">${sourceSummary}</div></details>
                         
                         <details style="margin-bottom: 12px;" open>
-                            <summary style="cursor: pointer; color: #4f46e5; font-weight: bold; font-size: 15px; outline: none; margin-bottom: 10px;">📝 제출 내용 (${data.studentRole === 'member' ? '지역 요약본' : '논술문'})</summary>
+                            <summary style="cursor: pointer; color: #4f46e5; font-weight: bold; font-size: 15px; outline: none; margin-bottom: 10px;">📝 작성 내용 (${data.studentRole === 'member' ? '지역 요약본' : '논술문'})</summary>
                             <div style="background: #f9fafb; padding: 18px; border-radius: 8px; border: 1px solid var(--border-color);">
                                 <p style="margin: 0; font-size: 15px; line-height: 1.6; color: #374151;">${essayContent}</p>
                             </div>
@@ -1341,7 +1316,7 @@
             if(!data) return;
 
             document.getElementById('present-title').innerText = data.studyMode === 'group' ? `🎓 ${data.studentClass}반 ${data.studentGroup}조의 탐구 결과` : `🎓 ${data.studentId}번 학생의 탐구 결과`;
-            document.getElementById('present-essay').innerText = data.essay || "작성된 내용이 없습니다.";
+            document.getElementById('present-essay').innerHTML = data.essay ? data.essay : '<span style="color:#9ca3af; font-size:16px;">(학생이 아직 글을 작성 중입니다...)</span>';
 
             let chatLog = "";
             if (data.chatContexts) {
@@ -1388,6 +1363,7 @@
         window.closePresentation = function() { document.getElementById("presentation-modal").style.display = "none"; }
 
         window.openOverlayModal = function() { document.getElementById("overlay-modal").style.display = "flex"; window.drawOverlayMap('filtered'); }
+        
         window.drawOverlayMap = function(mode) {
             const btnFiltered = document.getElementById("btn-overlay-filtered"); const btnAll = document.getElementById("btn-overlay-all");
             if (mode === 'filtered') {
@@ -1414,6 +1390,8 @@
             }
 
             const targetData = (mode === 'filtered') ? window.filteredSubmissionsData : window.globalSubmissionsData;
+            
+            // ✨ 작성 중인 학생의 화살표까지 모두 통합되어 실시간으로 그려짐
             targetData.forEach(item => {
                 if (item.arrows && Array.isArray(item.arrows)) {
                     item.arrows.forEach(arrow => {
@@ -1429,7 +1407,7 @@
             const workbook = new ExcelJS.Workbook(); const worksheet = workbook.addWorksheet('학생데이터', { views: [{ state: 'frozen', xSplit: 0, ySplit: 1 }] });
 
             worksheet.columns = [
-                { header: '학년도', key: 'year', width: 10 }, { header: '모드', key: 'mode', width: 10 }, { header: '반', key: 'cls', width: 6 }, { header: '조', key: 'group', width: 6 }, { header: '역할', key: 'role', width: 12 }, { header: '학번', key: 'id', width: 12 }, { header: '제출시간', key: 'time', width: 22 }, { header: 'AI점수', key: 'score', width: 12 }, 
+                { header: '상태', key: 'status', width: 10 }, { header: '학년도', key: 'year', width: 10 }, { header: '모드', key: 'mode', width: 10 }, { header: '반', key: 'cls', width: 6 }, { header: '조', key: 'group', width: 6 }, { header: '역할', key: 'role', width: 12 }, { header: '학번', key: 'id', width: 12 }, { header: '제출시간', key: 'time', width: 22 }, { header: 'AI점수', key: 'score', width: 12 }, 
                 { header: '사료학습답변', key: 'sourceAns', width: 60 }, { header: '작성내용(논술/요약)', key: 'essay', width: 60 }, { header: 'AI총평/피드백', key: 'feedback', width: 45 }, { header: '무역로', key: 'arrows', width: 25 }, { header: '챗봇대화기록', key: 'chat', width: 70 }
             ];
 
@@ -1452,9 +1430,11 @@
                         if(ans.a1 || ans.a2) sourceSummary += `[${sourceData[region].title}]\nQ1 답: ${ans.a1 || "미작성"}\nQ2 답: ${ans.a2 || "미작성"}\n\n`;
                     }
                 }
+                
+                const timeStampSecs = item.timestamp?.seconds || item.lastSaved?.seconds;
 
                 worksheet.addRow({
-                    year: item.academicYear || "미지정", mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: item.timestamp ? new Date(item.timestamp.seconds * 1000).toLocaleString() : "", score: item.aiScore || "", 
+                    status: item.status === 'progress' ? '작성 중' : '제출 완료', year: item.academicYear || "미지정", mode: item.studyMode === 'group' ? '조별' : '개인', cls: item.studentClass || "", group: item.studentGroup === 'none' ? '-' : item.studentGroup, role: item.studentRole === 'writer' ? '서기(논술)' : item.studentRole === 'member' ? '조원(요약)' : '개인', id: item.studentId || "", time: timeStampSecs ? new Date(timeStampSecs * 1000).toLocaleString() : "", score: item.aiScore || "", 
                     sourceAns: sourceSummary.trim() || "없음", essay: item.essay || "", feedback: (item.aiFeedback || "").replace(/\[채점 점수: [^\]]+\]\n?/g, '').trim(), arrows: item.arrows ? item.arrows.map(a => `${a.from}->${a.to}`).join(", ") : "", chat: chatLog.trim()
                 });
             });
@@ -1466,7 +1446,7 @@
                 row.eachCell((cell) => { cell.alignment = { vertical: 'middle', wrapText: true }; cell.border = { top: {style:'thin', color: {argb:'FFE5E7EB'}}, bottom: {style:'thin', color: {argb:'FFE5E7EB'}} }; cell.font = { name: '맑은 고딕' }; });
                 if (rowNumber % 2 === 0) row.eachCell(cell => { cell.fill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF9FAFB' } }; });
             });
-            worksheet.autoFilter = { from: 'A1', to: 'L1' };
+            worksheet.autoFilter = { from: 'A1', to: 'M1' };
 
             const buffer = await workbook.xlsx.writeBuffer();
             const cls = document.getElementById("classFilterDash").value; const grp = document.getElementById("groupFilterDash").value;
